@@ -1,0 +1,6 @@
+{
+  "name": "Portfolio Future-proof met AI",
+  "description": "Bewijzenportfolio voor de HU minor Future-proof met AI: bewijzen per sprint en leeruitkomst, persoonlijk profiel en media.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
