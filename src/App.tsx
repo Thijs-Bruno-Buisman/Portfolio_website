@@ -24,11 +24,14 @@ import { LearningOutcomesOverview } from './components/LearningOutcomesOverview'
 import { Chatbot } from './components/Chatbot';
 import {
   supabase,
+  supabaseConfigurationError,
+  isPortfolioOwner,
   subscribeProfile, 
   saveProfileToSupabase,
   subscribeEvidence, 
   saveEvidenceToSupabase,
   deleteEvidenceFromSupabase,
+  deleteAllEvidenceFromSupabase,
   logoutUser 
 } from './lib/supabase';
 import { User as SupabaseUser } from '@supabase/supabase-js';
@@ -48,6 +51,14 @@ import {
   Lock
 } from 'lucide-react';
 
+function writeLocalCache(key: string, value: unknown) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.warn(`Local cache could not be updated for ${key}:`, error);
+  }
+}
+
 export default function App() {
   // Navigation & View State - Default to 'profile' (Homepage: Wie ben ik?)
   const [activeTab, setActiveTab] = useState<'profile' | 'evidence' | 'outcomes'>('profile');
@@ -65,16 +76,11 @@ export default function App() {
 
   // Authentication & Ownership State
   const [currentUser, setCurrentUser] = useState<SupabaseUser | null>(null);
-  const [isOwnerPasscode, setIsOwnerPasscode] = useState<boolean>(() => {
-    return localStorage.getItem('hu_portfolio_owner_mode') === 'true';
-  });
-
-  const isOwner = useMemo(() => {
-    // Owner is authenticated user (or passcode unlocked)
-    return !!currentUser || isOwnerPasscode;
-  }, [currentUser, isOwnerPasscode]);
+  const [isOwner, setIsOwner] = useState(false);
+  const [databaseError, setDatabaseError] = useState<string | null>(supabaseConfigurationError);
 
   useEffect(() => {
+    if (!supabase) return;
     supabase.auth.getSession().then(({ data }) => setCurrentUser(data.session?.user ?? null));
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setCurrentUser(session?.user ?? null);
@@ -82,7 +88,20 @@ export default function App() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  // Profile state with Firestore sync + local cache fallback
+  useEffect(() => {
+    if (!currentUser) {
+      setIsOwner(false);
+      return;
+    }
+    void isPortfolioOwner()
+      .then(setIsOwner)
+      .catch((error) => {
+        setIsOwner(false);
+        setDatabaseError(`Eigenaarsrechten konden niet worden gecontroleerd: ${error.message}`);
+      });
+  }, [currentUser]);
+
+  // Profile state with Supabase sync + local cache fallback
   const [profile, setProfile] = useState<UserProfile>(() => {
     const saved = localStorage.getItem('hu_portfolio_profile');
     if (saved) {
@@ -95,7 +114,7 @@ export default function App() {
     return initialProfile;
   });
 
-  // Evidence state with Firestore sync + local cache fallback
+  // Evidence state with Supabase sync + local cache fallback
   const [evidenceItems, setEvidenceItems] = useState<EvidenceItem[]>(() => {
     const saved = localStorage.getItem('hu_portfolio_evidence');
     if (saved) {
@@ -118,17 +137,21 @@ export default function App() {
     return [];
   });
 
-  // Real-time Firestore subscriptions
+  // Real-time Supabase subscriptions. Read errors leave the local cache untouched.
   useEffect(() => {
+    if (!supabase) return;
+    const reportDatabaseError = (message: string) => setDatabaseError(message);
     const unsubscribeProfile = subscribeProfile((remoteProfile) => {
       setProfile(remoteProfile);
-      localStorage.setItem('hu_portfolio_profile', JSON.stringify(remoteProfile));
-    });
+      writeLocalCache('hu_portfolio_profile', remoteProfile);
+      setDatabaseError(null);
+    }, reportDatabaseError);
 
     const unsubscribeEvidence = subscribeEvidence((remoteItems) => {
       setEvidenceItems(remoteItems);
-      localStorage.setItem('hu_portfolio_evidence', JSON.stringify(remoteItems));
-    });
+      writeLocalCache('hu_portfolio_evidence', remoteItems);
+      setDatabaseError(null);
+    }, reportDatabaseError);
 
     return () => {
       unsubscribeProfile();
@@ -149,44 +172,41 @@ export default function App() {
       photos: updated.photos || [],
     };
 
-    setProfile(cleanProfile);
-    try {
-      localStorage.setItem('hu_portfolio_profile', JSON.stringify(cleanProfile));
-    } catch (storageErr) {
-      console.warn('LocalStorage quota limit reached, relying on Firestore cloud sync:', storageErr);
-    }
-
     try {
       await saveProfileToSupabase(cleanProfile);
+      setProfile(cleanProfile);
+      writeLocalCache('hu_portfolio_profile', cleanProfile);
+      setDatabaseError(null);
     } catch (err) {
-      console.warn('Supabase write failed, saved locally:', err);
+      setDatabaseError('Het profiel is niet opgeslagen in Supabase.');
       throw err;
     }
   };
 
   const handleAddEvidence = async (item: EvidenceItem) => {
-    const updated = [item, ...evidenceItems];
-    setEvidenceItems(updated);
-    localStorage.setItem('hu_portfolio_evidence', JSON.stringify(updated));
     try {
       await saveEvidenceToSupabase(item);
+      const updated = [item, ...evidenceItems];
+      setEvidenceItems(updated);
+      writeLocalCache('hu_portfolio_evidence', updated);
+      setDatabaseError(null);
     } catch (err) {
-      console.warn('Supabase write failed, saved locally:', err);
+      setDatabaseError('Het bewijsstuk is niet opgeslagen in Supabase.');
+      throw err;
     }
   };
 
   const handleDeleteEvidence = async (id: string) => {
     if (window.confirm('Weet je zeker dat je dit bewijsstuk of deze link wilt verwijderen?')) {
-      const updated = evidenceItems.filter((e) => e.id !== id);
-      setEvidenceItems(updated);
-      localStorage.setItem('hu_portfolio_evidence', JSON.stringify(updated));
-      if (activeEvidenceModalItem?.id === id) {
-        setActiveEvidenceModalItem(null);
-      }
       try {
         await deleteEvidenceFromSupabase(id);
+        const updated = evidenceItems.filter((e) => e.id !== id);
+        setEvidenceItems(updated);
+        writeLocalCache('hu_portfolio_evidence', updated);
+        if (activeEvidenceModalItem?.id === id) setActiveEvidenceModalItem(null);
+        setDatabaseError(null);
       } catch (err) {
-        console.warn('Supabase delete failed, deleted locally:', err);
+        setDatabaseError('Het bewijsstuk kon niet uit Supabase worden verwijderd.');
       }
     }
   };
@@ -201,30 +221,26 @@ export default function App() {
     const updatedItem: EvidenceItem = { ...targetItem, evaluationStatus: newStatus };
     const updatedList = evidenceItems.map((e) => (e.id === id ? updatedItem : e));
     
-    setEvidenceItems(updatedList);
-    localStorage.setItem('hu_portfolio_evidence', JSON.stringify(updatedList));
-
-    if (activeEvidenceModalItem?.id === id) {
-      setActiveEvidenceModalItem(updatedItem);
-    }
-
     try {
       await saveEvidenceToSupabase(updatedItem);
+      setEvidenceItems(updatedList);
+      writeLocalCache('hu_portfolio_evidence', updatedList);
+      if (activeEvidenceModalItem?.id === id) setActiveEvidenceModalItem(updatedItem);
+      setDatabaseError(null);
     } catch (err) {
-      console.warn('Supabase write failed, updated locally:', err);
+      setDatabaseError('De beoordelingsstatus is niet opgeslagen in Supabase.');
     }
   };
 
   const handleResetToCleanState = async () => {
     if (window.confirm('Weet je zeker dat je alle bewijzen wilt wissen om met een schone start te beginnen?')) {
-      setEvidenceItems([]);
-      localStorage.removeItem('hu_portfolio_evidence');
       try {
-        for (const item of evidenceItems) {
-          await deleteEvidenceFromSupabase(item.id);
-        }
+        await deleteAllEvidenceFromSupabase();
+        setEvidenceItems([]);
+        localStorage.removeItem('hu_portfolio_evidence');
+        setDatabaseError(null);
       } catch (e) {
-        console.warn('Reset sync warning:', e);
+        setDatabaseError('De bewijsstukken konden niet uit Supabase worden verwijderd.');
       }
     }
   };
@@ -235,8 +251,7 @@ export default function App() {
     } catch (e) {
       console.error(e);
     }
-    setIsOwnerPasscode(false);
-    localStorage.removeItem('hu_portfolio_owner_mode');
+    setIsOwner(false);
   };
 
   const handleOpenQuickLink = (sprintId: number) => {
@@ -288,6 +303,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-emerald-100 selection:text-emerald-900">
+      {databaseError && (
+        <div role="alert" className="bg-rose-50 border-b border-rose-200 px-4 py-2 text-center text-sm text-rose-800">
+          {databaseError} Je lokale gegevens zijn behouden.
+        </div>
+      )}
       {/* Top Header */}
       <Header
         profile={profile}
@@ -318,7 +338,7 @@ export default function App() {
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
                 <span className="text-slate-200">
-                  <strong className="text-emerald-400">Firebase Firestore Verbonden:</strong> Je bewerkt nu als eigenaar. Alles wat je aanpast of toevoegt wordt direct permanent in de cloud opgeslagen.
+                  <strong className="text-emerald-400">Supabase verbonden:</strong> Je bewerkt nu als eigenaar. Alles wat je aanpast of toevoegt wordt permanent opgeslagen.
                 </span>
               </>
             ) : (
@@ -617,10 +637,6 @@ export default function App() {
         <AuthModal
           isOpen={isAuthModalOpen}
           onClose={() => setIsAuthModalOpen(false)}
-          onOwnerAuthenticated={() => {
-            setIsOwnerPasscode(true);
-            localStorage.setItem('hu_portfolio_owner_mode', 'true');
-          }}
         />
       )}
     </div>

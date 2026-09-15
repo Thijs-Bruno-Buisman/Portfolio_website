@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
 import { loginWithGoogle } from '../lib/supabase';
-import { ShieldCheck, Lock, CheckCircle, AlertCircle, X, Sparkles, KeyRound } from 'lucide-react';
+import { ShieldCheck, AlertCircle, X } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onOwnerAuthenticated: () => void;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
   onClose,
-  onOwnerAuthenticated,
 }) => {
-  const [passcode, setPasscode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -24,27 +21,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setError(null);
     try {
       await loginWithGoogle();
-      onOwnerAuthenticated();
-      onClose();
     } catch (err: unknown) {
       console.error(err);
       setError(
-        'Google popup kon niet worden geopend of werd geannuleerd. Tip: Gebruik hieronder de eigenaarstoegangscode.'
+        'Inloggen met Google kon niet worden gestart. Controleer de Supabase- en Google-instellingen.'
       );
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handlePasscodeSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    // Allow owner unlock
-    if (passcode.trim().toLowerCase() === 'thijs' || passcode.trim() === 'hu2025' || passcode.trim() === 'minor2025') {
-      onOwnerAuthenticated();
-      onClose();
-    } else {
-      setError('Onjuiste toegangscode. Vul "thijs" of log in met Google.');
     }
   };
 
@@ -113,36 +96,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <span>{isLoading ? 'Inloggen...' : 'Inloggen met Google'}</span>
           </button>
 
-          <div className="relative flex items-center justify-center">
-            <div className="border-t border-slate-200 w-full"></div>
-            <span className="bg-white px-3 text-xs text-slate-400 uppercase font-medium">of directe code</span>
-          </div>
-
-          {/* Quick passcode form */}
-          <form onSubmit={handlePasscodeSubmit} className="space-y-3">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Eigenaarscode (bijvoorbeeld: <span className="font-mono text-emerald-700">thijs</span>)
-              </label>
-              <div className="relative">
-                <input
-                  type="password"
-                  value={passcode}
-                  onChange={(e) => setPasscode(e.target.value)}
-                  placeholder="Voer code in..."
-                  className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-xl focus:outline-emerald-500"
-                />
-                <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full py-2 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-colors cursor-pointer"
-            >
-              Ontgrendel Eigenaarsmodus
-            </button>
-          </form>
+          <p className="text-xs leading-relaxed text-slate-500">
+            Alleen het Google-account dat in Supabase als portfolio-eigenaar is geregistreerd krijgt schrijfrechten.
+          </p>
         </div>
       </div>
     </div>

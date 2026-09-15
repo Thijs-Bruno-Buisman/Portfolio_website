@@ -7,7 +7,7 @@ interface AddQuickLinkModalProps {
   sprintId: number;
   learningOutcomes: LearningOutcome[];
   onClose: () => void;
-  onAddEvidence: (item: EvidenceItem) => void;
+  onAddEvidence: (item: EvidenceItem) => Promise<void>;
 }
 
 export const AddQuickLinkModal: React.FC<AddQuickLinkModalProps> = ({
@@ -25,6 +25,8 @@ export const AddQuickLinkModal: React.FC<AddQuickLinkModalProps> = ({
   const [url, setUrl] = useState('');
   const [description, setDescription] = useState('');
   const [selectedLUs, setSelectedLUs] = useState<string[]>(['lu1']);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const toggleLU = (luId: string) => {
     if (selectedLUs.includes(luId)) {
@@ -36,7 +38,7 @@ export const AddQuickLinkModal: React.FC<AddQuickLinkModalProps> = ({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !url.trim()) return;
 
@@ -81,8 +83,16 @@ export const AddQuickLinkModal: React.FC<AddQuickLinkModalProps> = ({
       toolsUsed: [platformNames[platform]],
     };
 
-    onAddEvidence(newItem);
-    onClose();
+    setIsSaving(true);
+    setSaveError(null);
+    try {
+      await onAddEvidence(newItem);
+      onClose();
+    } catch {
+      setSaveError('Opslaan in Supabase is mislukt. Je invoer is behouden; probeer het opnieuw.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -266,11 +276,13 @@ export const AddQuickLinkModal: React.FC<AddQuickLinkModalProps> = ({
             </div>
           </div>
 
+          {saveError && <p role="alert" className="text-sm text-rose-700">{saveError}</p>}
           {/* Actions */}
           <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
             <button
               type="button"
               onClick={onClose}
+              disabled={isSaving}
               className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
             >
               Annuleren
@@ -278,10 +290,11 @@ export const AddQuickLinkModal: React.FC<AddQuickLinkModalProps> = ({
 
             <button
               type="submit"
-              className="px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+              disabled={isSaving}
+              className="px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
             >
               <Check className="w-4 h-4" />
-              Link Opslaan in Sprint {targetSprint}
+              {isSaving ? 'Opslaan in Supabase...' : `Link Opslaan in Sprint ${targetSprint}`}
             </button>
           </div>
         </form>

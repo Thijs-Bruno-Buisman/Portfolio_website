@@ -1,63 +1,64 @@
-# Portfolio "Future-proof met AI" (Hogeschool Utrecht)
+# Portfolio Future-proof met AI
 
-Een modern, statisch bewijzenportfolio voor de HU-minor **"Future-proof met AI"**. Ontworpen volgens het **Zero-Repo-Bloat** principe: geen grote mediabestanden in GitHub of Vercel, maar gestructureerde externe links naar **OneDrive/SharePoint** (voor documenten & presentaties) en **YouTube/Loom** (voor video demo's en Show & Tells).
+Een React- en TypeScript-portfolio voor de HU-minor Future-proof met AI. Vite bouwt de website; Supabase verzorgt authenticatie, permanente opslag en live updates. Bewijsbestanden blijven als externe links naar bijvoorbeeld OneDrive, YouTube, GitHub of Figma opgeslagen.
 
----
+## Lokaal starten
 
-## Belangrijkste Eigenschappen
+Vereisten: Node.js en npm.
 
-- 🏠 **Homepage (Persoonlijk Verhaal)**:
-  - Wie ben ik?, opleiding en studentnummer.
-  - De 3 kernpijlers: **Mijn Talenten**, **Mijn Passies** en **Mijn Dromen**.
-  - **Ruimte voor Foto's**: Visuele fotogalerij (Show & Tells, prototyping sessies) inclusief lightbox vergroting.
-  - Persoonlijke **AI-Visie** en startpunt in de minor.
-- 🚀 **Sprints & Links (Sprint 1 t/m 8)**:
-  - Tweewekelijkse navigatie met Show & Tell samenvattingen, peerfeedback en coachfeedback.
-  - **Directe Externe Deliverables Bar**: Prominente koppeling naar OneDrive documenten, YouTube video's en GitHub code.
-  - **"+ Externe Link toevoegen" knop**: Voeg in 3 klikken een nieuwe link toe aan een sprint.
-  - De 3 HU-reflectievragen per bewijs:
-    1. 🔍 *Wat heb ik onderzocht?*
-    2. 🛠️ *Wat heb ik gemaakt?*
-    3. 💡 *Wat heb ik geleerd?*
-- 🎯 **Leeruitkomsten (LU 1 t/m 4)**:
-  - Automatische evaluatieteller per leeruitkomst (voldoet ruim aan de 24 vereiste beoordelingsmomenten).
-  - Interactieve filters per leeruitkomst.
-- 📋 **Requirements & User Stories**:
-  - Overzicht van alle geformuleerde user stories inclusief acceptatiecriteria.
+1. Installeer de dependencies:
 
----
-
-## ✏️ Hoe pas ik mijn eigen teksten & foto's aan?
-
-Alle teksten, naam, foto's, bio en links zijn overzichtelijk verzameld in één centraal bestand:
-```
-src/data/initialData.ts
-```
-
-In dit bestand vind je heldere Nederlandse commentaarregels:
-1. **Homepage gegevens**: pas `initialProfile` aan met je eigen naam, studentnummer, bio, talenten, passies, dromen en foto-links (bijv. van Unsplash of je eigen GitHub avatar).
-2. **Sprints & Feedback**: pas `sprints` aan met de planning van jouw leerteam.
-3. **Bewijzen & Externe Links**: pas `initialEvidenceItems` aan met jouw eigen OneDrive-deellinks en YouTube-links.
-
-> **Tip:** Je kunt ook direct in de browser op de site klikken op **"Profiel & Verhaal Bewerken"** of **"+ Externe Link toevoegen"**. Via de knop **"Hosting & Deploy Gids"** onderaan kun je de aangepaste JSON kopiëren en direct in `initialData.ts` plakken!
-
----
-
-## 🚀 Publiceren & Hosten
-
-De site is een statische Single-Page Application (HTML, CSS, JS) en kan gratis en zonder serverkosten worden gehost:
-
-### Optie 1: Vercel (Aanbevolen, binnen 1 minuut)
-1. Push de code naar je GitHub account.
-2. Ga naar [vercel.com](https://vercel.com) en klik op **Add New Project**.
-3. Kies je GitHub repository. Vercel herkent automatisch het Vite-framework:
-   - **Build Command:** `npm run build`
-   - **Output Directory:** `dist`
-4. Klik op **Deploy**. Je portfolio is direct live met HTTPS!
-
-### Optie 2: GitHub Pages
-1. Bouw de statische bestanden met:
    ```bash
-   npm run build
+   npm install
    ```
-2. De map `dist/` bevat de pure statische HTML-, CSS- en JS-bestanden die je direct via GitHub Actions of via een `gh-pages` branch kunt serveren.
+
+2. Kopieer `.env.example` naar `.env`.
+3. Vul in `.env` de Project URL en publishable key uit **Supabase > Project Settings > API** in:
+
+   ```text
+   VITE_SUPABASE_URL=...
+   VITE_SUPABASE_ANON_KEY=...
+   ```
+
+   Gebruik in de browser nooit een Supabase secret key of `service_role` key. Bestanden met de naam `.env*` worden door Git genegeerd, behalve het veilige voorbeeldbestand `.env.example`.
+
+4. Start de ontwikkelserver:
+
+   ```bash
+   npm run dev
+   ```
+
+Na een wijziging in `.env` moet de ontwikkelserver opnieuw worden gestart.
+
+## Supabase inrichten
+
+1. Open de SQL Editor van je Supabase-project.
+2. Voer `supabase-schema.sql` uit. Dit maakt:
+   - `profiles`: het publieke portfolio-profiel;
+   - `evidence`: bewijsstukken en links;
+   - `portfolio_owners`: de lijst met accounts die mogen schrijven;
+   - de functie `is_portfolio_owner()`, beveiligingsregels en Realtime-configuratie.
+3. Zet in **Authentication > Providers** de Google-provider aan.
+4. Voeg bij **Authentication > URL Configuration** de lokale en gepubliceerde website-URL toe.
+5. Log één keer via de website in en kopieer daarna je User UID uit **Authentication > Users**.
+6. Voer de onderaan `supabase-schema.sql` beschreven owner-insert uit met die UID.
+
+Bezoekers mogen `profiles` en `evidence` lezen. Alleen een gebruiker in `portfolio_owners` mag inhoud toevoegen, wijzigen of verwijderen.
+
+## Projectinhoud aanpassen
+
+De standaardinhoud staat in `src/data/initialData.ts`. Via de eigenaarsmodus kun je profielgegevens, bewijsstukken en externe links aanpassen. Een wijziging verschijnt pas in de interface nadat Supabase het opslaan heeft bevestigd.
+
+## Controles en bouwen
+
+```bash
+npm run lint
+npm run build
+npm run preview
+```
+
+De productie-uitvoer komt in `dist/`. Vite verwerkt de `VITE_...`-variabelen tijdens de build; stel dezelfde variabelen daarom ook in bij je hostingprovider voordat je daar bouwt.
+
+## AI-assisted development
+
+Deze website is ontwikkeld met ondersteuning van AI-codegeneratie. GitHub Copilot is in een eerdere fase gebruikt. Codex is daarna gebruikt om de mislukte Firebase/Supabase-implementatie te analyseren, Firebase te verwijderen en de Supabase-koppeling te repareren. De uiteindelijke werking is handmatig gecontroleerd in de browser en in het Supabase-dashboard; AI-output is dus beoordeeld en getest voordat deze is geaccepteerd.

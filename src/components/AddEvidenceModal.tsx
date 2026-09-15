@@ -7,7 +7,7 @@ interface AddEvidenceModalProps {
   isOpen: boolean;
   learningOutcomes: LearningOutcome[];
   onClose: () => void;
-  onAddEvidence: (item: EvidenceItem) => void;
+  onAddEvidence: (item: EvidenceItem) => Promise<void>;
   defaultSprintId?: number | null;
 }
 
@@ -33,6 +33,8 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
   const [videoUrl, setVideoUrl] = useState('');
   const [projectLink, setProjectLink] = useState('');
   const [activeTemplateName, setActiveTemplateName] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const toggleLU = (luId: string) => {
     if (selectedLUs.includes(luId)) {
@@ -71,7 +73,7 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
     setActiveTemplateName(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
 
@@ -118,8 +120,16 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
       toolsUsed: toolsInput.split(',').map((t) => t.trim()).filter(Boolean),
     };
 
-    onAddEvidence(newItem);
-    onClose();
+    setIsSaving(true);
+    setSaveError(null);
+    try {
+      await onAddEvidence(newItem);
+      onClose();
+    } catch {
+      setSaveError('Opslaan in Supabase is mislukt. Je invoer is behouden; probeer het opnieuw.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -415,20 +425,23 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
             </div>
           </div>
 
+          {saveError && <p role="alert" className="text-sm text-rose-700">{saveError}</p>}
           {/* Form Actions */}
           <div className="pt-4 border-t border-slate-200 flex justify-end gap-2.5">
             <button
               type="button"
               onClick={onClose}
+              disabled={isSaving}
               className="px-4 py-2 rounded-xl text-slate-700 bg-slate-100 hover:bg-slate-200 font-medium cursor-pointer"
             >
               Annuleren
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm cursor-pointer"
+              disabled={isSaving}
+              className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm cursor-pointer disabled:opacity-50"
             >
-              Bewijs Opslaan
+              {isSaving ? 'Opslaan in Supabase...' : 'Bewijs Opslaan'}
             </button>
           </div>
         </form>

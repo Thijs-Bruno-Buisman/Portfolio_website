@@ -1,6 +1,6 @@
 /**
  * Client-side image compression utility using HTML5 Canvas.
- * Prevents Firestore document limit errors (1MB) and localStorage quota errors.
+ * Keeps profile data small enough for database and localStorage use.
  */
 export async function compressImage(
   file: File,
