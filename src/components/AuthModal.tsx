@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { loginWithGoogle } from '../lib/firebase';
+import { loginWithGoogle } from '../lib/supabase';
 import { ShieldCheck, Lock, CheckCircle, AlertCircle, X, Sparkles, KeyRound } from 'lucide-react';
 
 interface AuthModalProps {

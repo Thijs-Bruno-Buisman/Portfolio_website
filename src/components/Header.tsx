@@ -1,6 +1,6 @@
 import React from 'react';
 import { UserProfile } from '../types';
-import { User as FirebaseUser } from 'firebase/auth';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 import { 
   Sparkles, 
   Plus, 
@@ -21,7 +21,7 @@ interface HeaderProps {
   onTabChange: (tab: 'evidence' | 'profile' | 'outcomes') => void;
   onOpenAddModal: () => void;
   onOpenDeployGuide?: () => void;
-  currentUser: FirebaseUser | null;
+  currentUser: SupabaseUser | null;
   isOwner: boolean;
   onLogin: () => void;
   onLogout: () => void;

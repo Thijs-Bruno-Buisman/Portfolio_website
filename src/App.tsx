@@ -21,16 +21,17 @@ import { AddQuickLinkModal } from './components/AddQuickLinkModal';
 import { DeployGuideModal } from './components/DeployGuideModal';
 import { AuthModal } from './components/AuthModal';
 import { LearningOutcomesOverview } from './components/LearningOutcomesOverview';
-import { 
-  auth, 
+import { Chatbot } from './components/Chatbot';
+import {
+  supabase,
   subscribeProfile, 
-  saveProfileToFirestore, 
+  saveProfileToSupabase,
   subscribeEvidence, 
-  saveEvidenceToFirestore, 
-  deleteEvidenceFromFirestore,
+  saveEvidenceToSupabase,
+  deleteEvidenceFromSupabase,
   logoutUser 
-} from './lib/firebase';
-import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+} from './lib/supabase';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 import { 
   Search, 
   Filter, 
@@ -63,7 +64,7 @@ export default function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
 
   // Authentication & Ownership State
-  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
+  const [currentUser, setCurrentUser] = useState<SupabaseUser | null>(null);
   const [isOwnerPasscode, setIsOwnerPasscode] = useState<boolean>(() => {
     return localStorage.getItem('hu_portfolio_owner_mode') === 'true';
   });
@@ -74,10 +75,11 @@ export default function App() {
   }, [currentUser, isOwnerPasscode]);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
+    supabase.auth.getSession().then(({ data }) => setCurrentUser(data.session?.user ?? null));
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setCurrentUser(session?.user ?? null);
     });
-    return () => unsubscribe();
+    return () => listener.subscription.unsubscribe();
   }, []);
 
   // Profile state with Firestore sync + local cache fallback
@@ -155,9 +157,9 @@ export default function App() {
     }
 
     try {
-      await saveProfileToFirestore(cleanProfile);
+      await saveProfileToSupabase(cleanProfile);
     } catch (err) {
-      console.warn('Firestore write failed, saved in session:', err);
+      console.warn('Supabase write failed, saved locally:', err);
       throw err;
     }
   };
@@ -167,9 +169,9 @@ export default function App() {
     setEvidenceItems(updated);
     localStorage.setItem('hu_portfolio_evidence', JSON.stringify(updated));
     try {
-      await saveEvidenceToFirestore(item);
+      await saveEvidenceToSupabase(item);
     } catch (err) {
-      console.warn('Firestore write failed, saved locally:', err);
+      console.warn('Supabase write failed, saved locally:', err);
     }
   };
 
@@ -182,9 +184,9 @@ export default function App() {
         setActiveEvidenceModalItem(null);
       }
       try {
-        await deleteEvidenceFromFirestore(id);
+        await deleteEvidenceFromSupabase(id);
       } catch (err) {
-        console.warn('Firestore delete failed, deleted locally:', err);
+        console.warn('Supabase delete failed, deleted locally:', err);
       }
     }
   };
@@ -207,9 +209,9 @@ export default function App() {
     }
 
     try {
-      await saveEvidenceToFirestore(updatedItem);
+      await saveEvidenceToSupabase(updatedItem);
     } catch (err) {
-      console.warn('Firestore write failed, updated locally:', err);
+      console.warn('Supabase write failed, updated locally:', err);
     }
   };
 
@@ -219,7 +221,7 @@ export default function App() {
       localStorage.removeItem('hu_portfolio_evidence');
       try {
         for (const item of evidenceItems) {
-          await deleteEvidenceFromFirestore(item.id);
+          await deleteEvidenceFromSupabase(item.id);
         }
       } catch (e) {
         console.warn('Reset sync warning:', e);
@@ -569,6 +571,8 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      <Chatbot />
 
       {/* Modals */}
       {activeEvidenceModalItem && (
