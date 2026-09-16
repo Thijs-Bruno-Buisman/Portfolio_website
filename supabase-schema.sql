@@ -19,6 +19,12 @@ create table if not exists public.evidence (
   updated_at timestamptz not null default now()
 );
 
+insert into storage.buckets (id, name, public, file_size_limit)
+values ('evidence-files', 'evidence-files', true, 52428800)
+on conflict (id) do update
+set public = excluded.public,
+    file_size_limit = excluded.file_size_limit;
+
 alter table public.portfolio_owners enable row level security;
 alter table public.profiles enable row level security;
 alter table public.evidence enable row level security;
@@ -93,6 +99,29 @@ create policy "Portfolio owner can delete evidence"
   on public.evidence for delete
   to authenticated
   using ((select public.is_portfolio_owner()));
+
+drop policy if exists "Public can read evidence files" on storage.objects;
+drop policy if exists "Portfolio owner can upload evidence files" on storage.objects;
+drop policy if exists "Portfolio owner can update evidence files" on storage.objects;
+drop policy if exists "Portfolio owner can delete evidence files" on storage.objects;
+
+create policy "Public can read evidence files"
+  on storage.objects for select
+  to anon, authenticated
+  using (bucket_id = 'evidence-files');
+create policy "Portfolio owner can upload evidence files"
+  on storage.objects for insert
+  to authenticated
+  with check (bucket_id = 'evidence-files' and (select public.is_portfolio_owner()));
+create policy "Portfolio owner can update evidence files"
+  on storage.objects for update
+  to authenticated
+  using (bucket_id = 'evidence-files' and (select public.is_portfolio_owner()))
+  with check (bucket_id = 'evidence-files' and (select public.is_portfolio_owner()));
+create policy "Portfolio owner can delete evidence files"
+  on storage.objects for delete
+  to authenticated
+  using (bucket_id = 'evidence-files' and (select public.is_portfolio_owner()));
 
 -- Add both content tables to Realtime only when they are not already present.
 do $$

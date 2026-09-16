@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { EvidenceItem, LearningOutcome, MediaItem } from '../types';
-import { X, Plus, Sparkles, Image, Video, Link as LinkIcon, HelpCircle, RotateCcw } from 'lucide-react';
+import { X, Plus, Sparkles, Image, Video, Link as LinkIcon, HelpCircle, RotateCcw, Upload, FileText } from 'lucide-react';
 import { EVIDENCE_TEMPLATES, EvidenceTemplate } from '../data/templates';
 
 interface AddEvidenceModalProps {
   isOpen: boolean;
   learningOutcomes: LearningOutcome[];
   onClose: () => void;
-  onAddEvidence: (item: EvidenceItem) => Promise<void>;
+  onAddEvidence: (item: EvidenceItem, files?: File[], removedMedia?: MediaItem[]) => Promise<void>;
   defaultSprintId?: number | null;
+  initialItem?: EvidenceItem | null;
 }
 
 export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
@@ -17,17 +18,18 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
   onClose,
   onAddEvidence,
   defaultSprintId,
+  initialItem,
 }) => {
   if (!isOpen) return null;
 
-  const [title, setTitle] = useState('');
-  const [sprintId, setSprintId] = useState<number>(defaultSprintId || 1);
-  const [selectedLUs, setSelectedLUs] = useState<string[]>(['lu1']);
-  const [investigated, setInvestigated] = useState('');
-  const [created, setCreated] = useState('');
-  const [learned, setLearned] = useState('');
-  const [toolsInput, setToolsInput] = useState('');
-  const [tagsInput, setTagsInput] = useState('');
+  const [title, setTitle] = useState(initialItem?.title ?? '');
+  const [sprintId, setSprintId] = useState<number>(initialItem?.sprintId ?? defaultSprintId ?? 1);
+  const [selectedLUs, setSelectedLUs] = useState<string[]>(initialItem?.learningOutcomeIds ?? ['lu1']);
+  const [investigated, setInvestigated] = useState(initialItem?.investigated ?? '');
+  const [created, setCreated] = useState(initialItem?.created ?? '');
+  const [learned, setLearned] = useState(initialItem?.learned ?? '');
+  const [toolsInput, setToolsInput] = useState(initialItem?.toolsUsed.join(', ') ?? '');
+  const [tagsInput, setTagsInput] = useState(initialItem?.tags.join(', ') ?? '');
   const [imageUrl, setImageUrl] = useState('');
   const [imageCaption, setImageCaption] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
@@ -35,6 +37,9 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
   const [activeTemplateName, setActiveTemplateName] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [existingMedia, setExistingMedia] = useState<MediaItem[]>(initialItem?.media ?? []);
+  const [removedMedia, setRemovedMedia] = useState<MediaItem[]>([]);
 
   const toggleLU = (luId: string) => {
     if (selectedLUs.includes(luId)) {
@@ -77,7 +82,7 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
     e.preventDefault();
     if (!title.trim()) return;
 
-    const mediaList: MediaItem[] = [];
+    const mediaList: MediaItem[] = [...existingMedia];
     if (imageUrl.trim()) {
       mediaList.push({
         type: 'image',
@@ -102,11 +107,11 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
     }
 
     const newItem: EvidenceItem = {
-      id: `ev-${Date.now()}`,
+      id: initialItem?.id ?? `ev-${Date.now()}`,
       title: title.trim(),
       sprintId: Number(sprintId),
       learningOutcomeIds: selectedLUs,
-      date: new Date().toLocaleDateString('nl-NL', {
+      date: initialItem?.date ?? new Date().toLocaleDateString('nl-NL', {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
@@ -115,7 +120,7 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
       created: created.trim() || 'Documentatie en functioneel artefact geproduceerd.',
       learned: learned.trim() || 'Inzicht opgedaan in de werking en praktische randvoorwaarden.',
       media: mediaList,
-      evaluationStatus: 'in_behandeling',
+      evaluationStatus: initialItem?.evaluationStatus ?? 'in_behandeling',
       tags: tagsInput.split(',').map((t) => t.trim()).filter(Boolean),
       toolsUsed: toolsInput.split(',').map((t) => t.trim()).filter(Boolean),
     };
@@ -123,7 +128,7 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
     setIsSaving(true);
     setSaveError(null);
     try {
-      await onAddEvidence(newItem);
+      await onAddEvidence(newItem, selectedFiles, removedMedia);
       onClose();
     } catch {
       setSaveError('Opslaan in Supabase is mislukt. Je invoer is behouden; probeer het opnieuw.');
@@ -141,7 +146,7 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
         <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50">
           <div>
             <h3 className="text-lg font-bold text-slate-900">
-              Nieuw Bewijsstuk Toevoegen
+              {initialItem ? 'Bewijsstuk Bewerken' : 'Nieuw Bewijsstuk Toevoegen'}
             </h3>
             <p className="text-xs text-slate-500">
               Vul je eigen bevindingen in of kies een sjabloon als invulhulp.
@@ -355,74 +360,73 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
             </div>
           </div>
 
-          {/* Media Links with Zero-Repo-Bloat Guidance */}
-          <div className="pt-2 border-t border-slate-100 space-y-2.5">
-            <div className="flex items-center justify-between">
+          <div className="pt-2 border-t border-slate-100 space-y-3">
+            <div>
               <span className="block font-semibold text-slate-800 text-xs uppercase tracking-wider">
-                Externe Bronnen & Media (OneDrive, YouTube, etc.)
+                Bestanden toevoegen
               </span>
-              <span className="text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-medium">
-                Geen bestandsgrootte-limieten
-              </span>
+              <p className="mt-1 text-[11px] text-slate-500">
+                Selecteer meerdere documenten, bronbestanden, afbeeldingen of PDF's tegelijk. Maximaal 50 MB per bestand.
+              </p>
             </div>
-            
-            <p className="text-[11px] text-slate-500 leading-normal">
-              Omdat GitHub en Vercel strikte bestands- en payloadlimieten hebben, hosten we geen grote bestanden direct in de repository. Plak hieronder directe externe links.
-            </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-[11px] font-semibold text-slate-600 mb-1">
-                  📄 OneDrive / SharePoint / Drive Document (PDF/Word/Slides)
-                </label>
-                <input
-                  type="url"
-                  value={projectLink}
-                  onChange={(e) => setProjectLink(e.target.value)}
-                  placeholder="https://hu-my.sharepoint.com/... of OneDrive link"
-                  className="w-full px-3 py-1.5 border border-slate-300 rounded-xl text-xs focus:outline-emerald-500"
-                />
+            {existingMedia.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-slate-700">Gekoppelde bestanden en media</p>
+                {existingMedia.map((media, index) => (
+                  <div key={media.storagePath ?? `${media.url}-${index}`} className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white p-2">
+                    <FileText className="h-4 w-4 shrink-0 text-emerald-600" />
+                    <input
+                      value={media.title}
+                      onChange={(event) => setExistingMedia((items) => items.map((item, itemIndex) => itemIndex === index ? { ...item, title: event.target.value } : item))}
+                      className="min-w-0 flex-1 rounded-md border border-slate-200 px-2 py-1 text-xs text-slate-700 focus:border-emerald-500 focus:outline-none"
+                      aria-label="Bestandsnaam in portfolio"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRemovedMedia((items) => [...items, media]);
+                        setExistingMedia((items) => items.filter((_, itemIndex) => itemIndex !== index));
+                      }}
+                      className="rounded p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600"
+                      title="Bestand of link verwijderen"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+                <p className="text-[11px] text-slate-500">Je kunt de zichtbare naam aanpassen of een bestand verwijderen. Selecteer hieronder nieuwe bestanden om ze te vervangen of aan te vullen.</p>
               </div>
+            )}
 
-              <div>
-                <label className="block text-[11px] font-semibold text-slate-600 mb-1">
-                  🎬 Video Demo (YouTube / Loom screencast)
-                </label>
-                <input
-                  type="url"
-                  value={videoUrl}
-                  onChange={(e) => setVideoUrl(e.target.value)}
-                  placeholder="https://youtube.com/watch?v=... of Loom embed"
-                  className="w-full px-3 py-1.5 border border-slate-300 rounded-xl text-xs focus:outline-emerald-500"
-                />
-              </div>
+            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-sm font-semibold text-slate-700 transition hover:border-emerald-400 hover:bg-emerald-50">
+              <Upload className="h-5 w-5 text-emerald-600" />
+              Kies bestanden in Verkenner
+              <input
+                type="file"
+                multiple
+                className="sr-only"
+                onChange={(event) => setSelectedFiles(Array.from(event.target.files ?? []))}
+              />
+            </label>
 
-              <div>
-                <label className="block text-[11px] font-semibold text-slate-600 mb-1">
-                  🖼️ Screenshot / Afbeelding URL
-                </label>
-                <input
-                  type="url"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="https://... screenshot URL"
-                  className="w-full px-3 py-1.5 border border-slate-300 rounded-xl text-xs focus:outline-emerald-500"
-                />
+            {selectedFiles.length > 0 && (
+              <div className="space-y-1.5">
+                {selectedFiles.map((file, index) => (
+                  <div key={`${file.name}-${file.lastModified}`} className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs">
+                    <span className="flex min-w-0 items-center gap-2">
+                      <FileText className="h-4 w-4 shrink-0 text-emerald-600" />
+                      <span className="truncate font-medium text-slate-700">{file.name}</span>
+                      <span className="shrink-0 text-slate-400">{(file.size / 1024).toFixed(file.size < 1024 * 1024 ? 0 : 1)} {file.size < 1024 * 1024 ? 'KB' : 'MB'}</span>
+                    </span>
+                    <button type="button" onClick={() => setSelectedFiles((files) => files.filter((_, fileIndex) => fileIndex !== index))} className="text-slate-400 hover:text-rose-600" title="Bestand uit selectie verwijderen">
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
               </div>
+            )}
 
-              <div>
-                <label className="block text-[11px] font-semibold text-slate-600 mb-1">
-                  🏷️ Bijschrift bij afbeelding
-                </label>
-                <input
-                  type="text"
-                  value={imageCaption}
-                  onChange={(e) => setImageCaption(e.target.value)}
-                  placeholder="Korte beschrijving van de screenshot"
-                  className="w-full px-3 py-1.5 border border-slate-300 rounded-xl text-xs focus:outline-emerald-500"
-                />
-              </div>
-            </div>
           </div>
 
           {saveError && <p role="alert" className="text-sm text-rose-700">{saveError}</p>}

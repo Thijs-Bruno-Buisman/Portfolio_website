@@ -12,7 +12,9 @@ import {
   Tag, 
   Lightbulb, 
   Wrench, 
-  Search
+  Search,
+  Pencil,
+  FileText
 } from 'lucide-react';
 
 interface EvidenceModalProps {
@@ -20,6 +22,7 @@ interface EvidenceModalProps {
   learningOutcomes: LearningOutcome[];
   onClose: () => void;
   onUpdateStatus?: (id: string, newStatus: 'voldoende' | 'in_behandeling' | 'zelfevaluatie_klaar') => void;
+  onEdit?: (item: EvidenceItem) => void;
 }
 
 export const EvidenceModal: React.FC<EvidenceModalProps> = ({
@@ -27,6 +30,7 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
   learningOutcomes,
   onClose,
   onUpdateStatus,
+  onEdit,
 }) => {
   if (!item) return null;
 
@@ -244,6 +248,22 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
                         </a>
                       </div>
                     )}
+
+                    {media.type === 'file' && (
+                      <div className="p-3.5 bg-white flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="flex items-center gap-2 font-semibold text-slate-900 text-sm">
+                            <FileText className="h-4 w-4 shrink-0 text-emerald-600" />
+                            <span className="truncate">{media.title}</span>
+                          </p>
+                          {media.size && <p className="mt-0.5 text-xs text-slate-500">{(media.size / 1024 / 1024).toFixed(2)} MB</p>}
+                        </div>
+                        <a href={media.url} target="_blank" rel="noreferrer" className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-600">
+                          Openen
+                          <ExternalLink className="h-3.5 w-3.5" />
+                        </a>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -302,12 +322,20 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
             <div />
           )}
 
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
-          >
-            Sluiten
-          </button>
+          <div className="flex items-center gap-2">
+            {onEdit && (
+              <button onClick={() => onEdit(item)} className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 sm:text-sm">
+                <Pencil className="h-4 w-4" />
+                Bewerken
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
+            >
+              Sluiten
+            </button>
+          </div>
         </div>
       </div>
     </div>

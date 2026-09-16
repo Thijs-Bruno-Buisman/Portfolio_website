@@ -38,6 +38,7 @@ Na een wijziging in `.env` moet de ontwikkelserver opnieuw worden gestart.
    - `profiles`: het publieke portfolio-profiel;
    - `evidence`: bewijsstukken en links;
    - `portfolio_owners`: de lijst met accounts die mogen schrijven;
+   - `evidence-files`: een publieke Storage-bucket voor geüploade bewijsbestanden (maximaal 50 MB per bestand);
    - de functie `is_portfolio_owner()`, beveiligingsregels en Realtime-configuratie.
 3. Zet in **Authentication > Providers** de Google-provider aan.
 4. Voeg bij **Authentication > URL Configuration** de lokale en gepubliceerde website-URL toe.
@@ -48,7 +49,7 @@ Bezoekers mogen `profiles` en `evidence` lezen. Alleen een gebruiker in `portfol
 
 ## Projectinhoud aanpassen
 
-De standaardinhoud staat in `src/data/initialData.ts`. Via de eigenaarsmodus kun je profielgegevens, bewijsstukken en externe links aanpassen. Een wijziging verschijnt pas in de interface nadat Supabase het opslaan heeft bevestigd.
+De standaardinhoud staat in `src/data/initialData.ts`. Via de eigenaarsmodus kun je profielgegevens en bewijsstukken toevoegen of aanpassen. Bij een bewijsstuk kunnen meerdere bestanden tegelijk vanuit de Verkenner naar Supabase Storage worden geüpload. Een wijziging verschijnt pas in de interface nadat Supabase het opslaan heeft bevestigd.
 
 ## Controles en bouwen
 

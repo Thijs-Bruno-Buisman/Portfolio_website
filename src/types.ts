@@ -57,10 +57,13 @@ export interface Sprint {
 }
 
 export interface MediaItem {
-  type: 'image' | 'video' | 'link';
+  type: 'image' | 'video' | 'link' | 'file';
   url: string;
   title: string;
   caption?: string;
+  storagePath?: string;
+  mimeType?: string;
+  size?: number;
 }
 
 export interface EvidenceItem {

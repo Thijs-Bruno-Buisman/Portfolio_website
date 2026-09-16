@@ -12,7 +12,9 @@ import {
   Trash2,
   Cloud,
   Github,
-  Link2
+  Link2,
+  Pencil,
+  FileText
 } from 'lucide-react';
 
 interface EvidenceCardProps {
@@ -20,6 +22,7 @@ interface EvidenceCardProps {
   learningOutcomes: LearningOutcome[];
   onOpenDetails: (item: EvidenceItem) => void;
   onDelete?: (id: string) => void;
+  onEdit?: (item: EvidenceItem) => void;
 }
 
 export const EvidenceCard: React.FC<EvidenceCardProps> = ({
@@ -27,6 +30,7 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
   learningOutcomes,
   onOpenDetails,
   onDelete,
+  onEdit,
 }) => {
   const getLU = (id: string) => learningOutcomes.find((lu) => lu.id === id);
 
@@ -130,14 +134,15 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
         )}
 
         {/* External Deliverable Links (OneDrive / YouTube / GitHub) */}
-        {item.media.filter((m) => m.type === 'link' || m.type === 'video').length > 0 && (
+        {item.media.filter((m) => m.type === 'link' || m.type === 'video' || m.type === 'file').length > 0 && (
           <div className="mb-4 space-y-1.5">
             {item.media
-              .filter((m) => m.type === 'link' || m.type === 'video')
+              .filter((m) => m.type === 'link' || m.type === 'video' || m.type === 'file')
               .map((media, idx) => {
                 const isOneDrive = media.url.includes('sharepoint') || media.url.includes('onedrive');
                 const isYouTube = media.url.includes('youtube') || media.url.includes('youtu.be') || media.type === 'video';
                 const isGitHub = media.url.includes('github');
+                const isFile = media.type === 'file';
 
                 return (
                   <a
@@ -151,7 +156,8 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
                       {isOneDrive && <Cloud className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />}
                       {isYouTube && <Video className="w-3.5 h-3.5 text-rose-600 flex-shrink-0" />}
                       {isGitHub && <Github className="w-3.5 h-3.5 text-slate-800 flex-shrink-0" />}
-                      {!isOneDrive && !isYouTube && !isGitHub && <Link2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />}
+                      {isFile && <FileText className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />}
+                      {!isOneDrive && !isYouTube && !isGitHub && !isFile && <Link2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />}
                       <span className="font-semibold text-slate-800 truncate group-hover/link:text-emerald-800">
                         {media.title || 'Externe Deliverable'}
                       </span>
@@ -215,6 +221,15 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
 
         {/* View Details Action */}
         <div className="flex items-center gap-2">
+          {onEdit && (
+            <button
+              onClick={() => onEdit(item)}
+              className="text-slate-400 hover:text-emerald-700 p-1 rounded transition-colors cursor-pointer"
+              title="Bewijs bewerken"
+            >
+              <Pencil className="w-4 h-4" />
+            </button>
+          )}
           {onDelete && (
             <button
               onClick={() => onDelete(item.id)}

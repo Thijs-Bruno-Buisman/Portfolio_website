@@ -1,5 +1,5 @@
 import { createClient, type SupabaseClient, type User } from '@supabase/supabase-js';
-import type { EvidenceItem, UserProfile } from '../types';
+import type { EvidenceItem, MediaItem, UserProfile } from '../types';
 import { initialProfile } from '../data/initialData';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
@@ -98,6 +98,47 @@ export async function saveEvidenceToSupabase(item: EvidenceItem) {
   const { error } = await requireSupabase()
     .from('evidence')
     .upsert({ id: item.id, data: item, updated_at: new Date().toISOString() });
+  if (error) throw error;
+}
+
+function safeFileName(name: string) {
+  return name.normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '') || 'bestand';
+}
+
+export async function uploadEvidenceFiles(evidenceId: string, files: File[]): Promise<MediaItem[]> {
+  const client = requireSupabase();
+  const uploaded: MediaItem[] = [];
+
+  for (const file of files) {
+    const storagePath = `${evidenceId}/${crypto.randomUUID()}-${safeFileName(file.name)}`;
+    const { error } = await client.storage
+      .from('evidence-files')
+      .upload(storagePath, file, { contentType: file.type || undefined, upsert: false });
+    if (error) throw error;
+
+    const { data } = client.storage.from('evidence-files').getPublicUrl(storagePath);
+    const type: MediaItem['type'] = file.type.startsWith('image/')
+      ? 'image'
+      : file.type.startsWith('video/')
+        ? 'video'
+        : 'file';
+    uploaded.push({
+      type,
+      url: data.publicUrl,
+      title: file.name,
+      storagePath,
+      mimeType: file.type || undefined,
+      size: file.size,
+    });
+  }
+
+  return uploaded;
+}
+
+export async function deleteEvidenceFiles(items: MediaItem[]) {
+  const paths = items.flatMap((item) => item.storagePath ? [item.storagePath] : []);
+  if (paths.length === 0) return;
+  const { error } = await requireSupabase().storage.from('evidence-files').remove(paths);
   if (error) throw error;
 }
 

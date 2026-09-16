@@ -32,6 +32,8 @@ import {
   saveEvidenceToSupabase,
   deleteEvidenceFromSupabase,
   deleteAllEvidenceFromSupabase,
+  uploadEvidenceFiles,
+  deleteEvidenceFiles,
   logoutUser 
 } from './lib/supabase';
 import { User as SupabaseUser } from '@supabase/supabase-js';
@@ -69,6 +71,7 @@ export default function App() {
   // Modals
   const [activeEvidenceModalItem, setActiveEvidenceModalItem] = useState<EvidenceItem | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
+  const [editingEvidence, setEditingEvidence] = useState<EvidenceItem | null>(null);
   const [isQuickLinkModalOpen, setIsQuickLinkModalOpen] = useState<boolean>(false);
   const [quickLinkSprintId, setQuickLinkSprintId] = useState<number>(1);
   const [isDeployGuideOpen, setIsDeployGuideOpen] = useState<boolean>(false);
@@ -183,14 +186,40 @@ export default function App() {
     }
   };
 
-  const handleAddEvidence = async (item: EvidenceItem) => {
+  const handleAddEvidence = async (
+    item: EvidenceItem,
+    files: File[] = [],
+    removedMedia: EvidenceItem['media'] = [],
+  ) => {
+    let uploadedMedia: EvidenceItem['media'] = [];
     try {
-      await saveEvidenceToSupabase(item);
-      const updated = [item, ...evidenceItems];
+      uploadedMedia = files.length > 0 ? await uploadEvidenceFiles(item.id, files) : [];
+      const savedItem = { ...item, media: [...item.media, ...uploadedMedia] };
+      await saveEvidenceToSupabase(savedItem);
+      if (removedMedia.length > 0) {
+        try {
+          await deleteEvidenceFiles(removedMedia);
+        } catch (storageError) {
+          console.warn('Evidence was updated, but one or more removed files remain in storage:', storageError);
+        }
+      }
+      const exists = evidenceItems.some((e) => e.id === savedItem.id);
+      const updated = exists
+        ? evidenceItems.map((e) => e.id === savedItem.id ? savedItem : e)
+        : [savedItem, ...evidenceItems];
       setEvidenceItems(updated);
       writeLocalCache('hu_portfolio_evidence', updated);
+      if (activeEvidenceModalItem?.id === savedItem.id) setActiveEvidenceModalItem(savedItem);
+      setEditingEvidence(null);
       setDatabaseError(null);
     } catch (err) {
+      if (uploadedMedia.length > 0) {
+        try {
+          await deleteEvidenceFiles(uploadedMedia);
+        } catch (cleanupError) {
+          console.warn('Uploaded files could not be cleaned up after a failed save:', cleanupError);
+        }
+      }
       setDatabaseError('Het bewijsstuk is niet opgeslagen in Supabase.');
       throw err;
     }
@@ -200,6 +229,14 @@ export default function App() {
     if (window.confirm('Weet je zeker dat je dit bewijsstuk of deze link wilt verwijderen?')) {
       try {
         await deleteEvidenceFromSupabase(id);
+        const removedItem = evidenceItems.find((e) => e.id === id);
+        if (removedItem) {
+          try {
+            await deleteEvidenceFiles(removedItem.media);
+          } catch (storageError) {
+            console.warn('Evidence record was deleted, but one or more files could not be removed:', storageError);
+          }
+        }
         const updated = evidenceItems.filter((e) => e.id !== id);
         setEvidenceItems(updated);
         writeLocalCache('hu_portfolio_evidence', updated);
@@ -270,6 +307,11 @@ export default function App() {
     }
     setSelectedSprintId(sprintId);
     setIsAddModalOpen(true);
+  };
+
+  const handleEditEvidence = (item: EvidenceItem) => {
+    setActiveEvidenceModalItem(null);
+    setEditingEvidence(item);
   };
 
   // Filtered evidence items
@@ -499,6 +541,7 @@ export default function App() {
                     learningOutcomes={learningOutcomes}
                     onOpenDetails={setActiveEvidenceModalItem}
                     onDelete={isOwner ? handleDeleteEvidence : undefined}
+                    onEdit={isOwner ? handleEditEvidence : undefined}
                   />
                 ))}
               </div>
@@ -601,6 +644,7 @@ export default function App() {
           learningOutcomes={learningOutcomes}
           onClose={() => setActiveEvidenceModalItem(null)}
           onUpdateStatus={isOwner ? handleUpdateStatus : undefined}
+          onEdit={isOwner ? handleEditEvidence : undefined}
         />
       )}
 
@@ -611,6 +655,16 @@ export default function App() {
           onClose={() => setIsAddModalOpen(false)}
           onAddEvidence={handleAddEvidence}
           defaultSprintId={selectedSprintId}
+        />
+      )}
+
+      {editingEvidence && (
+        <AddEvidenceModal
+          isOpen={true}
+          learningOutcomes={learningOutcomes}
+          onClose={() => setEditingEvidence(null)}
+          onAddEvidence={handleAddEvidence}
+          initialItem={editingEvidence}
         />
       )}
 
