@@ -18,9 +18,10 @@ Vereisten: Node.js en npm.
    ```text
    VITE_SUPABASE_URL=...
    VITE_SUPABASE_ANON_KEY=...
+   GEMINI_API_KEY=...
    ```
 
-   Gebruik in de browser nooit een Supabase secret key of `service_role` key. Bestanden met de naam `.env*` worden door Git genegeerd, behalve het veilige voorbeeldbestand `.env.example`.
+   `GEMINI_API_KEY` wordt door de chatbot gebruikt. Gebruik in de browser nooit een Supabase secret key of `service_role` key. Bestanden met de naam `.env*` worden door Git genegeerd, behalve het veilige voorbeeldbestand `.env.example`.
 
 4. Start de ontwikkelserver:
 
