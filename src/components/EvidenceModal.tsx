@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { EvidenceItem, LearningOutcome } from '../types';
 import { 
   X, 
@@ -15,7 +15,9 @@ import {
   Lightbulb,
   Link2,
   Cloud,
-  Github
+  Github,
+  Share2,
+  Check
 } from 'lucide-react';
 
 interface EvidenceModalProps {
@@ -33,6 +35,8 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
   onUpdateStatus,
   onEdit,
 }) => {
+  const [copied, setCopied] = useState(false);
+
   if (!item) return null;
 
   const getLU = (id: string) => learningOutcomes.find((lu) => lu.id === id);
@@ -47,6 +51,14 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
     return url;
   };
 
+  const handleCopyLink = () => {
+    const shareUrl = new URL(window.location.href);
+    shareUrl.hash = `#sprints?item=${encodeURIComponent(item.id)}`;
+    navigator.clipboard.writeText(shareUrl.toString());
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-[#050505]/85 backdrop-blur-xs overflow-y-auto">
       <div 
@@ -55,7 +67,7 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
       >
         {/* Modal Header */}
         <div className="flex items-start justify-between p-6 bg-[#050505] text-white border-b border-[#1F1F1F]">
-          <div className="pr-6">
+          <div className="pr-4">
             <div className="flex flex-wrap items-center gap-2.5 mb-2.5">
               <span className="px-2.5 py-0.5 bg-[#E32636] text-white font-mono text-[11px] font-bold uppercase tracking-widest">
                 SPRINT 0{item.sprintId}
@@ -65,7 +77,7 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
                 {item.date}
               </span>
               <span className="font-mono text-xs text-white uppercase border border-[#1F1F1F] bg-[#1F1F1F] px-2 py-0.5">
-                {item.evaluationStatus === 'voldoende' ? 'BEOORDEELD // VOLDOENDE' : 'STATUS // IN BEHANDELING'}
+                {item.evaluationStatus === 'voldoende' ? 'STATUS // GEREED' : 'STATUS // IN ONTWIKKELING'}
               </span>
             </div>
 
@@ -74,13 +86,34 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
             </h2>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-1.5 text-[#D5D5D0] hover:text-[#E32636] transition-colors cursor-pointer"
-            aria-label="Dossier sluiten"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={handleCopyLink}
+              className="px-2.5 py-1.5 border border-[#1F1F1F] bg-[#1F1F1F] hover:border-white text-white font-mono text-xs uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer"
+              title="Kopieer directe link naar dit dossier"
+              aria-label="Kopieer dossier link"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-[#E32636]" />
+                  <span>Gekopieerd!</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Deel link</span>
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={onClose}
+              className="p-1.5 text-[#D5D5D0] hover:text-[#E32636] transition-colors cursor-pointer"
+              aria-label="Dossier sluiten"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Modal Body */}

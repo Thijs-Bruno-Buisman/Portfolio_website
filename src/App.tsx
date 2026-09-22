@@ -69,17 +69,23 @@ function writeLocalCache(key: string, value: unknown) {
 
 export default function App() {
   // Navigation & View State - Hash-driven deep linking
-  const parseHash = (): { tab: TabType; sprintId?: number } => {
-    const hash = window.location.hash.toLowerCase();
-    if (hash.startsWith('#sprints') || hash.startsWith('#bewijzen')) {
+  const parseHash = (): { tab: TabType; sprintId?: number; itemId?: string } => {
+    const hash = window.location.hash;
+    const lowerHash = hash.toLowerCase();
+    if (lowerHash.startsWith('#sprints') || lowerHash.startsWith('#bewijzen')) {
       const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
       const sprintParam = params.get('sprint');
-      return { tab: 'evidence', sprintId: sprintParam ? Number(sprintParam) : undefined };
+      const itemParam = params.get('item') || params.get('dossier');
+      return { 
+        tab: 'evidence', 
+        sprintId: sprintParam ? Number(sprintParam) : undefined,
+        itemId: itemParam || undefined
+      };
     }
-    if (hash.startsWith('#leeruitkomsten') || hash.startsWith('#outcomes')) {
+    if (lowerHash.startsWith('#leeruitkomsten') || lowerHash.startsWith('#outcomes')) {
       return { tab: 'outcomes' };
     }
-    if (hash.startsWith('#verhaal') || hash.startsWith('#profiel') || hash.startsWith('#story')) {
+    if (lowerHash.startsWith('#verhaal') || lowerHash.startsWith('#profiel') || lowerHash.startsWith('#story')) {
       return { tab: 'profile' };
     }
     return { tab: 'overview' };
@@ -92,23 +98,23 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [evidenceViewType, setEvidenceViewType] = useState<'grid' | 'ledger'>('grid');
 
-  // Handle browser back/forward and hash changes
-  useEffect(() => {
-    const handleHashChange = () => {
-      const route = parseHash();
-      setActiveTab(route.tab);
-      if (route.sprintId !== undefined) {
-        setSelectedSprintId(route.sprintId);
-      }
-    };
+  // Modals state
+  const [activeEvidenceModalItem, setActiveEvidenceModalItem] = useState<EvidenceItem | null>(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
+  const [editingEvidence, setEditingEvidence] = useState<EvidenceItem | null>(null);
 
-    window.addEventListener('popstate', handleHashChange);
-    window.addEventListener('hashchange', handleHashChange);
-    return () => {
-      window.removeEventListener('popstate', handleHashChange);
-      window.removeEventListener('hashchange', handleHashChange);
-    };
-  }, []);
+  const handleOpenEvidenceModal = (item: EvidenceItem) => {
+    setActiveEvidenceModalItem(item);
+    window.history.pushState(null, '', `#sprints?item=${encodeURIComponent(item.id)}`);
+  };
+
+  const handleCloseEvidenceModal = () => {
+    setActiveEvidenceModalItem(null);
+    const fallbackHash = selectedSprintId ? `#sprints?sprint=${selectedSprintId}` : '#sprints';
+    if (window.location.hash.includes('item=')) {
+      window.history.pushState(null, '', fallbackHash);
+    }
+  };
 
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
@@ -128,11 +134,6 @@ export default function App() {
       window.history.replaceState(null, '', newHash);
     }
   };
-
-  // Modals
-  const [activeEvidenceModalItem, setActiveEvidenceModalItem] = useState<EvidenceItem | null>(null);
-  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
-  const [editingEvidence, setEditingEvidence] = useState<EvidenceItem | null>(null);
   const [isQuickLinkModalOpen, setIsQuickLinkModalOpen] = useState<boolean>(false);
   const [quickLinkSprintId, setQuickLinkSprintId] = useState<number>(1);
   const [isDeployGuideOpen, setIsDeployGuideOpen] = useState<boolean>(false);
@@ -222,6 +223,41 @@ export default function App() {
       unsubscribeEvidence();
     };
   }, []);
+
+  // Handle browser back/forward and hash changes
+  useEffect(() => {
+    const handleHashChange = () => {
+      const route = parseHash();
+      setActiveTab(route.tab);
+      if (route.sprintId !== undefined) {
+        setSelectedSprintId(route.sprintId);
+      }
+      if (route.itemId) {
+        const item = evidenceItems.find((e) => e.id === route.itemId);
+        if (item) {
+          setActiveEvidenceModalItem(item);
+        }
+      } else if (!window.location.hash.includes('item=')) {
+        setActiveEvidenceModalItem(null);
+      }
+    };
+
+    window.addEventListener('popstate', handleHashChange);
+    window.addEventListener('hashchange', handleHashChange);
+    return () => {
+      window.removeEventListener('popstate', handleHashChange);
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, [evidenceItems]);
+
+  // Deep-link initial load effect for specific dossier items
+  useEffect(() => {
+    const route = parseHash();
+    if (route.itemId && evidenceItems.length > 0) {
+      const item = evidenceItems.find((e) => e.id === route.itemId);
+      if (item) setActiveEvidenceModalItem(item);
+    }
+  }, [evidenceItems]);
 
   // Handlers
   const handleUpdateProfile = async (updated: UserProfile): Promise<void> => {
@@ -512,7 +548,7 @@ export default function App() {
                     <SprintBriefing
                       sprint={sprints.find((s) => s.id === selectedSprintId) || sprints[0]}
                       evidenceItems={evidenceItems}
-                      onOpenEvidenceDetails={setActiveEvidenceModalItem}
+                      onOpenEvidenceDetails={handleOpenEvidenceModal}
                     />
                   )}
 
@@ -640,7 +676,7 @@ export default function App() {
                       <EvidenceLedger
                         items={filteredEvidence}
                         learningOutcomes={learningOutcomes}
-                        onOpenDetails={setActiveEvidenceModalItem}
+                        onOpenDetails={handleOpenEvidenceModal}
                         onEdit={isOwner ? handleEditEvidence : undefined}
                         onDelete={isOwner ? handleDeleteEvidence : undefined}
                         isOwner={isOwner}
@@ -652,7 +688,7 @@ export default function App() {
                             key={item.id}
                             item={item}
                             learningOutcomes={learningOutcomes}
-                            onOpenDetails={setActiveEvidenceModalItem}
+                            onOpenDetails={handleOpenEvidenceModal}
                             onDelete={isOwner ? handleDeleteEvidence : undefined}
                             onEdit={isOwner ? handleEditEvidence : undefined}
                           />
@@ -684,7 +720,7 @@ export default function App() {
                 evidenceItems={evidenceItems}
                 onOpenQuickLinkModal={handleOpenQuickLink}
                 onOpenAddModal={handleOpenAddModalForSprint}
-                onOpenEvidenceDetails={setActiveEvidenceModalItem}
+                onOpenEvidenceDetails={handleOpenEvidenceModal}
                 isOwner={isOwner}
               />
             )}
@@ -726,7 +762,7 @@ export default function App() {
                     <SprintBriefing
                       sprint={sprints.find((s) => s.id === selectedSprintId) || sprints[0]}
                       evidenceItems={evidenceItems}
-                      onOpenEvidenceDetails={setActiveEvidenceModalItem}
+                      onOpenEvidenceDetails={handleOpenEvidenceModal}
                     />
                   )}
 
@@ -855,7 +891,7 @@ export default function App() {
                 <EvidenceLedger
                   items={filteredEvidence}
                   learningOutcomes={learningOutcomes}
-                  onOpenDetails={setActiveEvidenceModalItem}
+                  onOpenDetails={handleOpenEvidenceModal}
                   onEdit={isOwner ? handleEditEvidence : undefined}
                   onDelete={isOwner ? handleDeleteEvidence : undefined}
                   isOwner={isOwner}
@@ -867,7 +903,7 @@ export default function App() {
                       key={item.id}
                       item={item}
                       learningOutcomes={learningOutcomes}
-                      onOpenDetails={setActiveEvidenceModalItem}
+                      onOpenDetails={handleOpenEvidenceModal}
                       onDelete={isOwner ? handleDeleteEvidence : undefined}
                       onEdit={isOwner ? handleEditEvidence : undefined}
                     />
@@ -917,7 +953,7 @@ export default function App() {
                   evidenceItems={evidenceItems}
                   onOpenQuickLinkModal={handleOpenQuickLink}
                   onOpenAddModal={handleOpenAddModalForSprint}
-                  onOpenEvidenceDetails={setActiveEvidenceModalItem}
+                  onOpenEvidenceDetails={handleOpenEvidenceModal}
                   isOwner={isOwner}
                 />
 
@@ -971,7 +1007,7 @@ export default function App() {
                       key={item.id}
                       item={item}
                       learningOutcomes={learningOutcomes}
-                      onOpenDetails={setActiveEvidenceModalItem}
+                      onOpenDetails={handleOpenEvidenceModal}
                       onDelete={isOwner ? handleDeleteEvidence : undefined}
                       onEdit={isOwner ? handleEditEvidence : undefined}
                     />
@@ -1044,7 +1080,7 @@ export default function App() {
         <EvidenceModal
           item={activeEvidenceModalItem}
           learningOutcomes={learningOutcomes}
-          onClose={() => setActiveEvidenceModalItem(null)}
+          onClose={handleCloseEvidenceModal}
           onUpdateStatus={isOwner ? handleUpdateStatus : undefined}
           onEdit={isOwner ? handleEditEvidence : undefined}
         />
