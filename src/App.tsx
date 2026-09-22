@@ -18,6 +18,7 @@ import { SprintBriefing } from './components/SprintBriefing';
 import { PersonalStory } from './components/PersonalStory';
 import { SprintNav } from './components/SprintNav';
 import { EvidenceCard } from './components/EvidenceCard';
+import { EvidenceLedger } from './components/EvidenceLedger';
 import { EvidenceModal } from './components/EvidenceModal';
 import { AddEvidenceModal } from './components/AddEvidenceModal';
 import { AddQuickLinkModal } from './components/AddQuickLinkModal';
@@ -53,7 +54,9 @@ import {
   Globe,
   ShieldCheck,
   Eye,
-  Lock
+  Lock,
+  LayoutGrid,
+  Table
 } from 'lucide-react';
 
 function writeLocalCache(key: string, value: unknown) {
@@ -87,6 +90,7 @@ export default function App() {
   const [selectedSprintId, setSelectedSprintId] = useState<number | null>(() => parseHash().sprintId ?? null);
   const [selectedLUFilter, setSelectedLUFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [evidenceViewType, setEvidenceViewType] = useState<'grid' | 'ledger'>('grid');
 
   // Handle browser back/forward and hash changes
   useEffect(() => {
@@ -549,23 +553,51 @@ export default function App() {
                       })}
                     </div>
 
-                    <div className="relative flex-1 max-w-xs">
-                      <Search className="w-3.5 h-3.5 text-[#6B6B6B] absolute left-3 top-1/2 -translate-y-1/2" />
-                      <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Zoek in dossiers, tools of tags..."
-                        className="w-full pl-9 pr-3 py-1.5 text-xs font-mono bg-[#F4F3EF] border border-[#D5D5D0] focus:border-[#050505] focus:bg-white text-[#050505] outline-none"
-                      />
-                      {searchQuery && (
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex-1 sm:w-64">
+                        <Search className="w-3.5 h-3.5 text-[#6B6B6B] absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="text"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          placeholder="Zoek in dossiers, tools of tags..."
+                          className="w-full pl-9 pr-3 py-1.5 text-xs font-mono bg-[#F4F3EF] border border-[#D5D5D0] focus:border-[#050505] focus:bg-white text-[#050505] outline-none"
+                        />
+                        {searchQuery && (
+                          <button
+                            onClick={() => setSearchQuery('')}
+                            className="font-mono text-xs text-[#6B6B6B] hover:text-[#E32636] absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer uppercase"
+                          >
+                            Wissen
+                          </button>
+                        )}
+                      </div>
+
+                      {/* View mode switcher: Grid vs Ledger */}
+                      <div className="flex items-center border border-[#D5D5D0] p-0.5 bg-[#F4F3EF]">
                         <button
-                          onClick={() => setSearchQuery('')}
-                          className="font-mono text-xs text-[#6B6B6B] hover:text-[#E32636] absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer uppercase"
+                          type="button"
+                          onClick={() => setEvidenceViewType('grid')}
+                          className={`p-1.5 font-mono text-xs transition-colors cursor-pointer ${
+                            evidenceViewType === 'grid' ? 'bg-[#050505] text-white' : 'text-[#6B6B6B] hover:text-[#050505]'
+                          }`}
+                          title="Rasterweergave (Dossierkaarten)"
+                          aria-label="Rasterweergave"
                         >
-                          Wissen
+                          <LayoutGrid className="w-3.5 h-3.5" />
                         </button>
-                      )}
+                        <button
+                          type="button"
+                          onClick={() => setEvidenceViewType('ledger')}
+                          className={`p-1.5 font-mono text-xs transition-colors cursor-pointer ${
+                            evidenceViewType === 'ledger' ? 'bg-[#050505] text-white' : 'text-[#6B6B6B] hover:text-[#050505]'
+                          }`}
+                          title="Tabeloverzicht (Evidence Ledger)"
+                          aria-label="Tabeloverzicht"
+                        >
+                          <Table className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -602,20 +634,31 @@ export default function App() {
                     )}
                   </div>
 
-                  {/* Evidence Cards Grid */}
+                  {/* Evidence Display (Grid or Ledger) */}
                   {filteredEvidence.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {filteredEvidence.map((item) => (
-                        <EvidenceCard
-                          key={item.id}
-                          item={item}
-                          learningOutcomes={learningOutcomes}
-                          onOpenDetails={setActiveEvidenceModalItem}
-                          onDelete={isOwner ? handleDeleteEvidence : undefined}
-                          onEdit={isOwner ? handleEditEvidence : undefined}
-                        />
-                      ))}
-                    </div>
+                    evidenceViewType === 'ledger' ? (
+                      <EvidenceLedger
+                        items={filteredEvidence}
+                        learningOutcomes={learningOutcomes}
+                        onOpenDetails={setActiveEvidenceModalItem}
+                        onEdit={isOwner ? handleEditEvidence : undefined}
+                        onDelete={isOwner ? handleDeleteEvidence : undefined}
+                        isOwner={isOwner}
+                      />
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {filteredEvidence.map((item) => (
+                          <EvidenceCard
+                            key={item.id}
+                            item={item}
+                            learningOutcomes={learningOutcomes}
+                            onOpenDetails={setActiveEvidenceModalItem}
+                            onDelete={isOwner ? handleDeleteEvidence : undefined}
+                            onEdit={isOwner ? handleEditEvidence : undefined}
+                          />
+                        ))}
+                      </div>
+                    )
                   ) : (
                     <div className="bg-white border border-[#D5D5D0] p-12 text-center max-w-lg mx-auto">
                       <div className="w-12 h-12 bg-[#050505] text-white flex items-center justify-center mx-auto mb-4">
@@ -725,24 +768,51 @@ export default function App() {
                 })}
               </div>
 
-              {/* Search Bar */}
-              <div className="relative flex-1 max-w-xs">
-                <Search className="w-3.5 h-3.5 text-[#6B6B6B] absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Zoek in dossiers, tools of tags..."
-                  className="w-full pl-9 pr-3 py-1.5 text-xs font-mono bg-[#F4F3EF] border border-[#D5D5D0] focus:border-[#050505] focus:bg-white text-[#050505] outline-none"
-                />
-                {searchQuery && (
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1 sm:w-64">
+                  <Search className="w-3.5 h-3.5 text-[#6B6B6B] absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Zoek in dossiers, tools of tags..."
+                    className="w-full pl-9 pr-3 py-1.5 text-xs font-mono bg-[#F4F3EF] border border-[#D5D5D0] focus:border-[#050505] focus:bg-white text-[#050505] outline-none"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="font-mono text-xs text-[#6B6B6B] hover:text-[#E32636] absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer uppercase"
+                    >
+                      Wissen
+                    </button>
+                  )}
+                </div>
+
+                {/* View mode switcher: Grid vs Ledger */}
+                <div className="flex items-center border border-[#D5D5D0] p-0.5 bg-[#F4F3EF]">
                   <button
-                    onClick={() => setSearchQuery('')}
-                    className="font-mono text-xs text-[#6B6B6B] hover:text-[#E32636] absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer uppercase"
+                    type="button"
+                    onClick={() => setEvidenceViewType('grid')}
+                    className={`p-1.5 font-mono text-xs transition-colors cursor-pointer ${
+                      evidenceViewType === 'grid' ? 'bg-[#050505] text-white' : 'text-[#6B6B6B] hover:text-[#050505]'
+                    }`}
+                    title="Rasterweergave (Dossierkaarten)"
+                    aria-label="Rasterweergave"
                   >
-                    Wissen
+                    <LayoutGrid className="w-3.5 h-3.5" />
                   </button>
-                )}
+                  <button
+                    type="button"
+                    onClick={() => setEvidenceViewType('ledger')}
+                    className={`p-1.5 font-mono text-xs transition-colors cursor-pointer ${
+                      evidenceViewType === 'ledger' ? 'bg-[#050505] text-white' : 'text-[#6B6B6B] hover:text-[#050505]'
+                    }`}
+                    title="Tabeloverzicht (Evidence Ledger)"
+                    aria-label="Tabeloverzicht"
+                  >
+                    <Table className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -779,20 +849,31 @@ export default function App() {
               )}
             </div>
 
-            {/* Evidence Cards Grid */}
+            {/* Evidence Display (Grid or Ledger) */}
             {filteredEvidence.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                {filteredEvidence.map((item) => (
-                  <EvidenceCard
-                    key={item.id}
-                    item={item}
-                    learningOutcomes={learningOutcomes}
-                    onOpenDetails={setActiveEvidenceModalItem}
-                    onDelete={isOwner ? handleDeleteEvidence : undefined}
-                    onEdit={isOwner ? handleEditEvidence : undefined}
-                  />
-                ))}
-              </div>
+              evidenceViewType === 'ledger' ? (
+                <EvidenceLedger
+                  items={filteredEvidence}
+                  learningOutcomes={learningOutcomes}
+                  onOpenDetails={setActiveEvidenceModalItem}
+                  onEdit={isOwner ? handleEditEvidence : undefined}
+                  onDelete={isOwner ? handleDeleteEvidence : undefined}
+                  isOwner={isOwner}
+                />
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {filteredEvidence.map((item) => (
+                    <EvidenceCard
+                      key={item.id}
+                      item={item}
+                      learningOutcomes={learningOutcomes}
+                      onOpenDetails={setActiveEvidenceModalItem}
+                      onDelete={isOwner ? handleDeleteEvidence : undefined}
+                      onEdit={isOwner ? handleEditEvidence : undefined}
+                    />
+                  ))}
+                </div>
+              )
             ) : (
               <div className="bg-white border border-[#D5D5D0] p-12 text-center max-w-lg mx-auto">
                 <div className="w-12 h-12 bg-[#050505] text-white flex items-center justify-center mx-auto mb-4">

@@ -6,13 +6,14 @@ import {
   Video, 
   CheckCircle, 
   Clock, 
-  ArrowRight,
-  Trash2,
-  Cloud,
-  Github,
-  Link2,
-  Pencil,
-  FileText
+  ArrowRight, 
+  Trash2, 
+  Cloud, 
+  Github, 
+  Link2, 
+  Pencil, 
+  FileText,
+  Star
 } from 'lucide-react';
 
 interface EvidenceCardProps {
@@ -57,11 +58,29 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
   const StatusIcon = statusConfig.icon;
   const firstImage = item.media.find((m) => m.type === 'image');
   const hasVideo = item.media.some((m) => m.type === 'video');
+  const isFeatured = Boolean(item.isFeatured);
 
   return (
-    <article className="bg-white border border-[#D5D5D0] hover:border-[#050505] transition-all flex flex-col justify-between group">
+    <article className={`bg-white transition-all flex flex-col justify-between group ${
+      isFeatured 
+        ? 'col-span-1 lg:col-span-2 border-2 border-[#050505] shadow-sm' 
+        : 'col-span-1 border border-[#D5D5D0] hover:border-[#050505]'
+    }`}>
       {/* Header & Core Content */}
-      <div className="p-6 sm:p-7 pb-4">
+      <div className={isFeatured ? 'p-6 sm:p-8 pb-4' : 'p-6 sm:p-7 pb-4'}>
+        {/* Featured Banner (if explicitly marked by owner) */}
+        {isFeatured && (
+          <div className="bg-[#050505] text-white px-3 py-1.5 font-mono text-[10px] tracking-widest uppercase flex items-center justify-between mb-4">
+            <span className="flex items-center gap-1.5 font-bold">
+              <Star className="w-3 h-3 text-[#E32636] fill-[#E32636]" />
+              Uitgelicht Hoofdonderzoek
+            </span>
+            <span className="text-[#D5D5D0] font-normal">
+              Sprint 0{item.sprintId} Lead Dossier
+            </span>
+          </div>
+        )}
+
         {/* Top Badges Row */}
         <div className="flex flex-wrap items-center justify-between gap-2.5 mb-4">
           <div className="flex flex-wrap items-center gap-2">
@@ -83,7 +102,9 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
         {/* Title */}
         <h3 
           onClick={() => onOpenDetails(item)}
-          className="font-display text-xl sm:text-2xl font-black text-[#050505] group-hover:text-[#E32636] transition-colors cursor-pointer leading-snug mb-3.5"
+          className={`font-display font-black text-[#050505] group-hover:text-[#E32636] transition-colors cursor-pointer leading-snug mb-3.5 ${
+            isFeatured ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'
+          }`}
         >
           {item.title}
         </h3>
@@ -111,12 +132,18 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
         {firstImage && (
           <div 
             onClick={() => onOpenDetails(item)}
-            className="relative overflow-hidden mb-5 bg-[#050505] cursor-pointer max-h-52 border border-[#D5D5D0]"
+            className={`relative overflow-hidden mb-5 bg-[#050505] cursor-pointer border border-[#D5D5D0] ${
+              isFeatured ? 'max-h-80' : 'max-h-52'
+            }`}
           >
             <img
               src={firstImage.url}
               alt={firstImage.title}
-              className="w-full h-48 object-cover opacity-95 group-hover:opacity-100 group-hover:scale-[1.01] transition-all duration-300"
+              loading="lazy"
+              decoding="async"
+              className={`w-full object-cover opacity-95 group-hover:opacity-100 group-hover:scale-[1.01] transition-all duration-300 ${
+                isFeatured ? 'h-64 sm:h-80' : 'h-48'
+              }`}
             />
             {hasVideo && (
               <div className="absolute top-2 right-2 bg-[#050505] text-white px-2 py-1 font-mono text-[10px] tracking-wider uppercase flex items-center gap-1.5 border border-[#1F1F1F]">
@@ -168,31 +195,31 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
           </div>
         )}
 
-        {/* The 3 HU Core Pillars: Onderzocht, Gemaakt, Geleerd */}
-        <div className="space-y-3.5 text-xs sm:text-sm">
+        {/* The 3 HU Core Pillars: Asymmetric 3-column in Featured mode, stacked in standard mode */}
+        <div className={isFeatured ? 'grid grid-cols-1 md:grid-cols-3 gap-3.5' : 'space-y-3.5'}>
           <div className="bg-[#F4F3EF] p-3.5 border border-[#D5D5D0]">
             <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#6B6B6B] block mb-1">
-              // 01. ONDERZOEK & ANALYSE
+              // 01. ONDERZOEK
             </span>
-            <p className="text-[#050505]/85 line-clamp-3 leading-relaxed text-xs sm:text-sm">
+            <p className="text-[#050505]/85 line-clamp-4 leading-relaxed text-xs sm:text-sm font-sans">
               {item.investigated}
             </p>
           </div>
 
           <div className="bg-[#F4F3EF] p-3.5 border border-[#D5D5D0]">
             <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#6B6B6B] block mb-1">
-              // 02. ARTIFACTEN & CREATIE
+              // 02. ARTIFACTEN
             </span>
-            <p className="text-[#050505]/85 line-clamp-3 leading-relaxed text-xs sm:text-sm">
+            <p className="text-[#050505]/85 line-clamp-4 leading-relaxed text-xs sm:text-sm font-sans">
               {item.created}
             </p>
           </div>
 
           <div className="bg-white p-3.5 border border-[#050505]">
             <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#E32636] block mb-1">
-              // 03. INZICHTEN & EVALUATIE
+              // 03. INZICHTEN
             </span>
-            <p className="text-[#050505] line-clamp-3 leading-relaxed text-xs sm:text-sm">
+            <p className="text-[#050505] line-clamp-4 leading-relaxed text-xs sm:text-sm font-sans">
               {item.learned}
             </p>
           </div>
@@ -203,7 +230,7 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
       <div className="px-6 py-4 bg-[#F4F3EF] border-t border-[#D5D5D0] flex items-center justify-between gap-3 text-xs">
         {/* Tools & Tags */}
         <div className="flex flex-wrap items-center gap-1.5 overflow-hidden">
-          {item.toolsUsed.slice(0, 3).map((tool, idx) => (
+          {item.toolsUsed.slice(0, 4).map((tool, idx) => (
             <span
               key={idx}
               className="px-2 py-0.5 bg-white text-[#050505] border border-[#D5D5D0] font-mono text-[10px] uppercase tracking-wider"
@@ -211,9 +238,9 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
               {tool}
             </span>
           ))}
-          {item.toolsUsed.length > 3 && (
+          {item.toolsUsed.length > 4 && (
             <span className="font-mono text-[#6B6B6B] text-[10px]">
-              +{item.toolsUsed.length - 3}
+              +{item.toolsUsed.length - 4}
             </span>
           )}
         </div>
@@ -245,7 +272,7 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
             onClick={() => onOpenDetails(item)}
             className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider font-bold text-[#050505] group-hover:text-[#E32636] transition-colors cursor-pointer ml-1"
           >
-            <span>DOSSIER</span>
+            <span>Dossier</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>

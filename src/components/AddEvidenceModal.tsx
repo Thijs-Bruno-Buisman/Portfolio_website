@@ -35,6 +35,7 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
   const [videoUrl, setVideoUrl] = useState('');
   const [projectLink, setProjectLink] = useState('');
   const [activeTemplateName, setActiveTemplateName] = useState<string | null>(null);
+  const [isFeatured, setIsFeatured] = useState<boolean>(initialItem?.isFeatured ?? false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -76,6 +77,7 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
     setVideoUrl('');
     setProjectLink('');
     setActiveTemplateName(null);
+    setIsFeatured(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -123,6 +125,7 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
       evaluationStatus: initialItem?.evaluationStatus ?? 'in_behandeling',
       tags: tagsInput.split(',').map((t) => t.trim()).filter(Boolean),
       toolsUsed: toolsInput.split(',').map((t) => t.trim()).filter(Boolean),
+      isFeatured,
     };
 
     setIsSaving(true);
@@ -294,6 +297,25 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
                 })}
               </div>
             </div>
+          </div>
+
+          {/* Featured Toggle Checkbox */}
+          <div className="border border-[#D5D5D0] bg-[#F4F3EF] p-3.5 flex items-start gap-3">
+            <input
+              type="checkbox"
+              id="is-featured-checkbox"
+              checked={isFeatured}
+              onChange={(e) => setIsFeatured(e.target.checked)}
+              className="mt-0.5 h-4 w-4 accent-[#E32636] border-[#D5D5D0] cursor-pointer"
+            />
+            <label htmlFor="is-featured-checkbox" className="text-xs text-[#050505] cursor-pointer select-none">
+              <strong className="font-bold block font-mono uppercase tracking-wider text-[11px]">
+                Markeer als Uitgelicht Hoofdbewijsstuk (Featured)
+              </strong>
+              <span className="text-[#6B6B6B] block mt-0.5 font-sans leading-relaxed">
+                Wanneer ingeschakeld krijgt dit bewijsstuk een prominentere, dubbelbrede redactionele lead-kaart in het overzicht van deze sprint.
+              </span>
+            </label>
           </div>
 
           {/* The 3 Editorial Questions */}

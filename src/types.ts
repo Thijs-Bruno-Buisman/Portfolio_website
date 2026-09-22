@@ -79,6 +79,7 @@ export interface EvidenceItem {
   evaluationStatus: 'voldoende' | 'in_behandeling' | 'zelfevaluatie_klaar';
   tags: string[];
   toolsUsed: string[];
+  isFeatured?: boolean; // Expliciet beheerd veld voor uitgelichte hoofdbewijzen
 }
 
 export interface UserStory {
