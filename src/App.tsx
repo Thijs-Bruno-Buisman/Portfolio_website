@@ -56,7 +56,8 @@ import {
   Eye,
   Lock,
   LayoutGrid,
-  Table
+  Table,
+  Star
 } from 'lucide-react';
 
 function writeLocalCache(key: string, value: unknown) {
@@ -466,73 +467,208 @@ export default function App() {
         onLogout={handleLogout}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
+        searchQuery={searchQuery}
+        onSearchChange={(q) => {
+          setSearchQuery(q);
+          if (activeTab !== 'evidence' && activeTab !== 'overview') {
+            handleTabChange('evidence');
+          }
+        }}
       />
 
-      {/* Cloud Synchronization & Access Telemetry Strip */}
-      <div className="bg-[#050505] text-[#D5D5D0] text-xs py-2 px-4 sm:px-6 border-b border-[#1F1F1F] font-mono">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div className="flex items-center gap-2.5">
-            {isOwner ? (
-              <>
-                <span className="flex h-2 w-2 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E32636] opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E32636]"></span>
-                </span>
-                <span className="tracking-wider text-[11px]">
-                  <strong className="text-white">TELEMETRY: SUPABASE ONLINE</strong> // SESSIE: EIGENAAR (SCHRIJFRECHTEN ACTIEF)
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="h-2 w-2 bg-[#6B6B6B] inline-block"></span>
-                <span className="tracking-wider text-[11px] text-[#A0A09C]">
-                  <strong className="text-white">TELEMETRY: LIVE CLOUD-VERSIE</strong> // MODUS: LEESMODUS BEZOEKER & DOCENT
-                </span>
-              </>
-            )}
-          </div>
+      {/* Cloud Synchronization & Access Telemetry Strip (Visible for Owner Only) */}
+      {isOwner && (
+        <div className="bg-[#050505] text-[#D5D5D0] text-xs py-2 px-4 sm:px-6 border-b border-[#1F1F1F] font-mono">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E32636] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E32636]"></span>
+              </span>
+              <span className="tracking-wider text-[11px]">
+                <strong className="text-white">TELEMETRY: SUPABASE ONLINE</strong> // SESSIE: EIGENAAR (SCHRIJFRECHTEN ACTIEF)
+              </span>
+            </div>
 
-          <div className="flex items-center gap-3">
-            {!isOwner ? (
-              <button
-                onClick={() => setIsAuthModalOpen(true)}
-                className="text-white hover:text-[#E32636] font-mono text-xs uppercase tracking-wider flex items-center gap-1.5 cursor-pointer transition-colors"
-              >
-                <Lock className="w-3 h-3" />
-                <span>Inloggen als Eigenaar</span>
-              </button>
-            ) : (
+            <div className="flex items-center gap-3">
               <span className="text-[11px] text-[#6B6B6B] tracking-wider uppercase hidden md:inline">
                 BEVEILIGD // AUTH ID: {currentUser?.email || 'THIJS'}
               </span>
-            )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Cinematic Full-Width NASA Hero on Overview Tab */}
+      {activeTab === 'overview' && (
+        <ResearchHero
+          profile={profile}
+          sprints={sprints}
+          evidenceItems={evidenceItems}
+          learningOutcomes={learningOutcomes}
+          onNavigateToSprints={() => {
+            handleTabChange('evidence');
+            handleSelectSprint(selectedSprintId ?? 3);
+          }}
+          onNavigateToOutcomes={() => handleTabChange('outcomes')}
+          onNavigateToStory={() => handleTabChange('profile')}
+          isOwner={isOwner}
+        />
+      )}
 
       {/* Main Container */}
-      <main id="main-content" tabIndex={-1} className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 outline-none">
+      <main id="main-content" tabIndex={-1} className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 outline-none">
         {/* Tab 0: Overzicht (Homepage Research Dispatch) */}
         {activeTab === 'overview' && (
-          <div className="space-y-8">
-            {/* Research Hero: Editorial student identity & true teacher metrics */}
-            <ResearchHero
-              profile={profile}
-              sprints={sprints}
-              evidenceItems={evidenceItems}
-              learningOutcomes={learningOutcomes}
-              onNavigateToSprints={() => {
-                handleTabChange('evidence');
-                handleSelectSprint(selectedSprintId ?? 1);
-              }}
-              onNavigateToOutcomes={() => handleTabChange('outcomes')}
-              onNavigateToStory={() => handleTabChange('profile')}
-              isOwner={isOwner}
-            />
+          <div className="space-y-12">
+            
+            {/* NASA-style 'Featured News' Dossiers Section */}
+            <section aria-labelledby="featured-dossiers-heading" className="bg-white">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-4 mb-6 border-b-2 border-[#050505]">
+                <div>
+                  <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#E03A3E] block mb-1">
+                    // ACTUEEL ONDERZOEK
+                  </span>
+                  <h2 id="featured-dossiers-heading" className="font-display font-black text-3xl sm:text-4xl text-[#050505] tracking-tight">
+                    Featured Dossiers
+                  </h2>
+                </div>
 
-            {/* Split-Rail Layout for Editorial View */}
-            {viewMode === 'editorial' ? (
-              <div className="flex flex-col lg:flex-row gap-8 items-start">
+                <button
+                  onClick={() => {
+                    handleTabChange('evidence');
+                    handleSelectSprint(null);
+                  }}
+                  className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider font-bold text-[#050505] hover:text-[#E03A3E] transition-colors cursor-pointer group/btn self-start sm:self-auto"
+                >
+                  <span>Alle Sprints & Bewijzen</span>
+                  <span className="w-5 h-5 rounded-full bg-[#E03A3E] text-white flex items-center justify-center text-xs group-hover/btn:translate-x-0.5 transition-transform">
+                    →
+                  </span>
+                </button>
+              </div>
+
+              {/* 3-Column Visual Grid matching NASA Featured News */}
+              {evidenceItems.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {(evidenceItems.filter((e) => e.isFeatured).length > 0
+                    ? evidenceItems.filter((e) => e.isFeatured).slice(0, 3)
+                    : evidenceItems.slice(0, 3)
+                  ).map((item) => {
+                    const firstImage = item.media.find((m) => m.type === 'image');
+                    const firstLU = learningOutcomes.find((lu) => item.learningOutcomeIds.includes(lu.id));
+                    return (
+                      <article
+                        key={item.id}
+                        onClick={() => handleOpenEvidenceModal(item)}
+                        className="group flex flex-col bg-white border border-[#E5E5E5] hover:border-[#050505] transition-all cursor-pointer overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.1)]"
+                      >
+                        {/* Card Image Banner */}
+                        <div className="relative aspect-[16/10] bg-[#0c0d12] overflow-hidden">
+                          {firstImage ? (
+                            <img
+                              src={firstImage.url}
+                              alt={item.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex flex-col justify-between p-5 bg-gradient-to-br from-[#111218] to-[#1c1e28] text-white relative">
+                              <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+                              <div className="flex items-center justify-between relative z-10">
+                                <span className="font-mono text-[10px] tracking-widest uppercase text-gray-400">
+                                  SPRINT 0{item.sprintId}
+                                </span>
+                                <span className="w-2 h-2 rounded-full bg-[#E03A3E]" />
+                              </div>
+                              <div className="relative z-10">
+                                <span className="font-mono text-xs text-[#E03A3E] font-bold tracking-wider block">
+                                  {firstLU ? `${firstLU.code} • ${firstLU.title}` : 'AI RESEARCH DOSSIER'}
+                                </span>
+                                <span className="font-display font-bold text-lg text-white/90 line-clamp-1">
+                                  {item.title}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Category Tag pill matching NASA screenshot (e.g. ◉ ARTICLE / ◉ DOSSIER) */}
+                          <div className="absolute top-3 left-3 bg-black/80 backdrop-blur-sm text-white px-2.5 py-1 text-[10px] font-mono uppercase tracking-widest font-bold flex items-center gap-1.5 border border-white/10">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#E03A3E]" />
+                            <span>{item.isFeatured ? 'FEATURED' : 'DOSSIER'}</span>
+                          </div>
+
+                          <div className="absolute bottom-3 right-3 w-7 h-7 rounded-full bg-black/70 text-white flex items-center justify-center text-xs group-hover:bg-[#E03A3E] transition-colors">
+                            →
+                          </div>
+                        </div>
+
+                        {/* Card Content */}
+                        <div className="p-5 flex-1 flex flex-col justify-between">
+                          <div>
+                            <div className="flex items-center gap-2 text-[#6B6B6B] font-mono text-[11px] mb-2">
+                              <span>SPRINT 0{item.sprintId}</span>
+                              <span>•</span>
+                              <span>{item.date}</span>
+                            </div>
+
+                            <h3 className="font-display font-black text-lg sm:text-xl text-[#050505] group-hover:text-[#E03A3E] transition-colors leading-snug mb-2 line-clamp-2">
+                              {item.title}
+                            </h3>
+
+                            <p className="text-xs text-[#555] line-clamp-2 font-sans mb-4">
+                              {item.investigated || item.created || item.learned || 'Bekijk het volledige onderzoeksrapport, methodologie en bewijslast.'}
+                            </p>
+                          </div>
+
+                          <div className="pt-3 border-t border-[#F0F0F0] flex items-center justify-between font-mono text-[11px]">
+                            <span className="text-[#6B6B6B]">
+                              {item.evaluationStatus === 'voldoende' ? 'Status: Gereed' : 'Status: In ontwikkeling'}
+                            </span>
+                            <span className="font-bold text-[#050505] group-hover:text-[#E03A3E] flex items-center gap-1">
+                              Bekijk dossier →
+                            </span>
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="border border-dashed border-[#D5D5D0] p-10 text-center bg-[#FAFAF8]">
+                  <div className="w-10 h-10 rounded-full bg-[#050505] text-white flex items-center justify-center mx-auto mb-3">
+                    <Star className="w-5 h-5 text-[#E03A3E]" />
+                  </div>
+                  <h4 className="font-display font-bold text-base text-[#050505] mb-1">
+                    Nog geen dossiers gepubliceerd
+                  </h4>
+                  <p className="text-xs font-mono text-[#6B6B6B] max-w-md mx-auto mb-4">
+                    Zodra bewijsstukken worden geregistreerd in de sprint missies, verschijnen de belangrijkste dossiers hier als visuele research cards.
+                  </p>
+                  {isOwner && (
+                    <button
+                      onClick={() => handleOpenAddModalForSprint(selectedSprintId ?? 1)}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#050505] text-white font-mono text-xs font-bold uppercase tracking-wider hover:bg-[#E03A3E] transition-colors"
+                    >
+                      + Eerste Dossier Toevoegen
+                    </button>
+                  )}
+                </div>
+              )}
+            </section>
+
+            {/* Sprints Tijdlijn & Dossiers (Split-Rail Layout or Classic) */}
+            <div className="pt-8 border-t border-[#D5D5D0]">
+              <div className="mb-6">
+                <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#6B6B6B] block mb-1">
+                  // TIJDLIJN (SPRINT 01 T/M 08)
+                </span>
+                <h3 className="font-display font-black text-2xl sm:text-3xl text-[#050505] tracking-tight">
+                  Sprint Missies & Dossier Ledger
+                </h3>
+              </div>
+
+              {viewMode === 'editorial' ? (
+                <div className="flex flex-col lg:flex-row gap-8 items-start">
                 <SprintRail
                   sprints={sprints}
                   selectedSprintId={selectedSprintId}
@@ -724,6 +860,7 @@ export default function App() {
                 isOwner={isOwner}
               />
             )}
+            </div>
           </div>
         )}
 

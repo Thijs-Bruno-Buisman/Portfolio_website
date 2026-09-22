@@ -1,12 +1,11 @@
 import React from 'react';
 import { UserProfile, LearningOutcome, Sprint, EvidenceItem } from '../types';
 import { 
-  FileCheck2, 
-  Target, 
-  Calendar, 
-  GraduationCap, 
   ArrowRight,
-  ShieldCheck
+  ShieldCheck,
+  Radio,
+  ExternalLink,
+  Sparkles
 } from 'lucide-react';
 
 interface ResearchHeroProps {
@@ -33,203 +32,132 @@ export const ResearchHero: React.FC<ResearchHeroProps> = ({
   // Compute true teacher/assessor metrics
   const totalEvidenceCount = evidenceItems.length;
 
-  // Covered learning outcomes count (at least 1 evidence item linked)
   const coveredLUsCount = learningOutcomes.filter((lu) =>
     evidenceItems.some((item) => item.learningOutcomeIds.includes(lu.id))
   ).length;
 
-  // Active or latest sprint with evidence (or fallback to sprint 1)
-  const currentSprint = sprints[2] || sprints[0]; // Sprint 3 is active in week 3-4
-
-  // Date of latest substantive update (from newest evidence item or fallback)
-  const latestUpdateDate = evidenceItems.length > 0 
-    ? evidenceItems[0].date 
-    : '22 september 2026';
+  // Active sprint (Sprint 3 in week 3-4, or fallback to first sprint)
+  const currentSprint = sprints.find((s) => s.id === 3) || sprints[0];
+  const nextSprint = sprints.find((s) => s.id === 4) || sprints[1] || sprints[0];
 
   return (
     <section 
-      aria-label="Onderzoeksoverzicht en Kerncijfers"
-      className="bg-white border border-[#D5D5D0] mb-8"
+      aria-label="NASA-stijl Research Hero"
+      className="relative w-full text-white overflow-hidden mb-12 border-b border-[#1c1c1c] bg-[#050505]"
+      style={{
+        backgroundImage: `linear-gradient(180deg, rgba(5, 5, 5, 0.45) 0%, rgba(5, 5, 5, 0.75) 60%, rgba(5, 5, 5, 0.98) 100%), url('https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?q=80&w=2074&auto=format&fit=crop')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center 35%',
+      }}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-12">
-        {/* Left Column: Editorial Presentation & Student Identity (7 cols) */}
-        <div className="lg:col-span-7 p-6 sm:p-8 lg:p-10 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-[#D5D5D0]">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-2 h-2 bg-[#E32636]" />
-              <span className="font-mono text-xs uppercase tracking-widest text-[#6B6B6B]">
-                {profile.institution || 'Hogeschool Utrecht'} // {profile.minor || 'Minor Future-proof met AI'}
-              </span>
-            </div>
-
-            <h1 className="font-heading font-black text-2xl sm:text-4xl text-[#050505] tracking-tight leading-tight mb-3">
-              Onderzoeks- & Bewijsdossier
-            </h1>
-
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-5 font-mono text-xs text-[#6B6B6B]">
-              <span className="font-bold text-[#050505]">{profile.name}</span>
-              <span>//</span>
-              <span>{profile.studyTrack || 'HBO Electrical Engineering'}</span>
-              <span>//</span>
-              <span>Studentnr: {profile.studentNumber || '1855662'}</span>
-            </div>
-
-            {/* Stance / Vision quote */}
-            <div className="border-l-2 border-[#E32636] pl-4 py-1 mb-6 bg-[#F4F3EF]">
-              <p className="font-sans text-sm sm:text-base italic text-[#050505] leading-relaxed">
-                &ldquo;AI is geen doel op zich, maar een krachtig instrument om maatschappelijke vraagstukken en technische processen fundamenteel te vernieuwen.&rdquo;
-              </p>
-            </div>
-
-            <p className="text-xs sm:text-sm text-[#6B6B6B] leading-relaxed line-clamp-3 font-sans mb-6">
-              {profile.bio}
-            </p>
+      {/* Cinematic Content Container */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-24 lg:pt-32 pb-12 sm:pb-16 relative z-10">
+        <div className="max-w-3xl">
+          {/* Institution & Lab Tag */}
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-black/60 border border-white/20 rounded-xs mb-4 text-xs font-mono tracking-widest uppercase text-gray-300 backdrop-blur-xs">
+            <span className="w-2 h-2 bg-[#E03A3E] rounded-full animate-ping" />
+            <span>{profile.institution || 'Hogeschool Utrecht'} // Minor {profile.minor || 'Future-proof met AI'}</span>
           </div>
 
-          {/* Quick Action Navigation Buttons */}
-          <div className="flex flex-wrap gap-2.5 pt-4 border-t border-[#D5D5D0]">
+          {/* NASA Bold Display Headline */}
+          <h1 className="font-display font-black text-4xl sm:text-6xl lg:text-7xl tracking-tight text-white leading-[1.08] mb-5">
+            Your Orbiting AI Laboratory
+          </h1>
+
+          {/* Subtitle Description */}
+          <p className="text-base sm:text-xl text-gray-200 leading-relaxed font-sans max-w-2xl mb-8 drop-shadow-sm">
+            Tijdens 8 sprints ontwikkelt Thijs Bruno Buisman een methodisch dossier van werkende AI-agents, API-integraties en verantwoorde implementaties verdeeld over de 5 officiële HU-leeruitkomsten.
+          </p>
+
+          {/* Prominent Red Action Button (Space Station Updates Style) */}
+          <div className="flex flex-wrap items-center gap-4">
             <button
               onClick={onNavigateToSprints}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#050505] hover:bg-[#E32636] text-white font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer"
+              className="px-7 py-4 bg-[#E03A3E] hover:bg-[#c82f33] text-white font-bold text-sm sm:text-base tracking-wide rounded-sm transition-all duration-200 transform hover:-translate-y-0.5 shadow-xl flex items-center gap-2.5 cursor-pointer active:translate-y-0"
             >
-              <span>Sprints & Bewijzen</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <span>Sprint Updates & Dossiers</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
-            <button
-              onClick={onNavigateToOutcomes}
-              className="inline-flex items-center gap-2 px-3.5 py-2 border border-[#D5D5D0] hover:border-[#050505] text-[#050505] font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer bg-white hover:bg-[#F4F3EF]"
-            >
-              <span>Leeruitkomsten</span>
-            </button>
+
             <button
               onClick={onNavigateToStory}
-              className="inline-flex items-center gap-2 px-3.5 py-2 border border-[#D5D5D0] hover:border-[#050505] text-[#6B6B6B] hover:text-[#050505] font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer bg-white hover:bg-[#F4F3EF]"
+              className="px-6 py-4 bg-black/50 hover:bg-black/80 text-white font-semibold text-sm sm:text-base border border-white/30 hover:border-white rounded-sm transition-all backdrop-blur-xs cursor-pointer"
             >
-              <span>Persoonlijk Verhaal</span>
+              <span>Over de Onderzoeker</span>
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Right Column: Assessor & Teacher Metric Scorecard (5 cols) */}
-        <div className="lg:col-span-5 bg-[#F4F3EF] p-6 sm:p-8 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between pb-3 border-b border-[#D5D5D0] mb-4">
-              <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#050505] flex items-center gap-1.5">
-                <GraduationCap className="w-4 h-4 text-[#050505]" />
-                Voortgang & Beoordelingsstatus
+      {/* NASA 3-Column Mission Ticker Strip at the Bottom */}
+      <div className="border-t border-white/15 bg-black/75 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 items-center">
+            
+            {/* Mission Strip Col 1: Current Sprint */}
+            <div 
+              onClick={onNavigateToSprints}
+              className="group cursor-pointer border-b md:border-b-0 md:border-r border-white/10 pb-3 md:pb-0 pr-4"
+            >
+              <span className="font-mono text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-widest block mb-1">
+                CURRENT SPRINT
               </span>
-              <span className="font-mono text-[10px] text-[#6B6B6B] uppercase">
-                Docentoverzicht
-              </span>
-            </div>
-
-            {/* 4 True Metric Tiles */}
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              {/* Metric 1: Total Evidence */}
-              <div className="bg-white border border-[#D5D5D0] p-3.5">
-                <div className="flex items-center gap-1.5 text-[#6B6B6B] mb-1">
-                  <FileCheck2 className="w-3.5 h-3.5 text-[#050505]" />
-                  <span className="font-mono text-[10px] uppercase tracking-wider font-semibold">
-                    Bewijslast
-                  </span>
-                </div>
-                <div className="font-heading font-black text-2xl text-[#050505]">
-                  {totalEvidenceCount}
-                </div>
-                <span className="font-mono text-[10px] text-[#6B6B6B]">
-                  {totalEvidenceCount === 1 ? 'Dossier geregistreerd' : 'Dossiers geregistreerd'}
+              <div className="flex items-center justify-between">
+                <span className="font-display text-sm sm:text-base font-bold text-white group-hover:text-[#E03A3E] transition-colors truncate">
+                  Sprint 0{currentSprint.id}: {currentSprint.title}
                 </span>
-              </div>
-
-              {/* Metric 2: Active Sprint */}
-              <div className="bg-white border border-[#D5D5D0] p-3.5">
-                <div className="flex items-center gap-1.5 text-[#6B6B6B] mb-1">
-                  <Target className="w-3.5 h-3.5 text-[#E32636]" />
-                  <span className="font-mono text-[10px] uppercase tracking-wider font-semibold">
-                    Actuele Sprint
-                  </span>
-                </div>
-                <div className="font-heading font-black text-2xl text-[#050505]">
-                  0{currentSprint.id}
-                </div>
-                <span className="font-mono text-[10px] text-[#6B6B6B] truncate block">
-                  {currentSprint.title}
-                </span>
-              </div>
-
-              {/* Metric 3: LU Coverage */}
-              <div className="bg-white border border-[#D5D5D0] p-3.5">
-                <div className="flex items-center gap-1.5 text-[#6B6B6B] mb-1">
-                  <GraduationCap className="w-3.5 h-3.5 text-[#050505]" />
-                  <span className="font-mono text-[10px] uppercase tracking-wider font-semibold">
-                    Bewijsdekking
-                  </span>
-                </div>
-                <div className="font-heading font-black text-2xl text-[#050505]">
-                  {coveredLUsCount} <span className="text-sm font-normal text-[#6B6B6B]">/ {learningOutcomes.length}</span>
-                </div>
-                <span className="font-mono text-[10px] text-[#6B6B6B]">
-                  Leeruitkomsten gedekt
-                </span>
-              </div>
-
-              {/* Metric 4: Latest Update */}
-              <div className="bg-white border border-[#D5D5D0] p-3.5">
-                <div className="flex items-center gap-1.5 text-[#6B6B6B] mb-1">
-                  <Calendar className="w-3.5 h-3.5 text-[#050505]" />
-                  <span className="font-mono text-[10px] uppercase tracking-wider font-semibold">
-                    Laatste Update
-                  </span>
-                </div>
-                <div className="font-heading font-bold text-sm text-[#050505] truncate pt-1">
-                  {latestUpdateDate}
-                </div>
-                <span className="font-mono text-[10px] text-[#6B6B6B] truncate block">
-                  Recente wijziging
+                <span className="w-5 h-5 rounded-full bg-[#E03A3E] text-white flex items-center justify-center text-xs font-bold ml-2 flex-shrink-0 group-hover:scale-110 transition-transform">
+                  →
                 </span>
               </div>
             </div>
 
-            {/* Competencies Progress Bars (Proof Coverage) */}
-            <div className="bg-white border border-[#D5D5D0] p-3 space-y-2">
-              <span className="font-mono text-[10px] font-bold text-[#6B6B6B] uppercase tracking-wider block">
-                Dekking per Leeruitkomst
+            {/* Mission Strip Col 2: Future / Focus */}
+            <div 
+              onClick={onNavigateToSprints}
+              className="group cursor-pointer border-b md:border-b-0 md:border-r border-white/10 pb-3 md:pb-0 pr-4"
+            >
+              <span className="font-mono text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-widest block mb-1">
+                FOCUS GEBIED
               </span>
-              <div className="grid grid-cols-5 gap-1.5">
-                {learningOutcomes.map((lu) => {
-                  const count = evidenceItems.filter((item) =>
-                    item.learningOutcomeIds.includes(lu.id)
-                  ).length;
-                  const isCovered = count > 0;
-                  return (
-                    <div 
-                      key={lu.id} 
-                      className={`p-1.5 text-center border ${
-                        isCovered 
-                          ? 'border-[#050505] bg-[#050505] text-white' 
-                          : 'border-[#D5D5D0] bg-[#F4F3EF] text-[#6B6B6B]'
-                      }`}
-                      title={`${lu.code} (${lu.title}): ${count} bewijsstuk(ken) gekoppeld`}
-                    >
-                      <span className="font-mono text-[10px] font-bold block">{lu.code}</span>
-                      <span className="font-mono text-[9px] block opacity-80">{count}x</span>
-                    </div>
-                  );
-                })}
+              <div className="flex items-center justify-between">
+                <span className="font-display text-sm sm:text-base font-bold text-white group-hover:text-[#E03A3E] transition-colors truncate">
+                  {currentSprint.focus || "Autonome Agents & API Tool-Use"}
+                </span>
+                <span className="w-5 h-5 rounded-full bg-[#E03A3E] text-white flex items-center justify-center text-xs font-bold ml-2 flex-shrink-0 group-hover:scale-110 transition-transform">
+                  →
+                </span>
               </div>
             </div>
+
+            {/* Mission Strip Col 3: Bewijsdekking (For the Benefit of All Style) */}
+            <div 
+              onClick={onNavigateToOutcomes}
+              className="group cursor-pointer pr-2 flex items-center justify-between"
+            >
+              <div>
+                <span className="font-mono text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-widest block mb-1">
+                  BEWIJSDEKKING HU MINOR
+                </span>
+                <span className="font-display text-sm sm:text-base font-bold text-white group-hover:text-[#E03A3E] transition-colors truncate">
+                  {coveredLUsCount} / {learningOutcomes.length} Leeruitkomsten Gedekt
+                </span>
+              </div>
+              <span className="w-5 h-5 rounded-full bg-[#E03A3E] text-white flex items-center justify-center text-xs font-bold ml-2 flex-shrink-0 group-hover:scale-110 transition-transform">
+                →
+              </span>
+            </div>
+
           </div>
 
-          {/* Owner-Only Telemetry (Completely hidden for guests/teachers) */}
+          {/* Owner Telemetry indicator if active */}
           {isOwner && (
-            <div className="mt-4 pt-3 border-t border-[#D5D5D0] flex items-center justify-between font-mono text-[11px] text-[#6B6B6B]">
-              <span className="flex items-center gap-1.5 text-[#050505]">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#E32636]" />
-                <strong>Eigenaarsrechten Actief</strong>
+            <div className="mt-3 pt-2 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-gray-400">
+              <span className="flex items-center gap-1.5 text-white">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#E03A3E]" />
+                <span>Eigenaarsmodus Actief // Supabase Cloud Sync Online</span>
               </span>
-              <span className="text-[10px] text-[#6B6B6B]">
-                Supabase Cloud Sync: OK
-              </span>
+              <span>{totalEvidenceCount} dossiers in database</span>
             </div>
           )}
         </div>
@@ -237,3 +165,4 @@ export const ResearchHero: React.FC<ResearchHeroProps> = ({
     </section>
   );
 };
+

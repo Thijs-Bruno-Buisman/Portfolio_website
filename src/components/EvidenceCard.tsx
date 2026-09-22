@@ -35,12 +35,12 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
 
   const statusConfig = {
     voldoende: {
-      label: 'BEOORDEELD // VOLDOENDE',
+      label: 'STATUS // GEREED',
       badge: 'bg-[#050505] text-white border-[#050505]',
       icon: CheckCircle,
     },
     in_behandeling: {
-      label: 'STATUS // IN BEHANDELING',
+      label: 'STATUS // IN ONTWIKKELING',
       badge: 'bg-[#F4F3EF] text-[#6B6B6B] border-[#D5D5D0]',
       icon: Clock,
     },
