@@ -17,7 +17,9 @@ import {
   Upload, 
   Loader2, 
   AlertCircle,
-  Terminal
+  Terminal,
+  Sparkles,
+  Target
 } from 'lucide-react';
 import { compressImage } from '../lib/imageUtils';
 
@@ -395,12 +397,63 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
                 // ONDERZOEKERSVERHAAL & MOTIVATIE
               </label>
               <textarea
-                rows={6}
+                rows={5}
                 value={formData.bio}
                 onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
                 className="w-full text-[#050505] text-sm leading-relaxed p-4 border border-[#D5D5D0] bg-[#F4F3EF] focus:bg-white focus:outline-2 focus:outline-[#050505]"
                 placeholder="Beschrijf je achtergrond, je motivatie voor deze minor en je visie op AI..."
               />
+            </div>
+
+            {/* Talenten, Passies, Dromen Form Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-[#F4F3EF] border border-[#D5D5D0]">
+              <div>
+                <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-[#050505] mb-1">
+                  Talenten (1 per regel)
+                </label>
+                <textarea
+                  rows={4}
+                  value={(formData.talents || []).join('\n')}
+                  onChange={(e) => {
+                    const lines = e.target.value.split('\n');
+                    setFormData(prev => ({ ...prev, talents: lines }));
+                  }}
+                  className="w-full text-xs font-mono p-2.5 bg-white border border-[#D5D5D0] text-[#050505] focus:outline-2 focus:outline-[#050505]"
+                  placeholder="Talent 1&#10;Talent 2"
+                />
+              </div>
+
+              <div>
+                <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-[#050505] mb-1">
+                  Passies (1 per regel)
+                </label>
+                <textarea
+                  rows={4}
+                  value={(formData.passions || []).join('\n')}
+                  onChange={(e) => {
+                    const lines = e.target.value.split('\n');
+                    setFormData(prev => ({ ...prev, passions: lines }));
+                  }}
+                  className="w-full text-xs font-mono p-2.5 bg-white border border-[#D5D5D0] text-[#050505] focus:outline-2 focus:outline-[#050505]"
+                  placeholder="Passie 1&#10;Passie 2"
+                />
+              </div>
+
+              <div>
+                <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-[#050505] mb-1">
+                  Dromen (1 per regel)
+                </label>
+                <textarea
+                  rows={4}
+                  value={(formData.dreams || []).join('\n')}
+                  onChange={(e) => {
+                    const lines = e.target.value.split('\n');
+                    setFormData(prev => ({ ...prev, dreams: lines }));
+                  }}
+                  className="w-full text-xs font-mono p-2.5 bg-white border border-[#D5D5D0] text-[#050505] focus:outline-2 focus:outline-[#050505]"
+                  placeholder="Droom 1&#10;Droom 2"
+                />
+              </div>
             </div>
           </div>
         ) : (
@@ -545,140 +598,209 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
         )}
       </div>
 
-      {/* Visual Archive / Photo Impressions */}
-      <div className="bg-white border border-[#D5D5D0] p-6 sm:p-10">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-5 border-b border-[#D5D5D0] mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-[#050505] text-white flex items-center justify-center">
-              <ImageIcon className="w-4 h-4 text-white" />
-            </div>
+      {/* 3-Column Editorial Grid: Talenten, Passies, Dromen */}
+      {((formData.talents && formData.talents.length > 0) || 
+        (formData.passions && formData.passions.length > 0) || 
+        (formData.dreams && formData.dreams.length > 0)) && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Card 1: Talenten & Sterktes */}
+          <div className="bg-white border border-[#D5D5D0] p-6 flex flex-col justify-between">
             <div>
-              <h3 className="font-display text-lg font-bold text-[#050505]">
-                Visueel Archief // Impressies & Prototypes
-              </h3>
-              <p className="font-mono text-xs text-[#6B6B6B]">
-                Sfeerbeelden, Show & Tell presentaties, artifacts en samenwerking binnen het AI-leerteam.
-              </p>
+              <div className="flex items-center gap-2 pb-3 mb-4 border-b border-[#D5D5D0]">
+                <Sparkles className="w-4 h-4 text-[#E32636]" />
+                <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#050505]">
+                  TALENTEN & STERKTES
+                </h4>
+              </div>
+              <ul className="space-y-2.5">
+                {(formData.talents || []).map((talent, idx) => (
+                  <li key={idx} className="flex items-start gap-2.5 text-xs text-[#050505]/85 leading-relaxed font-sans">
+                    <span className="w-1.5 h-1.5 bg-[#050505] rounded-none mt-1.5 flex-shrink-0" />
+                    <span>{talent}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
-          <span className="font-mono text-xs text-[#6B6B6B] border border-[#D5D5D0] px-2.5 py-1 self-start sm:self-auto uppercase tracking-wide">
-            {formData.photos?.length || 0} ITEMS IN ARCHIEF
-          </span>
-        </div>
+          {/* Card 2: Passies & AI-Interesses */}
+          <div className="bg-white border border-[#D5D5D0] p-6 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2 pb-3 mb-4 border-b border-[#D5D5D0]">
+                <Compass className="w-4 h-4 text-[#050505]" />
+                <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#050505]">
+                  PASSIES & INTERESSES
+                </h4>
+              </div>
+              <ul className="space-y-2.5">
+                {(formData.passions || []).map((passion, idx) => (
+                  <li key={idx} className="flex items-start gap-2.5 text-xs text-[#050505]/85 leading-relaxed font-sans">
+                    <span className="w-1.5 h-1.5 bg-[#E32636] rounded-none mt-1.5 flex-shrink-0" />
+                    <span>{passion}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
 
-        {/* Photos Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {formData.photos && formData.photos.length > 0 ? (
-            formData.photos.map((photo) => (
-              <div
-                key={photo.id}
-                className="group relative border border-[#D5D5D0] hover:border-[#050505] transition-all flex flex-col bg-white"
-              >
-                <div 
-                  onClick={() => setLightboxPhoto(photo)}
-                  className="relative h-48 w-full overflow-hidden bg-[#050505] cursor-pointer"
+          {/* Card 3: Toekomstdromen & Ambities */}
+          <div className="bg-white border border-[#D5D5D0] p-6 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2 pb-3 mb-4 border-b border-[#D5D5D0]">
+                <Target className="w-4 h-4 text-[#050505]" />
+                <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#050505]">
+                  DROMEN & AMBITIES
+                </h4>
+              </div>
+              <ul className="space-y-2.5">
+                {(formData.dreams || []).map((dream, idx) => (
+                  <li key={idx} className="flex items-start gap-2.5 text-xs text-[#050505]/85 leading-relaxed font-sans">
+                    <span className="w-1.5 h-1.5 bg-[#050505] rounded-none mt-1.5 flex-shrink-0" />
+                    <span>{dream}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Visual Archive / Photo Impressions: Only rendered if photos exist or when in edit mode */}
+      {((formData.photos && formData.photos.length > 0) || isEditing) && (
+        <div className="bg-white border border-[#D5D5D0] p-6 sm:p-10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-5 border-b border-[#D5D5D0] mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 bg-[#050505] text-white flex items-center justify-center">
+                <ImageIcon className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <h3 className="font-display text-lg font-bold text-[#050505]">
+                  Visueel Archief // Impressies & Prototypes
+                </h3>
+                <p className="font-mono text-xs text-[#6B6B6B]">
+                  Sfeerbeelden, Show & Tell presentaties, artifacts en samenwerking binnen het AI-leerteam.
+                </p>
+              </div>
+            </div>
+
+            <span className="font-mono text-xs text-[#6B6B6B] border border-[#D5D5D0] px-2.5 py-1 self-start sm:self-auto uppercase tracking-wide">
+              {formData.photos?.length || 0} ITEMS IN ARCHIEF
+            </span>
+          </div>
+
+          {/* Photos Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {formData.photos && formData.photos.length > 0 ? (
+              formData.photos.map((photo) => (
+                <div
+                  key={photo.id}
+                  className="group relative border border-[#D5D5D0] hover:border-[#050505] transition-all flex flex-col bg-white"
                 >
-                  <img
-                    src={photo.url}
-                    alt={photo.title}
-                    className="w-full h-full object-cover opacity-95 group-hover:opacity-100 group-hover:scale-[1.02] transition-all duration-300"
-                  />
-                  <div className="absolute inset-0 bg-[#050505]/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                    <span className="text-white font-mono text-xs tracking-wider uppercase">
-                      [ VERGROOT WEERGAVE ]
-                    </span>
+                  <div 
+                    onClick={() => setLightboxPhoto(photo)}
+                    className="relative h-48 w-full overflow-hidden bg-[#050505] cursor-pointer"
+                  >
+                    <img
+                      src={photo.url}
+                      alt={photo.title}
+                      className="w-full h-full object-cover opacity-95 group-hover:opacity-100 group-hover:scale-[1.02] transition-all duration-300"
+                    />
+                    <div className="absolute inset-0 bg-[#050505]/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                      <span className="text-white font-mono text-xs tracking-wider uppercase">
+                        [ VERGROOT WEERGAVE ]
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-4 flex-1 flex flex-col justify-between bg-white border-t border-[#D5D5D0]">
+                    <div>
+                      <h4 className="font-display font-bold text-[#050505] text-sm mb-1">
+                        {photo.title}
+                      </h4>
+                      <p className="text-xs text-[#6B6B6B] leading-relaxed">
+                        {photo.caption}
+                      </p>
+                    </div>
+
+                    {isEditing && (
+                      <div className="pt-3 mt-3 border-t border-[#D5D5D0] flex justify-end">
+                        <button
+                          onClick={() => removePhoto(photo.id)}
+                          className="font-mono text-xs text-[#E32636] hover:underline font-bold flex items-center gap-1 cursor-pointer uppercase tracking-wider"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          Verwijderen
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
+              ))
+            ) : (
+              <div className="col-span-full py-10 text-center bg-[#F4F3EF] border border-dashed border-[#D5D5D0]">
+                <ImageIcon className="w-8 h-8 text-[#6B6B6B] mx-auto mb-2" />
+                <p className="font-mono text-xs text-[#6B6B6B] uppercase tracking-wider">
+                  Geen foto's opgenomen in dit archief.
+                </p>
+              </div>
+            )}
+          </div>
 
-                <div className="p-4 flex-1 flex flex-col justify-between bg-white border-t border-[#D5D5D0]">
-                  <div>
-                    <h4 className="font-display font-bold text-[#050505] text-sm mb-1">
-                      {photo.title}
-                    </h4>
-                    <p className="text-xs text-[#6B6B6B] leading-relaxed">
-                      {photo.caption}
-                    </p>
-                  </div>
-
-                  {isEditing && (
-                    <div className="pt-3 mt-3 border-t border-[#D5D5D0] flex justify-end">
-                      <button
-                        onClick={() => removePhoto(photo.id)}
-                        className="font-mono text-xs text-[#E32636] hover:underline font-bold flex items-center gap-1 cursor-pointer uppercase tracking-wider"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                        Verwijderen
-                      </button>
-                    </div>
-                  )}
+          {/* Add Photo Form (Edit Mode) */}
+          {isEditing && (
+            <div className="mt-6 pt-5 border-t border-[#D5D5D0] bg-[#F4F3EF] p-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#050505] flex items-center gap-1.5">
+                  <Plus className="w-3.5 h-3.5 text-[#050505]" />
+                  Nieuwe archieffoto toevoegen
+                </h4>
+                <label className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#D5D5D0] hover:border-[#050505] text-[#050505] font-mono text-xs uppercase tracking-wider cursor-pointer transition-colors self-start sm:self-auto">
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>Kies foto van apparaat</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleGalleryPhotoUpload}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <input
+                  type="text"
+                  value={newPhotoTitle}
+                  onChange={(e) => setNewPhotoTitle(e.target.value)}
+                  placeholder="Titel (bijv. Prototype test)"
+                  className="text-xs px-3 py-2 bg-white border border-[#D5D5D0] font-mono text-[#050505] outline-none"
+                />
+                <input
+                  type="text"
+                  value={newPhotoUrl}
+                  onChange={(e) => setNewPhotoUrl(e.target.value)}
+                  placeholder="Foto URL of kies bestand..."
+                  className="text-xs px-3 py-2 bg-white border border-[#D5D5D0] font-mono text-[#050505] outline-none"
+                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newPhotoCaption}
+                    onChange={(e) => setNewPhotoCaption(e.target.value)}
+                    placeholder="Kort onderschrift..."
+                    className="text-xs flex-1 px-3 py-2 bg-white border border-[#D5D5D0] font-mono text-[#050505] outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={addPhoto}
+                    className="px-4 py-2 bg-[#050505] hover:bg-[#E32636] text-white font-mono text-xs uppercase tracking-wider font-bold transition-colors cursor-pointer whitespace-nowrap"
+                  >
+                    Toevoegen
+                  </button>
                 </div>
               </div>
-            ))
-          ) : (
-            <div className="col-span-full py-10 text-center bg-[#F4F3EF] border border-dashed border-[#D5D5D0]">
-              <ImageIcon className="w-8 h-8 text-[#6B6B6B] mx-auto mb-2" />
-              <p className="font-mono text-xs text-[#6B6B6B] uppercase tracking-wider">
-                Geen foto's opgenomen in dit archief.
-              </p>
             </div>
           )}
         </div>
-
-        {/* Add Photo Form (Edit Mode) */}
-        {isEditing && (
-          <div className="mt-6 pt-5 border-t border-[#D5D5D0] bg-[#F4F3EF] p-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-              <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#050505] flex items-center gap-1.5">
-                <Plus className="w-3.5 h-3.5 text-[#050505]" />
-                Nieuwe archieffoto toevoegen
-              </h4>
-              <label className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#D5D5D0] hover:border-[#050505] text-[#050505] font-mono text-xs uppercase tracking-wider cursor-pointer transition-colors self-start sm:self-auto">
-                <Upload className="w-3.5 h-3.5" />
-                <span>Kies foto van apparaat</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleGalleryPhotoUpload}
-                  className="hidden"
-                />
-              </label>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <input
-                type="text"
-                value={newPhotoTitle}
-                onChange={(e) => setNewPhotoTitle(e.target.value)}
-                placeholder="Titel (bijv. Prototype test)"
-                className="text-xs px-3 py-2 bg-white border border-[#D5D5D0] font-mono text-[#050505] outline-none"
-              />
-              <input
-                type="text"
-                value={newPhotoUrl}
-                onChange={(e) => setNewPhotoUrl(e.target.value)}
-                placeholder="Foto URL of kies bestand..."
-                className="text-xs px-3 py-2 bg-white border border-[#D5D5D0] font-mono text-[#050505] outline-none"
-              />
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={newPhotoCaption}
-                  onChange={(e) => setNewPhotoCaption(e.target.value)}
-                  placeholder="Kort onderschrift..."
-                  className="text-xs flex-1 px-3 py-2 bg-white border border-[#D5D5D0] font-mono text-[#050505] outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={addPhoto}
-                  className="px-4 py-2 bg-[#050505] hover:bg-[#E32636] text-white font-mono text-xs uppercase tracking-wider font-bold transition-colors cursor-pointer whitespace-nowrap"
-                >
-                  Toevoegen
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+      )}
 
       {/* Editorial Mission Statement */}
       <div className="bg-[#050505] border border-[#1F1F1F] p-8 sm:p-12 text-white">

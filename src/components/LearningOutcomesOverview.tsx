@@ -1,6 +1,6 @@
 import React from 'react';
 import { LearningOutcome, EvidenceItem } from '../types';
-import { ArrowRight, Terminal } from 'lucide-react';
+import { ArrowRight, Info } from 'lucide-react';
 
 interface LearningOutcomesOverviewProps {
   learningOutcomes: LearningOutcome[];
@@ -13,24 +13,20 @@ export const LearningOutcomesOverview: React.FC<LearningOutcomesOverviewProps> =
   evidenceItems,
   onSelectLUFilter,
 }) => {
-  // Calculate statistics based on the 5 Learning Outcomes (Total target: 18)
+  // Richtlijn: 18 gekoppelde bewijsstukken verdeeld over de 5 Leeruitkomsten
   const totalEvaluationsTarget = learningOutcomes.reduce(
     (acc, lu) => acc + (lu.minEvaluationsRequired || 0),
     0
   ) || 18;
   
-  // Count how many times an LU is evaluated / covered
-  const totalEvaluationsCurrent = evidenceItems.reduce((acc, item) => {
+  // Aantal gekoppelde bewijsstukken (telt iedere toewijzing aan een LU)
+  const totalLinkedCurrent = evidenceItems.reduce((acc, item) => {
     return acc + item.learningOutcomeIds.length;
   }, 0);
 
-  const sufficientEvaluationsCurrent = evidenceItems
-    .filter((item) => item.evaluationStatus === 'voldoende')
-    .reduce((acc, item) => acc + item.learningOutcomeIds.length, 0);
-
-  const progressPercentage = Math.min(
+  const coveragePercentage = Math.min(
     100,
-    Math.round((sufficientEvaluationsCurrent / totalEvaluationsTarget) * 100)
+    Math.round((totalLinkedCurrent / totalEvaluationsTarget) * 100)
   );
 
   return (
@@ -39,49 +35,57 @@ export const LearningOutcomesOverview: React.FC<LearningOutcomesOverviewProps> =
       <div className="bg-white border border-[#D5D5D0] p-6 sm:p-10">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 pb-6 border-b border-[#D5D5D0]">
           <div>
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
               <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-white bg-[#050505] px-2.5 py-0.5">
-                ASSESSMENT MATRIX // HU MINOR EISEN
+                BEWIJSDEKKING // HU MINOR RICHTLIJN
               </span>
               <span className="font-mono text-xs text-[#6B6B6B]">
-                Norm: Minimaal {totalEvaluationsTarget} evaluaties over 5 Leeruitkomsten
+                Richtlijn: Minimaal {totalEvaluationsTarget} gekoppelde bewijzen over 5 Leeruitkomsten
               </span>
             </div>
             <h2 className="font-display text-2xl sm:text-3xl font-black text-[#050505] tracking-tight">
-              Voortgang op Leeruitkomsten
+              Kwantitatieve Bewijsdekking per Leeruitkomst
             </h2>
             <p className="text-[#050505]/80 text-sm mt-2 max-w-2xl leading-relaxed">
-              Tijdens de minor verzamel je methodische bewijslast verdeeld over de 5 officiële leeruitkomsten. Hieronder staat de norm per competentie en je actuele voortgang.
+              Tijdens de minor verzamel je methodische bewijslast verdeeld over de 5 officiële leeruitkomsten van de Hogeschool Utrecht. Onderstaand overzicht toont hoeveel bewijsstukken er tot nu toe per leeruitkomst zijn gekoppeld ten opzichte van de richtlijn (totaal 18).
             </p>
           </div>
 
           <div className="flex items-center gap-5 bg-[#F4F3EF] p-5 border border-[#D5D5D0] self-start md:self-auto font-mono">
             <div className="text-right">
               <span className="text-3xl font-black text-[#050505] block leading-none">
-                {sufficientEvaluationsCurrent} <span className="text-sm font-normal text-[#6B6B6B]">/ {totalEvaluationsTarget}</span>
+                {totalLinkedCurrent} <span className="text-sm font-normal text-[#6B6B6B]">/ {totalEvaluationsTarget}</span>
               </span>
               <span className="text-[11px] text-[#6B6B6B] uppercase tracking-wider mt-1 block">
-                Beoordeeld: Voldoende
+                Gekoppelde Dossiers
               </span>
             </div>
-            <div className="w-14 h-14 bg-[#050505] text-white flex flex-col items-center justify-center font-bold border border-[#050505]">
-              <span className="text-sm text-[#E32636] leading-none">{progressPercentage}%</span>
-              <span className="text-[9px] text-[#D5D5D0] uppercase">NORM</span>
+            <div className="w-16 h-14 bg-[#050505] text-white flex flex-col items-center justify-center font-bold border border-[#050505]">
+              <span className="text-sm text-[#E32636] leading-none">{coveragePercentage}%</span>
+              <span className="text-[9px] text-[#D5D5D0] uppercase tracking-wider">DEKKING</span>
             </div>
           </div>
         </div>
 
         {/* Linear Progress Bar */}
         <div className="pt-6">
-          <div className="flex justify-between font-mono text-xs text-[#6B6B6B] mb-2 uppercase tracking-wide">
-            <span>TOTALE ASSESSMENT VOORTGANG</span>
-            <span>{sufficientEvaluationsCurrent} VAN {totalEvaluationsTarget} EVALUATIES BEHAALD</span>
+          <div className="flex justify-between font-mono text-xs text-[#6B6B6B] mb-2 uppercase tracking-wide flex-wrap gap-2">
+            <span>KWANTITATIEVE BEWIJSDEKKING</span>
+            <span>{totalLinkedCurrent} VAN {totalEvaluationsTarget} DOSSIERS GEKOPPELD ({coveragePercentage}%)</span>
           </div>
           <div className="w-full bg-[#F4F3EF] h-2.5 border border-[#D5D5D0]">
             <div
               className="bg-[#050505] h-full transition-all duration-500"
-              style={{ width: `${progressPercentage}%` }}
+              style={{ width: `${coveragePercentage}%` }}
             />
+          </div>
+
+          {/* Explicit pedagogical notice about what coverage represents */}
+          <div className="mt-4 p-3 bg-[#F4F3EF] border-l-2 border-[#050505] flex items-start gap-2.5">
+            <Info className="w-4 h-4 text-[#050505] flex-shrink-0 mt-0.5" />
+            <p className="font-mono text-xs text-[#050505]/80 leading-relaxed">
+              <strong>Toelichting bewijsdekking:</strong> Dit percentage toont uitsluitend de kwantitatieve spreiding van ingeleverde dossiers over de 5 leeruitkomsten. Dit is een administratieve richtlijn en vormt geen docentoordeel of beheersingsniveau.
+            </p>
           </div>
         </div>
 
@@ -89,7 +93,7 @@ export const LearningOutcomesOverview: React.FC<LearningOutcomesOverviewProps> =
         <div className="mt-8 pt-6 border-t border-[#D5D5D0] grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {learningOutcomes.map((lu) => {
             const currentCount = evidenceItems
-              .filter((item) => item.learningOutcomeIds.includes(lu.id) && item.evaluationStatus === 'voldoende')
+              .filter((item) => item.learningOutcomeIds.includes(lu.id))
               .length;
             const target = lu.minEvaluationsRequired || 1;
             const isTargetMet = currentCount >= target;
@@ -116,7 +120,7 @@ export const LearningOutcomesOverview: React.FC<LearningOutcomesOverviewProps> =
                   {lu.title}
                 </div>
                 <div className="text-[10px] text-[#6B6B6B] mt-1 uppercase">
-                  NORM: {target}X
+                  RICHTLIJN: {target}X
                 </div>
               </button>
             );
@@ -127,10 +131,10 @@ export const LearningOutcomesOverview: React.FC<LearningOutcomesOverviewProps> =
               TOTAAL
             </div>
             <div className="text-xl font-black text-white leading-none my-1">
-              {sufficientEvaluationsCurrent} / {totalEvaluationsTarget}
+              {totalLinkedCurrent} / {totalEvaluationsTarget}
             </div>
             <div className="text-[10px] text-[#E32636] uppercase tracking-wider font-bold">
-              18 EVALUATIES
+              18 RICHTLIJN
             </div>
           </div>
         </div>
@@ -142,11 +146,9 @@ export const LearningOutcomesOverview: React.FC<LearningOutcomesOverviewProps> =
           const matchingItems = evidenceItems.filter((item) =>
             item.learningOutcomeIds.includes(lu.id)
           );
-          const sufficientCount = matchingItems.filter(
-            (item) => item.evaluationStatus === 'voldoende'
-          ).length;
+          const linkedCount = matchingItems.length;
           const target = lu.minEvaluationsRequired || 1;
-          const luPercent = Math.min(100, Math.round((sufficientCount / target) * 100));
+          const luPercent = Math.min(100, Math.round((linkedCount / target) * 100));
 
           return (
             <div
@@ -165,11 +167,11 @@ export const LearningOutcomesOverview: React.FC<LearningOutcomesOverviewProps> =
                   </div>
 
                   <span className={`font-mono text-[11px] px-2 py-0.5 border ${
-                    sufficientCount >= target
+                    linkedCount >= target
                       ? 'bg-[#050505] text-white border-[#050505] font-bold'
                       : 'bg-[#F4F3EF] text-[#6B6B6B] border-[#D5D5D0]'
                   }`}>
-                    {sufficientCount} / {target}
+                    {linkedCount} / {target}
                   </span>
                 </div>
 
@@ -195,14 +197,14 @@ export const LearningOutcomesOverview: React.FC<LearningOutcomesOverviewProps> =
               {/* Card Footer: Count & Filter Action */}
               <div className="pt-4 border-t border-[#D5D5D0] flex items-center justify-between font-mono text-xs">
                 <div className="text-[#6B6B6B]">
-                  STATUS: <strong className="text-[#050505]">{sufficientCount} VOLDOENDE</strong>
+                  BEWIJSLAST: <strong className="text-[#050505]">{linkedCount} DOSSIER{linkedCount === 1 ? '' : 'S'}</strong>
                 </div>
 
                 <button
                   onClick={() => onSelectLUFilter(lu.id)}
                   className="inline-flex items-center gap-1.5 font-bold text-[#050505] hover:text-[#E32636] uppercase tracking-wider transition-colors cursor-pointer"
                 >
-                  <span>DOSSIERS</span>
+                  <span>BEKIJK DOSSIERS</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
