@@ -1,25 +1,23 @@
 import React, { useState } from 'react';
 import { UserProfile, ProfilePhoto } from '../types';
 import { 
-  Sparkles, 
-  GraduationCap, 
   Mail, 
   Github, 
   Linkedin, 
   Edit3, 
   Check, 
   Plus, 
-  Trash2,
-  BookOpen,
-  Image as ImageIcon,
-  ArrowRight,
-  X,
-  Compass,
-  FileCheck2,
-  Upload,
-  Loader2,
-  RotateCcw,
-  AlertCircle
+  Trash2, 
+  BookOpen, 
+  Image as ImageIcon, 
+  ArrowRight, 
+  X, 
+  Compass, 
+  FileCheck2, 
+  Upload, 
+  Loader2, 
+  AlertCircle,
+  Terminal
 } from 'lucide-react';
 import { compressImage } from '../lib/imageUtils';
 
@@ -53,7 +51,7 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
 
-  // Only synchronize external profile updates when NOT actively editing!
+  // Only synchronize external profile updates when NOT actively editing
   React.useEffect(() => {
     if (!isEditing) {
       setFormData({
@@ -106,7 +104,6 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
 
   const addPhoto = () => {
     if (newPhotoUrl.trim() && newPhotoTitle.trim()) {
-      const photos = formData.photos || [];
       const newP: ProfilePhoto = {
         id: `photo-${Date.now()}`,
         url: newPhotoUrl.trim(),
@@ -135,8 +132,7 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
     if (file) {
       try {
         setIsUploadingAvatar(true);
-        // Automatically compress image on canvas to max 400x400 px, ~25-40KB
-        const compressedUrl = await compressImage(file, 400, 400, 0.82);
+        const compressedUrl = await compressImage(file, 400, 400, 0.85);
         setFormData(prev => ({ ...prev, avatarUrl: compressedUrl }));
       } catch (err: any) {
         console.error('Avatar upload failed:', err);
@@ -152,8 +148,7 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
     if (file) {
       try {
         setIsUploadingGallery(true);
-        // Automatically compress gallery image on canvas to max 1000x1000 px, ~60-90KB
-        const compressedUrl = await compressImage(file, 1000, 1000, 0.82);
+        const compressedUrl = await compressImage(file, 1200, 1200, 0.85);
         setNewPhotoUrl(compressedUrl);
         if (!newPhotoTitle) {
           setNewPhotoTitle(file.name.replace(/\.[^/.]+$/, ""));
@@ -168,22 +163,20 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
   };
 
   return (
-    <div className="space-y-8 animate-fadeIn">
-      {/* Top Banner / Student Hero */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-50/50 rounded-full blur-3xl -z-10 pointer-events-none" />
-
+    <div className="space-y-8">
+      {/* Top Section / Student Profile Dossier */}
+      <div className="bg-white border border-[#D5D5D0] p-6 sm:p-10 relative">
         {isEditing ? (
-          /* EDIT MODE: Complete profile management */
+          /* EDIT MODE */
           <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                  <Edit3 className="w-5 h-5" />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#D5D5D0]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#050505] text-white flex items-center justify-center">
+                  <Edit3 className="w-5 h-5 text-[#E32636]" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900">Profiel & Verhaal Bewerken</h3>
-                  <p className="text-xs text-slate-500">Pas je gegevens, studentnummer en verhaal aan. Alles wordt direct opgeslagen in de cloud.</p>
+                  <h3 className="font-display text-lg font-bold text-[#050505]">Profiel & Verhaal Bewerken</h3>
+                  <p className="font-mono text-xs text-[#6B6B6B]">Pas je gegevens, studentnummer en verhaal aan. Direct gesynchroniseerd met Supabase.</p>
                 </div>
               </div>
 
@@ -192,26 +185,26 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
                   type="button"
                   onClick={handleCancel}
                   disabled={isSaving}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold transition-all cursor-pointer disabled:opacity-50"
+                  className="px-3.5 py-2 border border-[#D5D5D0] hover:border-[#050505] text-[#050505] font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-3.5 h-3.5 inline mr-1" />
                   Annuleren
                 </button>
                 <button
                   type="button"
                   onClick={handleSave}
                   disabled={isSaving}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow-sm transition-all cursor-pointer disabled:opacity-50"
+                  className="px-4 py-2 bg-[#050505] hover:bg-[#E32636] text-white font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
                 >
                   {isSaving ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Opslaan in cloud...</span>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Opslaan...</span>
                     </>
                   ) : (
                     <>
-                      <Check className="w-4 h-4" />
-                      <span>Wijzigingen Opslaan</span>
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Opslaan in Cloud</span>
                     </>
                   )}
                 </button>
@@ -219,119 +212,92 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
             </div>
 
             {saveError && (
-              <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2.5">
-                <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-600" />
+              <div className="p-3 bg-[#050505] border border-[#E32636] text-[#E32636] font-mono text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{saveError}</span>
               </div>
             )}
 
-            {/* Profile Fields Grid */}
+            {/* Form Fields Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block font-mono text-xs uppercase tracking-wider font-bold text-[#050505] mb-1">
                   Volledige Naam
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full text-sm font-medium text-slate-900 border border-slate-300 rounded-xl px-3 py-2 focus:outline-emerald-500 focus:border-emerald-500 bg-white"
+                  className="w-full text-sm font-medium text-[#050505] border border-[#D5D5D0] px-3 py-2 bg-[#F4F3EF] focus:bg-white focus:outline-2 focus:outline-[#050505]"
                   placeholder="bijv. Thijs Buisman"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1.5">
+                <label className="block font-mono text-xs uppercase tracking-wider font-bold text-[#050505] mb-1">
                   Studentnummer
                 </label>
                 <input
                   type="text"
                   value={formData.studentNumber}
                   onChange={(e) => setFormData(prev => ({ ...prev, studentNumber: e.target.value }))}
-                  className="w-full text-sm font-mono font-semibold text-slate-900 border-2 border-emerald-300 bg-emerald-50/30 rounded-xl px-3 py-2 focus:outline-emerald-500 focus:border-emerald-500"
-                  placeholder="bijv. 1855662"
+                  className="w-full text-sm font-medium text-[#050505] border border-[#D5D5D0] px-3 py-2 bg-[#F4F3EF] focus:bg-white focus:outline-2 focus:outline-[#050505] font-mono"
+                  placeholder="bijv. 1829302"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block font-mono text-xs uppercase tracking-wider font-bold text-[#050505] mb-1">
                   Opleiding / Studierichting
                 </label>
                 <input
                   type="text"
                   value={formData.studyTrack}
                   onChange={(e) => setFormData(prev => ({ ...prev, studyTrack: e.target.value }))}
-                  className="w-full text-sm font-medium text-slate-900 border border-slate-300 rounded-xl px-3 py-2 focus:outline-emerald-500 focus:border-emerald-500 bg-white"
-                  placeholder="bijv. HBO Electrical Engineering"
+                  className="w-full text-sm font-medium text-[#050505] border border-[#D5D5D0] px-3 py-2 bg-[#F4F3EF] focus:bg-white focus:outline-2 focus:outline-[#050505]"
+                  placeholder="bijv. HBO-ICT"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Onderwijsinstelling / Hogeschool
+                <label className="block font-mono text-xs uppercase tracking-wider font-bold text-[#050505] mb-1">
+                  Onderwijsinstelling
                 </label>
                 <input
                   type="text"
                   value={formData.institution}
                   onChange={(e) => setFormData(prev => ({ ...prev, institution: e.target.value }))}
-                  className="w-full text-sm font-medium text-slate-900 border border-slate-300 rounded-xl px-3 py-2 focus:outline-emerald-500 focus:border-emerald-500 bg-white"
+                  className="w-full text-sm font-medium text-[#050505] border border-[#D5D5D0] px-3 py-2 bg-[#F4F3EF] focus:bg-white focus:outline-2 focus:outline-[#050505]"
                   placeholder="bijv. Hogeschool Utrecht"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Minor Titel
+              <div className="md:col-span-2">
+                <label className="block font-mono text-xs uppercase tracking-wider font-bold text-[#050505] mb-1">
+                  Profielfoto URL / Bestand Uploaden
                 </label>
-                <input
-                  type="text"
-                  value={formData.minor}
-                  onChange={(e) => setFormData(prev => ({ ...prev, minor: e.target.value }))}
-                  className="w-full text-sm font-medium text-slate-900 border border-slate-300 rounded-xl px-3 py-2 focus:outline-emerald-500 focus:border-emerald-500 bg-white"
-                  placeholder="bijv. Future-proof met AI"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Profielfoto
-                </label>
-                <div className="flex items-center gap-2">
-                  <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-emerald-100 border border-emerald-200 flex-shrink-0 flex items-center justify-center font-bold text-emerald-800 text-sm">
-                    {formData.avatarUrl ? (
-                      <img
-                        src={formData.avatarUrl}
-                        alt="Voorvertoning"
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLElement).style.display = 'none';
-                        }}
-                      />
-                    ) : (
-                      <span>{formData.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'TB'}</span>
-                    )}
-                  </div>
+                <div className="flex gap-2">
                   <input
                     type="text"
-                    value={formData.avatarUrl || ''}
+                    value={formData.avatarUrl}
                     onChange={(e) => {
                       const val = e.target.value;
                       setFormData(prev => ({ ...prev, avatarUrl: val }));
                     }}
-                    className="flex-1 text-xs text-slate-700 border border-slate-300 rounded-xl px-3 py-2 focus:outline-emerald-500 bg-white"
+                    className="flex-1 text-xs border border-[#D5D5D0] px-3 py-2 bg-[#F4F3EF] focus:bg-white focus:outline-2 focus:outline-[#050505] font-mono"
                     placeholder="Plak afbeeldings-URL of upload bestand..."
                   />
-                  <label className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-slate-700 text-xs font-semibold cursor-pointer transition-colors whitespace-nowrap ${
-                    isUploadingAvatar ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 hover:bg-slate-200'
+                  <label className={`inline-flex items-center gap-1.5 px-3 py-2 border border-[#D5D5D0] text-[#050505] font-mono text-xs uppercase tracking-wider cursor-pointer transition-colors whitespace-nowrap ${
+                    isUploadingAvatar ? 'bg-[#050505] text-white' : 'bg-[#F4F3EF] hover:bg-white hover:border-[#050505]'
                   }`}>
                     {isUploadingAvatar ? (
                       <>
-                        <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600" />
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
                         <span>Comprimeren...</span>
                       </>
                     ) : (
                       <>
-                        <Upload className="w-3.5 h-3.5 text-emerald-600" />
+                        <Upload className="w-3.5 h-3.5" />
                         <span>Kies foto</span>
                       </>
                     )}
@@ -347,29 +313,25 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
                     <button
                       type="button"
                       onClick={() => setFormData(prev => ({ ...prev, avatarUrl: '' }))}
-                      className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs"
+                      className="p-2 border border-[#D5D5D0] hover:border-[#E32636] text-[#6B6B6B] hover:text-[#E32636] text-xs cursor-pointer"
                       title="Verwijder foto"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   )}
                 </div>
-                <p className="text-[10px] text-slate-400 mt-1">
-                  Upload een eigen foto (wordt automatisch geoptimaliseerd voor snelle cloudopslag) of plak een link.
-                </p>
               </div>
             </div>
 
             {/* Social Links & Contact */}
-            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
-                <span>Contact & Social Links</span>
-                <span className="text-[11px] font-normal text-slate-500 normal-case">(zichtbaar voor docenten en beoordelaars)</span>
+            <div className="p-4 bg-[#F4F3EF] border border-[#D5D5D0] space-y-3">
+              <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#050505] flex items-center gap-2">
+                <span>CONTACT & VERIFICATIE LINKS</span>
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-1 flex items-center gap-1.5">
-                    <Mail className="w-3 h-3 text-slate-500" />
+                  <label className="block font-mono text-[11px] text-[#6B6B6B] mb-1 flex items-center gap-1.5">
+                    <Mail className="w-3 h-3 text-[#050505]" />
                     <span>E-mailadres</span>
                   </label>
                   <input
@@ -379,20 +341,17 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
                       const val = e.target.value;
                       setFormData(prev => ({
                         ...prev,
-                        socials: {
-                          ...prev.socials,
-                          email: val,
-                        },
+                        socials: { ...prev.socials, email: val },
                       }));
                     }}
-                    placeholder="thijs.buisman@student.hu.nl"
-                    className="w-full text-xs text-slate-800 border border-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-emerald-500 bg-white"
+                    placeholder="student@hu.nl"
+                    className="w-full text-xs text-[#050505] border border-[#D5D5D0] px-2.5 py-1.5 bg-white font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-1 flex items-center gap-1.5">
-                    <Linkedin className="w-3 h-3 text-[#0A66C2]" />
-                    <span>LinkedIn Profiel URL</span>
+                  <label className="block font-mono text-[11px] text-[#6B6B6B] mb-1 flex items-center gap-1.5">
+                    <Linkedin className="w-3 h-3 text-[#050505]" />
+                    <span>LinkedIn URL</span>
                   </label>
                   <input
                     type="url"
@@ -401,20 +360,17 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
                       const val = e.target.value;
                       setFormData(prev => ({
                         ...prev,
-                        socials: {
-                          ...prev.socials,
-                          linkedin: val,
-                        },
+                        socials: { ...prev.socials, linkedin: val },
                       }));
                     }}
-                    placeholder="https://linkedin.com/in/jouw-profiel"
-                    className="w-full text-xs text-slate-800 border border-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-emerald-500 bg-white"
+                    placeholder="https://linkedin.com/in/..."
+                    className="w-full text-xs text-[#050505] border border-[#D5D5D0] px-2.5 py-1.5 bg-white font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-1 flex items-center gap-1.5">
-                    <Github className="w-3 h-3 text-slate-800" />
-                    <span>GitHub Profiel URL</span>
+                  <label className="block font-mono text-[11px] text-[#6B6B6B] mb-1 flex items-center gap-1.5">
+                    <Github className="w-3 h-3 text-[#050505]" />
+                    <span>GitHub URL</span>
                   </label>
                   <input
                     type="url"
@@ -423,47 +379,41 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
                       const val = e.target.value;
                       setFormData(prev => ({
                         ...prev,
-                        socials: {
-                          ...prev.socials,
-                          github: val,
-                        },
+                        socials: { ...prev.socials, github: val },
                       }));
                     }}
-                    placeholder="https://github.com/jouw-account"
-                    className="w-full text-xs text-slate-800 border border-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-emerald-500 bg-white"
+                    placeholder="https://github.com/..."
+                    className="w-full text-xs text-[#050505] border border-[#D5D5D0] px-2.5 py-1.5 bg-white font-mono"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Wie ben ik? Textarea */}
+            {/* Biography Textarea */}
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <BookOpen className="w-4 h-4 text-emerald-600" />
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                  Wie ben ik? (Persoonlijke introductie & motivatie)
-                </label>
-              </div>
+              <label className="block font-mono text-xs uppercase tracking-wider font-bold text-[#050505] mb-1.5">
+                // ONDERZOEKERSVERHAAL & MOTIVATIE
+              </label>
               <textarea
-                rows={5}
+                rows={6}
                 value={formData.bio}
                 onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
-                className="w-full text-slate-800 text-sm leading-relaxed p-3.5 border border-slate-300 rounded-xl focus:outline-emerald-500 focus:border-emerald-500 bg-white"
-                placeholder="Vertel wie je bent, wat jouw achtergrond is, waarom je deze AI-minor volgt en wat jou inspireert..."
+                className="w-full text-[#050505] text-sm leading-relaxed p-4 border border-[#D5D5D0] bg-[#F4F3EF] focus:bg-white focus:outline-2 focus:outline-[#050505]"
+                placeholder="Beschrijf je achtergrond, je motivatie voor deze minor en je visie op AI..."
               />
             </div>
           </div>
         ) : (
-          /* VIEW MODE: Clean public presentation */
+          /* VIEW MODE */
           <>
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6 border-b border-slate-100">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-                <div className="relative">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-[#D5D5D0]">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                <div className="relative flex-shrink-0">
                   {formData.avatarUrl ? (
                     <img
                       src={formData.avatarUrl}
                       alt={formData.name}
-                      className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover border-2 border-slate-200 shadow-sm"
+                      className="w-28 h-28 sm:w-32 sm:h-32 object-cover border-2 border-[#050505]"
                       onError={(e) => {
                         (e.target as HTMLElement).style.display = 'none';
                         const fallback = (e.target as HTMLElement).parentElement?.querySelector('.avatar-initials-fallback') as HTMLElement;
@@ -472,41 +422,41 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
                     />
                   ) : null}
                   <div
-                    className={`avatar-initials-fallback w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white font-extrabold text-2xl sm:text-3xl items-center justify-center border-2 border-slate-200 shadow-sm ${
+                    className={`avatar-initials-fallback w-28 h-28 sm:w-32 sm:h-32 bg-[#050505] text-white font-mono font-bold text-3xl items-center justify-center border-2 border-[#050505] ${
                       formData.avatarUrl ? 'hidden' : 'flex'
                     }`}
                   >
                     {formData.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'TB'}
                   </div>
-                  <div className="absolute -bottom-2 -right-2 bg-emerald-600 text-white p-1.5 rounded-lg shadow-sm">
-                    <Sparkles className="w-4 h-4" />
+                  <div className="absolute -bottom-1 -right-1 bg-[#E32636] text-white font-mono text-[10px] px-1.5 py-0.5 uppercase tracking-widest font-bold">
+                    AI
                   </div>
                 </div>
 
                 <div>
-                  <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-emerald-800 bg-emerald-100/80 px-2.5 py-0.5 rounded-full">
-                      Student Minor {formData.minor || 'Future-proof met AI'}
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <span className="font-mono text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-white bg-[#050505] px-2.5 py-0.5">
+                      MINOR // {formData.minor || 'FUTURE-PROOF MET AI'}
                     </span>
-                    <span className="text-xs text-slate-500 font-medium">
-                      {formData.institution} • {formData.studyTrack}
+                    <span className="font-mono text-xs text-[#6B6B6B]">
+                      {formData.institution} // {formData.studyTrack}
                     </span>
                   </div>
 
-                  <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+                  <h2 className="font-display text-3xl sm:text-4xl font-black text-[#050505] tracking-tight">
                     {formData.name}
                   </h2>
-                  <p className="text-sm text-slate-500 mt-1 flex items-center gap-2">
-                    <span>Studentnummer:</span>
-                    <span className="font-mono font-bold text-slate-800 bg-slate-100 px-2.5 py-0.5 rounded-md border border-slate-200 text-xs">
-                      {formData.studentNumber || 'Nog niet ingevuld'}
+                  <p className="font-mono text-xs text-[#6B6B6B] mt-1.5 flex items-center gap-2">
+                    <span>STUDENTNUMMER:</span>
+                    <span className="font-bold text-[#050505] bg-[#F4F3EF] px-2 py-0.5 border border-[#D5D5D0]">
+                      {formData.studentNumber || 'ONBEKEND'}
                     </span>
                   </p>
                 </div>
               </div>
 
-              {/* Edit Button & Sprint Navigation */}
-              <div className="flex items-center gap-3 self-end md:self-auto">
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3 self-end md:self-auto">
                 {isOwner && (
                   <button
                     type="button"
@@ -524,46 +474,47 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
                       setSaveError(null);
                       setIsEditing(true);
                     }}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition-all cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-[#D5D5D0] hover:border-[#050505] text-[#050505] hover:bg-[#F4F3EF] font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer"
                   >
-                    <Edit3 className="w-4 h-4 text-emerald-600" />
-                    Profiel & Gegevens Bewerken
+                    <Edit3 className="w-3.5 h-3.5 text-[#050505]" />
+                    <span>Gegevens Bewerken</span>
                   </button>
                 )}
 
                 {onNavigateToSprints && (
                   <button
                     onClick={onNavigateToSprints}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-sm shadow-sm transition-all cursor-pointer"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#050505] hover:bg-[#E32636] text-white font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer"
                   >
-                    <FileCheck2 className="w-4 h-4 text-emerald-400" />
-                    Naar Sprints & Links
-                    <ArrowRight className="w-4 h-4" />
+                    <span>Naar Dossiers</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>
             </div>
 
-            {/* Wie ben ik? Section */}
-            <div className="pt-6">
+            {/* Narrative Editorial Section */}
+            <div className="pt-8">
               <div className="flex items-center gap-2 mb-3">
-                <BookOpen className="w-5 h-5 text-emerald-600" />
-                <h3 className="text-lg font-bold text-slate-900">Wie ben ik?</h3>
+                <Terminal className="w-4 h-4 text-[#050505]" />
+                <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-[#050505]">
+                  // ONDERZOEKERSVERHAAL & MOTIVATIE
+                </h3>
               </div>
 
-              <p className="text-slate-700 text-base leading-relaxed max-w-4xl whitespace-pre-line">
+              <div className="text-[#050505]/85 text-base sm:text-lg leading-relaxed max-w-4xl whitespace-pre-line space-y-4">
                 {formData.bio}
-              </p>
+              </div>
 
-              {/* Social Links */}
-              <div className="flex flex-wrap items-center gap-3 mt-5 pt-4 border-t border-slate-100">
+              {/* Social & Contact Strip */}
+              <div className="flex flex-wrap items-center gap-3 mt-8 pt-6 border-t border-[#D5D5D0]">
                 {formData.socials.email && (
                   <a
                     href={`mailto:${formData.socials.email}`}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-emerald-600 transition-colors bg-slate-50 hover:bg-emerald-50 px-3 py-1.5 rounded-lg border border-slate-200"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-[#050505] border border-[#D5D5D0] hover:border-[#050505] hover:bg-[#F4F3EF] transition-colors"
                   >
-                    <Mail className="w-3.5 h-3.5" />
-                    {formData.socials.email}
+                    <Mail className="w-3.5 h-3.5 text-[#050505]" />
+                    <span>{formData.socials.email}</span>
                   </a>
                 )}
                 {formData.socials.linkedin && (
@@ -571,10 +522,10 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
                     href={formData.socials.linkedin}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-blue-600 transition-colors bg-slate-50 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-slate-200"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-[#050505] border border-[#D5D5D0] hover:border-[#050505] hover:bg-[#F4F3EF] transition-colors"
                   >
-                    <Linkedin className="w-3.5 h-3.5" />
-                    LinkedIn
+                    <Linkedin className="w-3.5 h-3.5 text-[#050505]" />
+                    <span>LinkedIn</span>
                   </a>
                 )}
                 {formData.socials.github && (
@@ -582,10 +533,10 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
                     href={formData.socials.github}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-[#050505] border border-[#D5D5D0] hover:border-[#050505] hover:bg-[#F4F3EF] transition-colors"
                   >
-                    <Github className="w-3.5 h-3.5" />
-                    GitHub
+                    <Github className="w-3.5 h-3.5 text-[#050505]" />
+                    <span>GitHub</span>
                   </a>
                 )}
               </div>
@@ -594,25 +545,25 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
         )}
       </div>
 
-      {/* Ruimte voor Foto's & Impressies (Requirement: Ruimte voor foto's) */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-5 border-b border-slate-100 mb-6">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <ImageIcon className="w-5 h-5" />
+      {/* Visual Archive / Photo Impressions */}
+      <div className="bg-white border border-[#D5D5D0] p-6 sm:p-10">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-5 border-b border-[#D5D5D0] mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-[#050505] text-white flex items-center justify-center">
+              <ImageIcon className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-slate-900">
-                Foto's & Visuele Impressies
+              <h3 className="font-display text-lg font-bold text-[#050505]">
+                Visueel Archief // Impressies & Prototypes
               </h3>
-              <p className="text-xs text-slate-500">
-                Sfeerbeelden van prototypes, Show & Tell sessies en samenwerking in het leerteam.
+              <p className="font-mono text-xs text-[#6B6B6B]">
+                Sfeerbeelden, Show & Tell presentaties, artifacts en samenwerking binnen het AI-leerteam.
               </p>
             </div>
           </div>
 
-          <span className="text-xs text-slate-400 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100 font-medium self-start sm:self-auto">
-            {formData.photos?.length || 0} foto's geregistreerd
+          <span className="font-mono text-xs text-[#6B6B6B] border border-[#D5D5D0] px-2.5 py-1 self-start sm:self-auto uppercase tracking-wide">
+            {formData.photos?.length || 0} ITEMS IN ARCHIEF
           </span>
         </div>
 
@@ -622,39 +573,39 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
             formData.photos.map((photo) => (
               <div
                 key={photo.id}
-                className="group relative rounded-xl border border-slate-200 overflow-hidden bg-slate-50 hover:shadow-md transition-all flex flex-col"
+                className="group relative border border-[#D5D5D0] hover:border-[#050505] transition-all flex flex-col bg-white"
               >
                 <div 
                   onClick={() => setLightboxPhoto(photo)}
-                  className="relative h-48 w-full overflow-hidden bg-slate-900 cursor-pointer"
+                  className="relative h-48 w-full overflow-hidden bg-[#050505] cursor-pointer"
                 >
                   <img
                     src={photo.url}
                     alt={photo.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover opacity-95 group-hover:opacity-100 group-hover:scale-[1.02] transition-all duration-300"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                    <span className="text-white text-xs font-semibold">
-                      Klik om te vergroten
+                  <div className="absolute inset-0 bg-[#050505]/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                    <span className="text-white font-mono text-xs tracking-wider uppercase">
+                      [ VERGROOT WEERGAVE ]
                     </span>
                   </div>
                 </div>
 
-                <div className="p-4 flex-1 flex flex-col justify-between bg-white">
+                <div className="p-4 flex-1 flex flex-col justify-between bg-white border-t border-[#D5D5D0]">
                   <div>
-                    <h4 className="font-bold text-slate-900 text-sm mb-1">
+                    <h4 className="font-display font-bold text-[#050505] text-sm mb-1">
                       {photo.title}
                     </h4>
-                    <p className="text-xs text-slate-600 leading-relaxed">
+                    <p className="text-xs text-[#6B6B6B] leading-relaxed">
                       {photo.caption}
                     </p>
                   </div>
 
                   {isEditing && (
-                    <div className="pt-3 mt-3 border-t border-slate-100 flex justify-end">
+                    <div className="pt-3 mt-3 border-t border-[#D5D5D0] flex justify-end">
                       <button
                         onClick={() => removePhoto(photo.id)}
-                        className="text-xs text-red-600 hover:text-red-800 font-semibold flex items-center gap-1 cursor-pointer"
+                        className="font-mono text-xs text-[#E32636] hover:underline font-bold flex items-center gap-1 cursor-pointer uppercase tracking-wider"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                         Verwijderen
@@ -665,26 +616,26 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
               </div>
             ))
           ) : (
-            <div className="col-span-full py-8 text-center bg-slate-50 rounded-xl border border-dashed border-slate-200">
-              <ImageIcon className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-              <p className="text-xs text-slate-500 font-medium">
-                Nog geen foto's toegevoegd.
+            <div className="col-span-full py-10 text-center bg-[#F4F3EF] border border-dashed border-[#D5D5D0]">
+              <ImageIcon className="w-8 h-8 text-[#6B6B6B] mx-auto mb-2" />
+              <p className="font-mono text-xs text-[#6B6B6B] uppercase tracking-wider">
+                Geen foto's opgenomen in dit archief.
               </p>
             </div>
           )}
         </div>
 
-        {/* Add Photo Form (if in Edit Mode) */}
+        {/* Add Photo Form (Edit Mode) */}
         {isEditing && (
-          <div className="mt-6 pt-5 border-t border-slate-100 bg-slate-50 p-4 rounded-xl">
+          <div className="mt-6 pt-5 border-t border-[#D5D5D0] bg-[#F4F3EF] p-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                <Plus className="w-4 h-4 text-emerald-600" />
-                Nieuwe foto toevoegen (Upload of URL)
+              <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#050505] flex items-center gap-1.5">
+                <Plus className="w-3.5 h-3.5 text-[#050505]" />
+                Nieuwe archieffoto toevoegen
               </h4>
-              <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-semibold cursor-pointer transition-colors shadow-2xs self-start sm:self-auto">
-                <Upload className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Kies foto van computer/telefoon</span>
+              <label className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#D5D5D0] hover:border-[#050505] text-[#050505] font-mono text-xs uppercase tracking-wider cursor-pointer transition-colors self-start sm:self-auto">
+                <Upload className="w-3.5 h-3.5" />
+                <span>Kies foto van apparaat</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -698,15 +649,15 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
                 type="text"
                 value={newPhotoTitle}
                 onChange={(e) => setNewPhotoTitle(e.target.value)}
-                placeholder="Titel (bijv. Show & Tell presentatie)"
-                className="text-xs px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-emerald-500"
+                placeholder="Titel (bijv. Prototype test)"
+                className="text-xs px-3 py-2 bg-white border border-[#D5D5D0] font-mono text-[#050505] outline-none"
               />
               <input
                 type="text"
                 value={newPhotoUrl}
                 onChange={(e) => setNewPhotoUrl(e.target.value)}
-                placeholder="Foto URL of kies bestand hierboven..."
-                className="text-xs px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-emerald-500"
+                placeholder="Foto URL of kies bestand..."
+                className="text-xs px-3 py-2 bg-white border border-[#D5D5D0] font-mono text-[#050505] outline-none"
               />
               <div className="flex gap-2">
                 <input
@@ -714,12 +665,12 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
                   value={newPhotoCaption}
                   onChange={(e) => setNewPhotoCaption(e.target.value)}
                   placeholder="Kort onderschrift..."
-                  className="text-xs flex-1 px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-emerald-500"
+                  className="text-xs flex-1 px-3 py-2 bg-white border border-[#D5D5D0] font-mono text-[#050505] outline-none"
                 />
                 <button
                   type="button"
                   onClick={addPhoto}
-                  className="px-3 py-2 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700 transition-colors cursor-pointer whitespace-nowrap"
+                  className="px-4 py-2 bg-[#050505] hover:bg-[#E32636] text-white font-mono text-xs uppercase tracking-wider font-bold transition-colors cursor-pointer whitespace-nowrap"
                 >
                   Toevoegen
                 </button>
@@ -729,30 +680,30 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
         )}
       </div>
 
-      {/* AI Visie & Motivatie */}
-      <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 sm:p-8 text-white shadow-md relative overflow-hidden">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="space-y-2 max-w-2xl">
+      {/* Editorial Mission Statement */}
+      <div className="bg-[#050505] border border-[#1F1F1F] p-8 sm:p-12 text-white">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+          <div className="space-y-3 max-w-2xl">
             <div className="flex items-center gap-2">
-              <Compass className="w-5 h-5 text-emerald-400" />
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
-                Mijn AI-Visie & Startpunt
+              <Compass className="w-4 h-4 text-[#E32636]" />
+              <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#E32636]">
+                ONDERZOEKSVISIE // HU MINOR
               </span>
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold leading-snug">
-              "AI vervangt mensen niet, maar mensen die verstandig en ethisch met AI werken vervangen mensen die dat niet doen."
+            <h3 className="font-display text-2xl sm:text-3xl font-black leading-tight tracking-tight">
+              "AI vervangt professionals niet, maar professionals die verstandig en ethisch met AI werken vervangen hen die dat nalaten."
             </h3>
-            <p className="text-sm text-slate-300 leading-relaxed pt-1">
-              Gedurende deze 8 sprints bij de Hogeschool Utrecht bouw ik stap voor stap een solide bewijsvoering op voor de 4 HU-leeruitkomsten. Mijn doel is niet louter tools testen, maar een toekomstbestendige denkwijze en professionele autonomie ontwikkelen.
+            <p className="text-sm text-[#D5D5D0] leading-relaxed pt-1">
+              Gedurende 8 sprints bij de Hogeschool Utrecht bouw ik stap voor stap een verifieerbare bewijsvoering op over de 5 HU-leeruitkomsten. Mijn doel is methodische AI-toepassing en professionele autonomie.
             </p>
           </div>
 
           {onNavigateToSprints && (
             <button
               onClick={onNavigateToSprints}
-              className="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer self-start md:self-auto"
+              className="px-6 py-3.5 bg-white hover:bg-[#E32636] text-[#050505] hover:text-white font-mono text-xs uppercase tracking-widest font-bold transition-colors flex items-center gap-2.5 whitespace-nowrap cursor-pointer self-start md:self-auto"
             >
-              Bekijk Sprints (1 t/m 8)
+              <span>Bekijk Sprints (01 - 08)</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           )}
@@ -761,24 +712,24 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
 
       {/* Floating Save/Cancel bar during editing */}
       {isEditing && (
-        <div className="sticky bottom-4 z-40 bg-slate-900/95 backdrop-blur-md text-white p-3 sm:p-4 rounded-2xl shadow-2xl border border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-3 animate-slideUp">
-          <div className="flex items-center gap-2.5">
-            <Sparkles className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+        <div className="sticky bottom-4 z-40 bg-[#050505] text-white p-4 border border-[#D5D5D0] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Terminal className="w-5 h-5 text-[#E32636] flex-shrink-0" />
             <div>
-              <p className="text-xs sm:text-sm font-semibold text-slate-100">
-                Je bewerkt momenteel je profiel, studentnummer, talenten en foto's
+              <p className="font-display text-sm font-bold text-white">
+                Bewerken actief: Profiel & Archief
               </p>
-              <p className="text-[11px] text-slate-400">
-                Sla je wijzigingen op zodat ze direct in de cloud-database worden bijgewerkt.
+              <p className="font-mono text-[11px] text-[#D5D5D0]">
+                Vergeet niet je wijzigingen op te slaan naar de cloud database.
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end font-mono text-xs uppercase tracking-wider">
             <button
               type="button"
               onClick={handleCancel}
               disabled={isSaving}
-              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-medium transition-colors cursor-pointer disabled:opacity-50"
+              className="px-4 py-2 border border-[#D5D5D0] hover:border-white text-white transition-colors cursor-pointer disabled:opacity-50"
             >
               Annuleren
             </button>
@@ -786,17 +737,17 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
               type="button"
               onClick={handleSave}
               disabled={isSaving}
-              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold shadow-sm transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+              className="px-5 py-2 bg-[#E32636] hover:bg-[#050505] text-white border border-[#E32636] font-bold transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
             >
               {isSaving ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   <span>Opslaan...</span>
                 </>
               ) : (
                 <>
-                  <Check className="w-4 h-4" />
-                  <span>Wijzigingen Opslaan</span>
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Opslaan</span>
                 </>
               )}
             </button>
@@ -807,14 +758,14 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
       {/* Lightbox Modal for Photos */}
       {lightboxPhoto && (
         <div 
-          className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-[#050505]/90 backdrop-blur-xs flex items-center justify-center p-4"
           onClick={() => setLightboxPhoto(null)}
         >
           <div 
-            className="bg-white rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl relative animate-scaleUp"
+            className="bg-white border border-[#D5D5D0] max-w-3xl w-full overflow-hidden relative"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative bg-slate-950">
+            <div className="relative bg-[#050505]">
               <img
                 src={lightboxPhoto.url}
                 alt={lightboxPhoto.title}
@@ -822,16 +773,17 @@ export const PersonalStory: React.FC<PersonalStoryProps> = ({
               />
               <button
                 onClick={() => setLightboxPhoto(null)}
-                className="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-900/80 text-white flex items-center justify-center hover:bg-slate-800 transition-colors cursor-pointer"
+                className="absolute top-3 right-3 p-2 bg-[#050505] text-white border border-[#1F1F1F] hover:bg-[#E32636] transition-colors cursor-pointer"
+                aria-label="Sluiten"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="p-4 sm:p-5">
-              <h3 className="text-base font-bold text-slate-900">
+            <div className="p-5">
+              <h3 className="font-display text-base font-bold text-[#050505]">
                 {lightboxPhoto.title}
               </h3>
-              <p className="text-xs text-slate-600 mt-1">
+              <p className="font-mono text-xs text-[#6B6B6B] mt-1">
                 {lightboxPhoto.caption}
               </p>
             </div>

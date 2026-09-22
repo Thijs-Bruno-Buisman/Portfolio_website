@@ -4,14 +4,14 @@ import {
   Calendar, 
   Users, 
   MessageSquare, 
-  CheckCircle2, 
   Plus, 
   ExternalLink, 
   Cloud, 
   Video, 
   Github, 
   FileText,
-  Link2
+  Link2,
+  Terminal
 } from 'lucide-react';
 
 interface SprintNavProps {
@@ -32,7 +32,6 @@ export const SprintNav: React.FC<SprintNavProps> = ({
   evidenceItems = [],
   onOpenQuickLinkModal,
   onOpenAddModal,
-  onOpenEvidenceDetails,
   isOwner = false,
 }) => {
   const currentSprint = sprints.find((s) => s.id === selectedSprintId);
@@ -54,22 +53,22 @@ export const SprintNav: React.FC<SprintNavProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Horizontal Sprint Bar */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-2 sm:p-2.5 shadow-sm">
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+      {/* Technical Mission Timeline Bar */}
+      <div className="bg-white border border-[#D5D5D0] p-1.5 sm:p-2">
+        <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
           <button
             id="sprint-all-btn"
             onClick={() => onSelectSprint(null)}
-            className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
+            className={`px-3.5 py-2 text-xs font-mono uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer border ${
               selectedSprintId === null
-                ? 'bg-slate-900 text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                ? 'bg-[#050505] text-white border-[#050505] font-bold'
+                : 'text-[#6B6B6B] border-transparent hover:text-[#050505] hover:bg-[#F4F3EF]'
             }`}
           >
-            Alle Sprints (1 - 8)
+            [ ALLE SPRINTS 01 - 08 ]
           </button>
 
-          <div className="h-6 w-px bg-slate-200 mx-1 flex-shrink-0" />
+          <div className="h-5 w-px bg-[#D5D5D0] mx-1 flex-shrink-0" />
 
           {sprints.map((sprint) => {
             const isSelected = selectedSprintId === sprint.id;
@@ -79,21 +78,21 @@ export const SprintNav: React.FC<SprintNavProps> = ({
                 key={sprint.id}
                 id={`sprint-btn-${sprint.id}`}
                 onClick={() => onSelectSprint(sprint.id)}
-                className={`group flex items-center gap-2 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                className={`group flex items-center gap-2 px-3 py-2 text-xs font-mono uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer border ${
                   isSelected
-                    ? 'bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-600/30'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'bg-[#050505] text-white border-[#050505] border-b-2 border-b-[#E32636] font-bold'
+                    : 'text-[#6B6B6B] border-transparent hover:text-[#050505] hover:bg-[#F4F3EF]'
                 }`}
               >
-                <span>Sprint {sprint.id}</span>
+                <span>SPRINT 0{sprint.id}</span>
                 <span
-                  className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono ${
+                  className={`text-[10px] px-1 py-0.2 rounded-none font-mono ${
                     isSelected
-                      ? 'bg-emerald-700 text-emerald-100'
-                      : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200'
+                      ? 'bg-[#E32636] text-white font-bold'
+                      : 'bg-[#F4F3EF] text-[#6B6B6B] group-hover:text-[#050505]'
                   }`}
                 >
-                  {count} {count === 1 ? 'item' : 'items'}
+                  {count}
                 </span>
               </button>
             );
@@ -103,49 +102,49 @@ export const SprintNav: React.FC<SprintNavProps> = ({
 
       {/* Selected Sprint Details & Deliverables Callout */}
       {currentSprint && (
-        <div className="bg-gradient-to-br from-emerald-50/50 via-white to-slate-50 rounded-2xl border border-emerald-100 p-5 sm:p-6 shadow-sm animate-fadeIn space-y-5">
+        <div className="bg-white border border-[#D5D5D0] p-6 sm:p-8 space-y-6">
           {/* Header Row */}
-          <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 pb-4 border-b border-emerald-100/70">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 pb-6 border-b border-[#D5D5D0]">
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-md">
-                  Sprint {currentSprint.id}
+              <div className="flex flex-wrap items-center gap-2.5 mb-2">
+                <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-white bg-[#050505] px-2.5 py-0.5">
+                  MISSION SPRINT // 0{currentSprint.id}
                 </span>
-                <span className="text-xs text-slate-500 flex items-center gap-1 font-medium">
-                  <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                  {currentSprint.period}
+                <span className="font-mono text-xs text-[#6B6B6B] flex items-center gap-1.5 font-medium">
+                  <Calendar className="w-3.5 h-3.5 text-[#6B6B6B]" />
+                  PERIODE: {currentSprint.period}
                 </span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900">
+              <h3 className="font-display text-2xl sm:text-3xl font-black tracking-tight text-[#050505] leading-tight">
                 {currentSprint.title}
               </h3>
-              <p className="text-sm text-slate-600 mt-1 max-w-3xl leading-relaxed">
+              <p className="text-sm text-[#050505]/80 mt-2 max-w-3xl leading-relaxed">
                 {currentSprint.focus}
               </p>
             </div>
 
             {/* Action buttons for this sprint */}
             {isOwner && (
-              <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
+              <div className="flex flex-wrap items-center gap-2.5 self-start md:self-auto flex-shrink-0">
                 {onOpenQuickLinkModal && (
                   <button
                     id={`add-quick-link-sprint-${currentSprint.id}`}
                     onClick={() => onOpenQuickLinkModal(currentSprint.id)}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#050505] hover:bg-[#E32636] text-white font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer"
                     title="Direct een OneDrive of YouTube link toevoegen aan deze sprint"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    + Externe Link toevoegen
+                    <span>+ Externe Link</span>
                   </button>
                 )}
 
                 {onOpenAddModal && (
                   <button
                     onClick={() => onOpenAddModal(currentSprint.id)}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold shadow-xs transition-all cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-transparent hover:bg-[#F4F3EF] text-[#050505] border border-[#D5D5D0] hover:border-[#050505] font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer"
                   >
-                    <FileText className="w-3.5 h-3.5 text-slate-500" />
-                    Volledig Bewijs
+                    <FileText className="w-3.5 h-3.5 text-[#6B6B6B]" />
+                    <span>Volledig Bewijs</span>
                   </button>
                 )}
               </div>
@@ -153,21 +152,21 @@ export const SprintNav: React.FC<SprintNavProps> = ({
           </div>
 
           {/* Dedicated External Deliverables Bar (Zero-Repo-Bloat) */}
-          <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-2xs">
+          <div className="bg-[#F4F3EF] p-4 border border-[#D5D5D0]">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
               <div className="flex items-center gap-2">
-                <Cloud className="w-4 h-4 text-blue-600" />
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">
-                  Gekoppelde Externe Deliverables & Links (OneDrive / YouTube / GitHub)
+                <Terminal className="w-4 h-4 text-[#050505]" />
+                <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#050505]">
+                  GEKOPPELDE CLOUD DELIVERABLES // ONEDRIVE, GITHUB & VIDEO
                 </h4>
               </div>
-              <span className="text-[11px] text-slate-400">
-                Geen bestanden in repo • directe cloud links
+              <span className="font-mono text-[10px] text-[#6B6B6B] uppercase tracking-wider">
+                Directe live links // zero-repo storage
               </span>
             </div>
 
             {sprintExternalLinks.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {sprintExternalLinks.map(({ parentItem, media }, idx) => {
                   const isOneDrive = media.url.includes('sharepoint') || media.url.includes('onedrive') || parentItem.toolsUsed.includes('OneDrive');
                   const isYouTube = media.url.includes('youtube') || media.url.includes('youtu.be') || media.type === 'video';
@@ -176,35 +175,35 @@ export const SprintNav: React.FC<SprintNavProps> = ({
                   return (
                     <div
                       key={idx}
-                      className="group flex items-center justify-between gap-2 p-2.5 rounded-lg border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-slate-300 hover:shadow-xs transition-all text-xs"
+                      className="group flex items-center justify-between gap-2.5 p-3 bg-white border border-[#D5D5D0] hover:border-[#050505] transition-all text-xs"
                     >
-                      <div className="flex items-center gap-2 overflow-hidden min-w-0">
+                      <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
                         {isOneDrive && (
-                          <div className="w-7 h-7 rounded-md bg-blue-100 text-blue-700 flex items-center justify-center flex-shrink-0">
-                            <Cloud className="w-3.5 h-3.5" />
+                          <div className="w-7 h-7 bg-[#050505] text-white flex items-center justify-center flex-shrink-0">
+                            <Cloud className="w-3.5 h-3.5 text-white" />
                           </div>
                         )}
                         {isYouTube && (
-                          <div className="w-7 h-7 rounded-md bg-red-100 text-red-700 flex items-center justify-center flex-shrink-0">
-                            <Video className="w-3.5 h-3.5" />
+                          <div className="w-7 h-7 bg-[#E32636] text-white flex items-center justify-center flex-shrink-0">
+                            <Video className="w-3.5 h-3.5 text-white" />
                           </div>
                         )}
                         {isGitHub && (
-                          <div className="w-7 h-7 rounded-md bg-slate-800 text-white flex items-center justify-center flex-shrink-0">
-                            <Github className="w-3.5 h-3.5" />
+                          <div className="w-7 h-7 bg-[#050505] text-white flex items-center justify-center flex-shrink-0">
+                            <Github className="w-3.5 h-3.5 text-white" />
                           </div>
                         )}
                         {!isOneDrive && !isYouTube && !isGitHub && (
-                          <div className="w-7 h-7 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
-                            <Link2 className="w-3.5 h-3.5" />
+                          <div className="w-7 h-7 bg-[#050505] text-white flex items-center justify-center flex-shrink-0">
+                            <Link2 className="w-3.5 h-3.5 text-white" />
                           </div>
                         )}
 
                         <div className="truncate min-w-0">
-                          <p className="font-semibold text-slate-900 truncate">
+                          <p className="font-display font-bold text-[#050505] truncate">
                             {media.title || parentItem.title}
                           </p>
-                          <p className="text-[10px] text-slate-500 truncate">
+                          <p className="font-mono text-[10px] text-[#6B6B6B] uppercase tracking-wide truncate">
                             {parentItem.title}
                           </p>
                         </div>
@@ -215,7 +214,7 @@ export const SprintNav: React.FC<SprintNavProps> = ({
                           href={media.url}
                           target="_blank"
                           rel="noreferrer"
-                          className="p-1.5 rounded-md bg-white hover:bg-slate-100 text-slate-600 hover:text-emerald-700 border border-slate-200 transition-colors cursor-pointer"
+                          className="p-1.5 border border-[#D5D5D0] hover:border-[#050505] text-[#050505] hover:bg-[#F4F3EF] transition-colors cursor-pointer"
                           title="Open externe link in nieuw tabblad"
                         >
                           <ExternalLink className="w-3.5 h-3.5" />
@@ -226,16 +225,16 @@ export const SprintNav: React.FC<SprintNavProps> = ({
                 })}
               </div>
             ) : (
-              <div className="py-3 px-4 rounded-lg bg-slate-50 border border-dashed border-slate-200 text-center flex flex-col sm:flex-row items-center justify-between gap-3">
-                <p className="text-xs text-slate-500">
-                  Nog geen externe link geregistreerd voor Sprint {currentSprint.id}.
+              <div className="py-4 px-4 bg-white border border-dashed border-[#D5D5D0] text-center flex flex-col sm:flex-row items-center justify-between gap-3">
+                <p className="font-mono text-xs text-[#6B6B6B] uppercase tracking-wide">
+                  Geen externe links geregistreerd voor Sprint 0{currentSprint.id}.
                 </p>
                 {onOpenQuickLinkModal && (
                   <button
                     onClick={() => onOpenQuickLinkModal(currentSprint.id)}
-                    className="text-xs font-bold text-emerald-700 hover:text-emerald-800 cursor-pointer"
+                    className="font-mono text-xs uppercase tracking-wider text-[#050505] hover:text-[#E32636] font-bold cursor-pointer transition-colors"
                   >
-                    + Voeg OneDrive of YouTube link toe
+                    + Externe Link toevoegen
                   </button>
                 )}
               </div>
@@ -245,36 +244,38 @@ export const SprintNav: React.FC<SprintNavProps> = ({
           {/* Show & Tell and Feedback row */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
             {currentSprint.showAndTellSummary && (
-              <div className="bg-white/90 rounded-xl p-4 border border-slate-200">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2 font-bold text-slate-900">
-                    <Users className="w-4 h-4 text-emerald-600" />
-                    Show & Tell Uitkomst
+              <div className="bg-[#F4F3EF] p-4 sm:p-5 border border-[#D5D5D0]">
+                <div className="flex items-center justify-between mb-2 pb-2 border-b border-[#D5D5D0]">
+                  <div className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-[#050505]">
+                    <Users className="w-3.5 h-3.5 text-[#050505]" />
+                    SHOW & TELL BEVINDING
                   </div>
-                  <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+                  <span className="font-mono text-[10px] font-medium text-[#6B6B6B]">
                     {currentSprint.showAndTellDate}
                   </span>
                 </div>
-                <p className="text-slate-600 leading-relaxed">
+                <p className="text-[#050505]/80 leading-relaxed text-xs sm:text-sm">
                   {currentSprint.showAndTellSummary}
                 </p>
               </div>
             )}
 
             {(currentSprint.peerFeedback || currentSprint.coachFeedback) && (
-              <div className="bg-white/90 rounded-xl p-4 border border-slate-200 space-y-2">
-                <div className="flex items-center gap-2 font-bold text-slate-900 mb-2">
-                  <MessageSquare className="w-4 h-4 text-emerald-600" />
-                  Feedback Leerteam & Coach
+              <div className="bg-[#F4F3EF] p-4 sm:p-5 border border-[#D5D5D0] space-y-3">
+                <div className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-[#050505] pb-2 border-b border-[#D5D5D0]">
+                  <MessageSquare className="w-3.5 h-3.5 text-[#050505]" />
+                  FEEDBACK PEERS & COACH
                 </div>
                 {currentSprint.peerFeedback && (
-                  <p className="text-slate-600 leading-relaxed">
-                    <span className="font-semibold text-slate-800">Peers:</span> {currentSprint.peerFeedback}
+                  <p className="text-[#050505]/80 leading-relaxed text-xs sm:text-sm">
+                    <span className="font-mono uppercase font-bold text-[11px] text-[#050505] tracking-wider mr-1.5">PEERS:</span>
+                    {currentSprint.peerFeedback}
                   </p>
                 )}
                 {currentSprint.coachFeedback && (
-                  <p className="text-slate-600 leading-relaxed">
-                    <span className="font-semibold text-slate-800">Coach:</span> {currentSprint.coachFeedback}
+                  <p className="text-[#050505]/80 leading-relaxed text-xs sm:text-sm">
+                    <span className="font-mono uppercase font-bold text-[11px] text-[#050505] tracking-wider mr-1.5">COACH:</span>
+                    {currentSprint.coachFeedback}
                   </p>
                 )}
               </div>

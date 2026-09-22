@@ -1,6 +1,6 @@
 import React from 'react';
 import { LearningOutcome, EvidenceItem } from '../types';
-import { Target, CheckCircle2, AlertCircle, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, Terminal } from 'lucide-react';
 
 interface LearningOutcomesOverviewProps {
   learningOutcomes: LearningOutcome[];
@@ -34,58 +34,59 @@ export const LearningOutcomesOverview: React.FC<LearningOutcomesOverviewProps> =
   );
 
   return (
-    <div className="space-y-8 animate-fadeIn">
-      {/* Target Progress Banner */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-100">
+    <div className="space-y-8">
+      {/* Assessment Matrix Dashboard Banner */}
+      <div className="bg-white border border-[#D5D5D0] p-6 sm:p-10">
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 pb-6 border-b border-[#D5D5D0]">
           <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">
-                Assessment Voortgang
+            <div className="flex items-center gap-2 mb-2">
+              <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-white bg-[#050505] px-2.5 py-0.5">
+                ASSESSMENT MATRIX // HU MINOR EISEN
               </span>
-              <span className="text-xs text-slate-500 font-medium">
-                HU Minor Eis: Minimaal {totalEvaluationsTarget} evaluaties over 5 Leeruitkomsten
+              <span className="font-mono text-xs text-[#6B6B6B]">
+                Norm: Minimaal {totalEvaluationsTarget} evaluaties over 5 Leeruitkomsten
               </span>
             </div>
-            <h2 className="text-2xl font-bold text-slate-900">
+            <h2 className="font-display text-2xl sm:text-3xl font-black text-[#050505] tracking-tight">
               Voortgang op Leeruitkomsten
             </h2>
-            <p className="text-slate-600 text-sm mt-1 max-w-2xl leading-relaxed">
-              Tijdens de minor verzamel je bewijslast verdeeld over de 5 officiële leeruitkomsten. Hieronder zie je de exacte norm per leeruitkomst en jouw actuele voortgang.
+            <p className="text-[#050505]/80 text-sm mt-2 max-w-2xl leading-relaxed">
+              Tijdens de minor verzamel je methodische bewijslast verdeeld over de 5 officiële leeruitkomsten. Hieronder staat de norm per competentie en je actuele voortgang.
             </p>
           </div>
 
-          <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 self-start md:self-auto">
+          <div className="flex items-center gap-5 bg-[#F4F3EF] p-5 border border-[#D5D5D0] self-start md:self-auto font-mono">
             <div className="text-right">
-              <span className="text-2xl font-extrabold text-slate-900 block leading-none">
-                {sufficientEvaluationsCurrent} <span className="text-sm font-normal text-slate-500">/ {totalEvaluationsTarget}</span>
+              <span className="text-3xl font-black text-[#050505] block leading-none">
+                {sufficientEvaluationsCurrent} <span className="text-sm font-normal text-[#6B6B6B]">/ {totalEvaluationsTarget}</span>
               </span>
-              <span className="text-xs text-slate-500 font-medium mt-1 block">
+              <span className="text-[11px] text-[#6B6B6B] uppercase tracking-wider mt-1 block">
                 Beoordeeld: Voldoende
               </span>
             </div>
-            <div className="w-12 h-12 rounded-full border-4 border-emerald-500 bg-emerald-50 flex items-center justify-center font-bold text-xs text-emerald-800">
-              {progressPercentage}%
+            <div className="w-14 h-14 bg-[#050505] text-white flex flex-col items-center justify-center font-bold border border-[#050505]">
+              <span className="text-sm text-[#E32636] leading-none">{progressPercentage}%</span>
+              <span className="text-[9px] text-[#D5D5D0] uppercase">NORM</span>
             </div>
           </div>
         </div>
 
-        {/* Visual Progress Bar */}
+        {/* Linear Progress Bar */}
         <div className="pt-6">
-          <div className="flex justify-between text-xs font-semibold text-slate-600 mb-2">
-            <span>Totale Voortgang (Voldoende beoordelingen)</span>
-            <span>{sufficientEvaluationsCurrent} van {totalEvaluationsTarget} vereiste evaluaties behaald</span>
+          <div className="flex justify-between font-mono text-xs text-[#6B6B6B] mb-2 uppercase tracking-wide">
+            <span>TOTALE ASSESSMENT VOORTGANG</span>
+            <span>{sufficientEvaluationsCurrent} VAN {totalEvaluationsTarget} EVALUATIES BEHAALD</span>
           </div>
-          <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden p-0.5 border border-slate-200">
+          <div className="w-full bg-[#F4F3EF] h-2.5 border border-[#D5D5D0]">
             <div
-              className="bg-emerald-600 h-full rounded-full transition-all duration-500"
+              className="bg-[#050505] h-full transition-all duration-500"
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
         </div>
 
-        {/* Requirements Summary Table / Scorecard */}
-        <div className="mt-6 pt-5 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+        {/* Requirements Summary Matrix */}
+        <div className="mt-8 pt-6 border-t border-[#D5D5D0] grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {learningOutcomes.map((lu) => {
             const currentCount = evidenceItems
               .filter((item) => item.learningOutcomeIds.includes(lu.id) && item.evaluationStatus === 'voldoende')
@@ -97,39 +98,39 @@ export const LearningOutcomesOverview: React.FC<LearningOutcomesOverviewProps> =
               <button
                 key={lu.id}
                 onClick={() => onSelectLUFilter(lu.id)}
-                className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                className={`p-3 border text-left transition-all cursor-pointer font-mono ${
                   isTargetMet 
-                    ? 'bg-emerald-50/70 border-emerald-200 hover:bg-emerald-100/50' 
-                    : 'bg-slate-50/70 border-slate-200 hover:bg-slate-100'
+                    ? 'bg-white border-[#050505] hover:border-[#E32636]' 
+                    : 'bg-[#F4F3EF] border-[#D5D5D0] hover:border-[#050505]'
                 }`}
               >
-                <div className="flex items-center justify-between text-[11px] font-bold text-slate-600 mb-1">
-                  <span>{lu.code}</span>
-                  <span className={`px-1.5 py-0.2 rounded text-[10px] ${
-                    isTargetMet ? 'bg-emerald-200 text-emerald-900 font-bold' : 'bg-slate-200 text-slate-700'
+                <div className="flex items-center justify-between text-xs font-bold mb-1">
+                  <span className="text-[#050505]">{lu.code}</span>
+                  <span className={`text-[10px] px-1 py-0.2 ${
+                    isTargetMet ? 'bg-[#050505] text-white' : 'bg-white border border-[#D5D5D0] text-[#6B6B6B]'
                   }`}>
                     {currentCount}/{target}
                   </span>
                 </div>
-                <div className="text-xs font-bold text-slate-900 truncate">
+                <div className="font-display text-xs font-bold text-[#050505] truncate">
                   {lu.title}
                 </div>
-                <div className="text-[10px] text-slate-500 mt-0.5">
-                  Norm: {target}x
+                <div className="text-[10px] text-[#6B6B6B] mt-1 uppercase">
+                  NORM: {target}X
                 </div>
               </button>
             );
           })}
 
-          <div className="p-2.5 rounded-xl border border-slate-300 bg-slate-900 text-white flex flex-col justify-between">
-            <div className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
-              Totaal
+          <div className="p-3 bg-[#050505] text-white border border-[#050505] flex flex-col justify-between font-mono">
+            <div className="text-[10px] font-bold text-[#D5D5D0] uppercase tracking-wider">
+              TOTAAL
             </div>
-            <div className="text-lg font-black text-white leading-none my-1">
+            <div className="text-xl font-black text-white leading-none my-1">
               {sufficientEvaluationsCurrent} / {totalEvaluationsTarget}
             </div>
-            <div className="text-[10px] text-slate-300">
-              18 evaluaties
+            <div className="text-[10px] text-[#E32636] uppercase tracking-wider font-bold">
+              18 EVALUATIES
             </div>
           </div>
         </div>
@@ -150,58 +151,58 @@ export const LearningOutcomesOverview: React.FC<LearningOutcomesOverviewProps> =
           return (
             <div
               key={lu.id}
-              className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between hover:border-emerald-300 transition-colors"
+              className="bg-white border border-[#D5D5D0] hover:border-[#050505] p-6 sm:p-7 flex flex-col justify-between transition-colors"
             >
               <div>
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-1 rounded-lg bg-slate-900 text-white font-bold text-xs">
+                <div className="flex items-start justify-between gap-3 mb-4">
+                  <div className="flex items-center gap-2.5">
+                    <span className="px-2.5 py-0.5 bg-[#050505] text-white font-mono font-bold text-xs uppercase tracking-widest">
                       {lu.code}
                     </span>
-                    <h3 className="text-lg font-bold text-slate-900">
+                    <h3 className="font-display text-lg font-bold text-[#050505]">
                       {lu.title}
                     </h3>
                   </div>
 
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                  <span className={`font-mono text-[11px] px-2 py-0.5 border ${
                     sufficientCount >= target
-                      ? 'bg-emerald-100 text-emerald-800'
-                      : 'bg-slate-100 text-slate-700'
+                      ? 'bg-[#050505] text-white border-[#050505] font-bold'
+                      : 'bg-[#F4F3EF] text-[#6B6B6B] border-[#D5D5D0]'
                   }`}>
-                    {sufficientCount} / {target} vereist
+                    {sufficientCount} / {target}
                   </span>
                 </div>
 
                 {/* Progress bar per LU */}
-                <div className="mb-3">
-                  <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200">
+                <div className="mb-4">
+                  <div className="w-full bg-[#F4F3EF] h-1.5 border border-[#D5D5D0]">
                     <div
-                      className="bg-emerald-600 h-full rounded-full transition-all duration-300"
+                      className="bg-[#050505] h-full transition-all duration-300"
                       style={{ width: `${luPercent}%` }}
                     />
                   </div>
                 </div>
 
-                <p className="text-xs font-medium text-emerald-800 mb-3 bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-100/60">
+                <div className="text-xs font-mono text-[#050505] mb-4 bg-[#F4F3EF] p-3 border-l-2 border-[#E32636]">
                   {lu.shortDesc}
-                </p>
+                </div>
 
-                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed mb-5">
+                <p className="text-[#050505]/80 text-xs sm:text-sm leading-relaxed mb-6">
                   {lu.fullDesc}
                 </p>
               </div>
 
               {/* Card Footer: Count & Filter Action */}
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                <div className="text-xs text-slate-500 font-medium">
-                  Status: <span className="font-bold text-slate-800">{sufficientCount} voldoende</span> ({matchingItems.length} ingediend)
+              <div className="pt-4 border-t border-[#D5D5D0] flex items-center justify-between font-mono text-xs">
+                <div className="text-[#6B6B6B]">
+                  STATUS: <strong className="text-[#050505]">{sufficientCount} VOLDOENDE</strong>
                 </div>
 
                 <button
                   onClick={() => onSelectLUFilter(lu.id)}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-800 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 font-bold text-[#050505] hover:text-[#E32636] uppercase tracking-wider transition-colors cursor-pointer"
                 >
-                  Bekijk bewijzen
+                  <span>DOSSIERS</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>

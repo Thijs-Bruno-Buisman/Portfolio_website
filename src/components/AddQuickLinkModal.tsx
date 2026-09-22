@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { EvidenceItem, LearningOutcome, MediaItem } from '../types';
-import { X, ExternalLink, Cloud, Video, Github, Layout, Link2, Sparkles, Check } from 'lucide-react';
+import { X, ExternalLink, Cloud, Video, Github, Link2, Check, Terminal } from 'lucide-react';
 
 interface AddQuickLinkModalProps {
   isOpen: boolean;
@@ -96,76 +96,77 @@ export const AddQuickLinkModal: React.FC<AddQuickLinkModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl animate-scaleUp border border-slate-200">
+    <div className="fixed inset-0 z-50 bg-[#050505]/85 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="bg-white max-w-lg w-full overflow-hidden border border-[#050505] shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/80">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#1F1F1F] bg-[#050505] text-white">
+          <div className="flex items-center gap-2.5 font-mono">
+            <div className="w-8 h-8 bg-[#E32636] text-white flex items-center justify-center">
               <ExternalLink className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900">
-                Externe Link Toevoegen aan Sprint {targetSprint}
+              <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                EXTERNE LINK // SPRINT 0{targetSprint}
               </h3>
-              <p className="text-xs text-slate-500">
-                Zero-Repo-Bloat: Geen grote bestanden in de git repository
+              <p className="text-[10px] text-[#D5D5D0] uppercase">
+                Zero-Repo-Bloat: Directe cloud-koppeling
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer"
+            className="p-1 text-[#D5D5D0] hover:text-[#E32636] transition-colors cursor-pointer"
+            aria-label="Sluiten"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs sm:text-sm">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs font-mono">
           {/* Platform Selector */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
-              Type Platform
+            <label className="block text-xs font-bold text-[#050505] mb-1.5 uppercase tracking-wider">
+              // PLATFORM KEUZE
             </label>
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => setPlatform('onedrive')}
-                className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-semibold gap-1.5 transition-all cursor-pointer ${
+                className={`flex flex-col items-center justify-center p-2.5 border text-xs uppercase tracking-wider gap-1.5 transition-all cursor-pointer ${
                   platform === 'onedrive'
-                    ? 'border-blue-500 bg-blue-50 text-blue-800 ring-2 ring-blue-500/20'
-                    : 'border-slate-200 hover:border-slate-300 text-slate-700 bg-white'
+                    ? 'bg-[#050505] text-white border-[#050505] font-bold'
+                    : 'bg-[#F4F3EF] border-[#D5D5D0] text-[#6B6B6B] hover:text-[#050505] hover:border-[#050505]'
                 }`}
               >
-                <Cloud className="w-4 h-4 text-blue-600" />
-                OneDrive
+                <Cloud className="w-4 h-4" />
+                <span>OneDrive</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setPlatform('youtube')}
-                className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-semibold gap-1.5 transition-all cursor-pointer ${
+                className={`flex flex-col items-center justify-center p-2.5 border text-xs uppercase tracking-wider gap-1.5 transition-all cursor-pointer ${
                   platform === 'youtube'
-                    ? 'border-red-500 bg-red-50 text-red-800 ring-2 ring-red-500/20'
-                    : 'border-slate-200 hover:border-slate-300 text-slate-700 bg-white'
+                    ? 'bg-[#E32636] text-white border-[#E32636] font-bold'
+                    : 'bg-[#F4F3EF] border-[#D5D5D0] text-[#6B6B6B] hover:text-[#050505] hover:border-[#050505]'
                 }`}
               >
-                <Video className="w-4 h-4 text-red-600" />
-                YouTube Video
+                <Video className="w-4 h-4" />
+                <span>YouTube</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setPlatform('github')}
-                className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-semibold gap-1.5 transition-all cursor-pointer ${
+                className={`flex flex-col items-center justify-center p-2.5 border text-xs uppercase tracking-wider gap-1.5 transition-all cursor-pointer ${
                   platform === 'github'
-                    ? 'border-slate-700 bg-slate-100 text-slate-900 ring-2 ring-slate-700/20'
-                    : 'border-slate-200 hover:border-slate-300 text-slate-700 bg-white'
+                    ? 'bg-[#050505] text-white border-[#050505] font-bold'
+                    : 'bg-[#F4F3EF] border-[#D5D5D0] text-[#6B6B6B] hover:text-[#050505] hover:border-[#050505]'
                 }`}
               >
-                <Github className="w-4 h-4 text-slate-800" />
-                GitHub Code
+                <Github className="w-4 h-4" />
+                <span>GitHub</span>
               </button>
             </div>
           </div>
@@ -173,24 +174,24 @@ export const AddQuickLinkModal: React.FC<AddQuickLinkModalProps> = ({
           {/* Sprint Selector & Title */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-bold text-[#050505] mb-1 uppercase tracking-wider">
                 Sprint
               </label>
               <select
                 value={targetSprint}
                 onChange={(e) => setTargetSprint(Number(e.target.value))}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-emerald-500 text-xs"
+                className="w-full px-3 py-2 bg-[#F4F3EF] border border-[#D5D5D0] font-mono text-xs text-[#050505] outline-none"
               >
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
                   <option key={num} value={num}>
-                    Sprint {num}
+                    Sprint 0{num}
                   </option>
                 ))}
               </select>
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-bold text-[#050505] mb-1 uppercase tracking-wider">
                 Titel van de deliverable *
               </label>
               <input
@@ -199,14 +200,14 @@ export const AddQuickLinkModal: React.FC<AddQuickLinkModalProps> = ({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Bijv. Onderzoeksrapport Ethische AI (PDF)"
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-emerald-500 text-xs"
+                className="w-full px-3 py-2 bg-[#F4F3EF] border border-[#D5D5D0] text-xs font-mono text-[#050505] outline-none focus:border-[#050505] focus:bg-white"
               />
             </div>
           </div>
 
           {/* External URL */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">
+            <label className="block text-xs font-bold text-[#050505] mb-1 uppercase tracking-wider">
               Externe URL (OneDrive / YouTube / GitHub) *
             </label>
             <div className="relative">
@@ -222,35 +223,30 @@ export const AddQuickLinkModal: React.FC<AddQuickLinkModalProps> = ({
                     ? 'https://www.youtube.com/watch?v=...'
                     : 'https://github.com/...'
                 }
-                className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-emerald-500 text-xs"
+                className="w-full pl-9 pr-3 py-2 bg-[#F4F3EF] border border-[#D5D5D0] text-xs font-mono text-[#050505] outline-none focus:border-[#050505] focus:bg-white"
               />
-              <Link2 className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+              <Link2 className="w-4 h-4 text-[#6B6B6B] absolute left-3 top-2" />
             </div>
-            <p className="text-[11px] text-slate-500 mt-1">
-              {platform === 'onedrive' && 'Zorg dat de OneDrive deellink ingesteld staat op "Iedereen bij HU met de link kan bekijken".'}
-              {platform === 'youtube' && 'Mag een openbare of verborgen (unlisted) YouTube video zijn.'}
-              {platform === 'github' && 'Link direct naar de repository of de specifieke branch/commit.'}
-            </p>
           </div>
 
           {/* Korte Toelichting */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">
+            <label className="block text-xs font-bold text-[#050505] mb-1 uppercase tracking-wider">
               Korte toelichting (optioneel)
             </label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Bijv. 10 minuten presentatie over RAG architectuur en benchmarkresultaten."
-              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-emerald-500 text-xs"
+              placeholder="Bijv. 10 minuten presentatie over RAG architectuur."
+              className="w-full px-3 py-2 bg-[#F4F3EF] border border-[#D5D5D0] text-xs font-mono text-[#050505] outline-none focus:border-[#050505] focus:bg-white"
             />
           </div>
 
           {/* Leeruitkomsten Koppeling */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
-              Koppel aan Leeruitkomst(en)
+            <label className="block text-xs font-bold text-[#050505] mb-1.5 uppercase tracking-wider">
+              // KOPPELING AAN LEERUITKOMSTEN
             </label>
             <div className="grid grid-cols-2 gap-2">
               {learningOutcomes.map((lu) => {
@@ -260,30 +256,31 @@ export const AddQuickLinkModal: React.FC<AddQuickLinkModalProps> = ({
                     type="button"
                     key={lu.id}
                     onClick={() => toggleLU(lu.id)}
-                    className={`flex items-center gap-1.5 p-2 rounded-lg border text-left text-xs transition-all cursor-pointer ${
+                    className={`flex items-center gap-2 p-2 border text-left text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
                       isSelected
-                        ? 'border-emerald-600 bg-emerald-50 text-emerald-900 font-semibold'
-                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                        ? 'bg-[#050505] text-white border-[#050505] font-bold'
+                        : 'border-[#D5D5D0] bg-[#F4F3EF] text-[#6B6B6B] hover:text-[#050505] hover:border-[#050505]'
                     }`}
                   >
-                    <div className={`w-3.5 h-3.5 rounded flex items-center justify-center border text-[10px] ${isSelected ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300'}`}>
+                    <div className={`w-3.5 h-3.5 border flex items-center justify-center text-[10px] ${isSelected ? 'border-white text-white' : 'border-[#D5D5D0]'}`}>
                       {isSelected && <Check className="w-2.5 h-2.5" />}
                     </div>
-                    <span className="truncate">{lu.code}: {lu.title}</span>
+                    <span className="truncate">{lu.code}: {lu.title.split(' ')[0]}</span>
                   </button>
                 );
               })}
             </div>
           </div>
 
-          {saveError && <p role="alert" className="text-sm text-rose-700">{saveError}</p>}
+          {saveError && <p role="alert" className="p-2.5 bg-[#050505] border border-[#E32636] font-mono text-xs text-[#E32636]">{saveError}</p>}
+
           {/* Actions */}
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
+          <div className="pt-3 border-t border-[#D5D5D0] flex items-center justify-between gap-3">
             <button
               type="button"
               onClick={onClose}
               disabled={isSaving}
-              className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+              className="px-4 py-2 text-xs uppercase tracking-wider font-mono text-[#6B6B6B] hover:text-[#050505] transition-colors cursor-pointer"
             >
               Annuleren
             </button>
@@ -291,10 +288,10 @@ export const AddQuickLinkModal: React.FC<AddQuickLinkModalProps> = ({
             <button
               type="submit"
               disabled={isSaving}
-              className="px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              className="px-5 py-2 text-xs font-bold text-white bg-[#050505] hover:bg-[#E32636] uppercase tracking-wider font-mono transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
             >
-              <Check className="w-4 h-4" />
-              {isSaving ? 'Opslaan in Supabase...' : `Link Opslaan in Sprint ${targetSprint}`}
+              <Check className="w-3.5 h-3.5" />
+              <span>{isSaving ? 'OPSLAAN...' : `LINK OPSLAAN (SPRINT 0${targetSprint})`}</span>
             </button>
           </div>
         </form>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { EvidenceItem, LearningOutcome, MediaItem } from '../types';
-import { X, Plus, Sparkles, Image, Video, Link as LinkIcon, HelpCircle, RotateCcw, Upload, FileText } from 'lucide-react';
+import { X, Layers, RotateCcw, Upload, FileText, Check, AlertCircle } from 'lucide-react';
 import { EVIDENCE_TEMPLATES, EvidenceTemplate } from '../data/templates';
 
 interface AddEvidenceModalProps {
@@ -138,133 +138,143 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-[#050505]/75 backdrop-blur-xs overflow-y-auto">
       <div 
-        className="relative w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden my-8 max-h-[90vh] flex flex-col"
+        className="relative w-full max-w-3xl bg-[#FFFFFF] border border-[#050505] shadow-2xl overflow-hidden my-6 max-h-[92vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-5 border-b border-slate-200 bg-slate-50">
+        {/* Editorial Top Bar */}
+        <div className="bg-[#050505] text-[#FFFFFF] px-6 py-4 flex items-center justify-between border-b border-[#050505]">
           <div>
-            <h3 className="text-lg font-bold text-slate-900">
-              {initialItem ? 'Bewijsstuk Bewerken' : 'Nieuw Bewijsstuk Toevoegen'}
+            <div className="flex items-center gap-2 mb-1">
+              <span className="w-1.5 h-1.5 bg-[#E32636]" />
+              <span className="font-mono text-[10px] tracking-widest text-[#D5D5D0] uppercase">
+                {initialItem ? '// EDIT EVIDENCE DOSSIER' : '// NEW EVIDENCE REGISTRATION'}
+              </span>
+            </div>
+            <h3 className="font-heading font-black text-lg sm:text-xl tracking-tight text-[#FFFFFF]">
+              {initialItem ? 'Bewijsstuk Bewerken' : 'Nieuw Onderzoeksdossier Registreren'}
             </h3>
-            <p className="text-xs text-slate-500">
-              Vul je eigen bevindingen in of kies een sjabloon als invulhulp.
-            </p>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors cursor-pointer"
+            className="p-1.5 text-[#D5D5D0] hover:text-[#FFFFFF] hover:bg-[#FFFFFF]/10 transition-colors cursor-pointer"
+            aria-label="Sluit venster"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 overflow-y-auto space-y-4 text-xs sm:text-sm">
-          {/* Template Selection Box */}
-          <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3.5 space-y-2.5">
+        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-6 text-sm text-[#050505]">
+          {/* Template Selection Drawer */}
+          <div className="border border-[#D5D5D0] bg-[#F4F3EF] p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 font-bold text-xs text-emerald-950">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Invulsjablonen (optioneel):</span>
+              <div className="flex items-center gap-2">
+                <Layers className="w-4 h-4 text-[#050505]" />
+                <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#050505]">
+                  Onderzoekssjablonen (Optioneel)
+                </span>
               </div>
               <button
                 type="button"
                 onClick={handleClear}
-                className="text-[11px] font-medium text-slate-500 hover:text-slate-800 flex items-center gap-1 cursor-pointer transition-colors"
+                className="font-mono text-[11px] text-[#6B6B6B] hover:text-[#050505] flex items-center gap-1 cursor-pointer transition-colors"
                 title="Maak alle velden weer leeg"
               >
                 <RotateCcw className="w-3 h-3" />
-                Velden leegmaken
+                Herstel invoer
               </button>
             </div>
 
-            <p className="text-[11px] text-slate-600 leading-snug">
-              Klik op een sjabloon om direct handige richtvragen en koppen in de invoervelden te laden:
+            <p className="text-xs text-[#6B6B6B] leading-relaxed">
+              Selecteer een sjabloon om gestructureerde vraagstellingen en metadata in te laden:
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-              {EVIDENCE_TEMPLATES.map((tmpl) => (
-                <button
-                  key={tmpl.id}
-                  type="button"
-                  onClick={() => applyTemplate(tmpl)}
-                  className={`p-2 rounded-lg border text-left transition-all cursor-pointer flex flex-col justify-between ${
-                    activeTemplateName === tmpl.name
-                      ? 'bg-emerald-700 text-white border-emerald-700 shadow-xs'
-                      : 'bg-white text-slate-800 border-emerald-200/70 hover:bg-emerald-100/50'
-                  }`}
-                >
-                  <div className="flex items-center justify-between w-full mb-0.5">
-                    <span className="font-bold text-xs truncate">
-                      {tmpl.name}
-                    </span>
-                    <span className={`text-[10px] px-1.5 py-0.2 rounded font-semibold ${
-                      activeTemplateName === tmpl.name
-                        ? 'bg-emerald-800 text-emerald-100'
-                        : 'bg-emerald-100 text-emerald-800'
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {EVIDENCE_TEMPLATES.map((tmpl) => {
+                const isActive = activeTemplateName === tmpl.name;
+                return (
+                  <button
+                    key={tmpl.id}
+                    type="button"
+                    onClick={() => applyTemplate(tmpl)}
+                    className={`p-2.5 text-left border transition-all cursor-pointer flex flex-col justify-between ${
+                      isActive
+                        ? 'bg-[#050505] text-[#FFFFFF] border-[#050505]'
+                        : 'bg-[#FFFFFF] text-[#050505] border-[#D5D5D0] hover:border-[#050505]'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between w-full mb-1">
+                      <span className="font-bold text-xs truncate">
+                        {tmpl.name}
+                      </span>
+                      <span className={`font-mono text-[9px] px-1.5 py-0.5 uppercase tracking-wider ${
+                        isActive
+                          ? 'bg-[#E32636] text-[#FFFFFF]'
+                          : 'bg-[#F4F3EF] text-[#6B6B6B] border border-[#D5D5D0]'
+                      }`}>
+                        {tmpl.badge}
+                      </span>
+                    </div>
+                    <span className={`text-[11px] truncate ${
+                      isActive ? 'text-[#D5D5D0]' : 'text-[#6B6B6B]'
                     }`}>
-                      {tmpl.badge}
+                      {tmpl.description}
                     </span>
-                  </div>
-                  <span className={`text-[10px] truncate ${
-                    activeTemplateName === tmpl.name ? 'text-emerald-100' : 'text-slate-500'
-                  }`}>
-                    {tmpl.description}
-                  </span>
-                </button>
-              ))}
+                  </button>
+                );
+              })}
             </div>
 
             {activeTemplateName && (
-              <div className="text-[11px] font-medium text-emerald-800 bg-emerald-100/80 px-2.5 py-1 rounded-md flex items-center gap-1.5">
-                <Sparkles className="w-3 h-3 text-emerald-600 flex-shrink-0" />
+              <div className="font-mono text-xs text-[#050505] bg-[#FFFFFF] border border-[#D5D5D0] px-3 py-2 flex items-center gap-2">
+                <Check className="w-3.5 h-3.5 text-[#E32636] shrink-0" />
                 <span>
-                  Sjabloon <strong>{activeTemplateName}</strong> geladen! Pas de tekst hieronder aan met je eigen ervaring.
+                  Sjabloon <strong className="font-bold">{activeTemplateName}</strong> geladen. Pas de tekst hieronder aan.
                 </span>
               </div>
             )}
           </div>
 
-          {/* Title */}
+          {/* Dossier Title */}
           <div>
-            <label className="block font-semibold text-slate-700 mb-1">
-              Titel van het bewijsstuk *
+            <label className="block font-mono text-xs font-bold uppercase tracking-wider text-[#050505] mb-1.5">
+              Titel van het Bewijsstuk *
             </label>
             <input
               type="text"
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Bijv. Evaluatie van Prompting Frameworks in Sprint 1"
-              className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-emerald-500 text-slate-900"
+              placeholder="Bijv. Evaluatie van RAG Architecture & Context Retrieval in Sprint 3"
+              className="w-full px-3.5 py-2.5 bg-[#FFFFFF] border border-[#D5D5D0] focus:border-[#050505] focus:outline-none text-[#050505] text-sm font-sans"
             />
           </div>
 
           {/* Sprint & Learning Outcomes */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">
+              <label className="block font-mono text-xs font-bold uppercase tracking-wider text-[#050505] mb-1.5">
                 Kies Sprint *
               </label>
               <select
                 value={sprintId}
                 onChange={(e) => setSprintId(Number(e.target.value))}
-                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-emerald-500 text-slate-900 bg-white"
+                className="w-full px-3.5 py-2.5 bg-[#FFFFFF] border border-[#D5D5D0] focus:border-[#050505] focus:outline-none text-[#050505] font-mono text-xs cursor-pointer"
               >
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
                   <option key={s} value={s}>
-                    Sprint {s}
+                    Sprint {s < 10 ? `0${s}` : s}
                   </option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">
+              <label className="block font-mono text-xs font-bold uppercase tracking-wider text-[#050505] mb-1.5">
                 Koppel Leeruitkomst(en) *
               </label>
-              <div className="flex flex-wrap gap-1.5 pt-1">
+              <div className="flex flex-wrap gap-1.5 pt-0.5">
                 {learningOutcomes.map((lu) => {
                   const isChecked = selectedLUs.includes(lu.id);
                   return (
@@ -272,10 +282,10 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
                       type="button"
                       key={lu.id}
                       onClick={() => toggleLU(lu.id)}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
+                      className={`px-3 py-1.5 font-mono text-xs tracking-wider border transition-all cursor-pointer ${
                         isChecked
-                          ? 'bg-emerald-600 text-white border-emerald-600'
-                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                          ? 'bg-[#050505] text-[#FFFFFF] border-[#050505]'
+                          : 'bg-[#FFFFFF] text-[#6B6B6B] border-[#D5D5D0] hover:border-[#050505] hover:text-[#050505]'
                       }`}
                     >
                       {lu.code}
@@ -286,47 +296,56 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
             </div>
           </div>
 
-          {/* The 3 HU Questions */}
-          <div className="space-y-3 pt-2">
+          {/* The 3 Editorial Questions */}
+          <div className="space-y-4 pt-2 border-t border-[#D5D5D0]">
             <div>
-              <label className="block font-semibold text-slate-800 mb-1">
-                🔍 Wat heb ik onderzocht? *
-              </label>
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="font-mono text-xs font-bold text-[#E32636]">// 01. ONDERZOEK</span>
+                <label className="font-mono text-xs font-bold uppercase tracking-wider text-[#050505]">
+                  Wat heb ik onderzocht? *
+                </label>
+              </div>
               <textarea
                 required
-                rows={2}
+                rows={3}
                 value={investigated}
                 onChange={(e) => setInvestigated(e.target.value)}
-                placeholder="Beschrijf welke leervraag, literatuur, modellen of casus je hebt verkend..."
-                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-emerald-500 text-slate-900"
+                placeholder="Beschrijf leervraag, literatuur, modellen of geteste hypotheses..."
+                className="w-full px-3.5 py-2.5 bg-[#FFFFFF] border border-[#D5D5D0] focus:border-[#050505] focus:outline-none text-[#050505] text-xs sm:text-sm font-sans leading-relaxed"
               />
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-800 mb-1">
-                🛠️ Wat heb ik gemaakt? *
-              </label>
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="font-mono text-xs font-bold text-[#E32636]">// 02. ARTIFACTEN</span>
+                <label className="font-mono text-xs font-bold uppercase tracking-wider text-[#050505]">
+                  Wat heb ik gemaakt? *
+                </label>
+              </div>
               <textarea
                 required
-                rows={2}
+                rows={3}
                 value={created}
                 onChange={(e) => setCreated(e.target.value)}
-                placeholder="Beschrijf het concrete artefact: prototype, prompt library, testmatrix, code..."
-                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-emerald-500 text-slate-900"
+                placeholder="Beschrijf het concrete artefact: prototype, benchmarking script, prompt library, testmatrix..."
+                className="w-full px-3.5 py-2.5 bg-[#FFFFFF] border border-[#D5D5D0] focus:border-[#050505] focus:outline-none text-[#050505] text-xs sm:text-sm font-sans leading-relaxed"
               />
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-800 mb-1">
-                💡 Wat heb ik geleerd? (Reflectie) *
-              </label>
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="font-mono text-xs font-bold text-[#E32636]">// 03. INZICHTEN</span>
+                <label className="font-mono text-xs font-bold uppercase tracking-wider text-[#050505]">
+                  Wat heb ik geleerd? (Reflectie) *
+                </label>
+              </div>
               <textarea
                 required
-                rows={2}
+                rows={3}
                 value={learned}
                 onChange={(e) => setLearned(e.target.value)}
-                placeholder="Wat zijn je belangrijkste inzichten? Wat ging goed en wat zou je anders doen?"
-                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-emerald-500 text-slate-900"
+                placeholder="Wat zijn de kernbevindingen? Welke randvoorwaarden werden ontdekt en wat zijn de vervolgstappen?"
+                className="w-full px-3.5 py-2.5 bg-[#FFFFFF] border border-[#D5D5D0] focus:border-[#050505] focus:outline-none text-[#050505] text-xs sm:text-sm font-sans leading-relaxed"
               />
             </div>
           </div>
@@ -334,52 +353,55 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
           {/* Tools & Tags */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">
+              <label className="block font-mono text-xs font-bold uppercase tracking-wider text-[#050505] mb-1.5">
                 Gebruikte Tools (komma-gescheiden)
               </label>
               <input
                 type="text"
                 value={toolsInput}
                 onChange={(e) => setToolsInput(e.target.value)}
-                placeholder="ChatGPT, Cursor, Python"
-                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-emerald-500 text-slate-900"
+                placeholder="PyTorch, Cursor, LangChain, Claude 3.5 Sonnet"
+                className="w-full px-3.5 py-2 bg-[#FFFFFF] border border-[#D5D5D0] focus:border-[#050505] focus:outline-none text-[#050505] font-mono text-xs"
               />
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">
+              <label className="block font-mono text-xs font-bold uppercase tracking-wider text-[#050505] mb-1.5">
                 Onderwerp Tags
               </label>
               <input
                 type="text"
                 value={tagsInput}
                 onChange={(e) => setTagsInput(e.target.value)}
-                placeholder="LLM, Ethiek, Prototyping"
-                className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-emerald-500 text-slate-900"
+                placeholder="RAG, Evaluation, Prompt-Engineering"
+                className="w-full px-3.5 py-2 bg-[#FFFFFF] border border-[#D5D5D0] focus:border-[#050505] focus:outline-none text-[#050505] font-mono text-xs"
               />
             </div>
           </div>
 
-          <div className="pt-2 border-t border-slate-100 space-y-3">
+          {/* Media & Files Upload Section */}
+          <div className="pt-4 border-t border-[#D5D5D0] space-y-3">
             <div>
-              <span className="block font-semibold text-slate-800 text-xs uppercase tracking-wider">
-                Bestanden toevoegen
+              <span className="block font-mono text-xs font-bold uppercase tracking-wider text-[#050505]">
+                Bestanden & Bewijslast Koppelen
               </span>
-              <p className="mt-1 text-[11px] text-slate-500">
-                Selecteer meerdere documenten, bronbestanden, afbeeldingen of PDF's tegelijk. Maximaal 50 MB per bestand.
+              <p className="mt-1 text-xs text-[#6B6B6B]">
+                Ondersteuning voor PDF, bronbestanden, afbeeldingen of documentatie (max 50 MB per bestand).
               </p>
             </div>
 
             {existingMedia.length > 0 && (
               <div className="space-y-2">
-                <p className="text-xs font-semibold text-slate-700">Gekoppelde bestanden en media</p>
+                <p className="font-mono text-[11px] font-bold text-[#6B6B6B] uppercase tracking-wider">
+                  Reeds gekoppelde artefacten
+                </p>
                 {existingMedia.map((media, index) => (
-                  <div key={media.storagePath ?? `${media.url}-${index}`} className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white p-2">
-                    <FileText className="h-4 w-4 shrink-0 text-emerald-600" />
+                  <div key={media.storagePath ?? `${media.url}-${index}`} className="flex items-center gap-2 border border-[#D5D5D0] bg-[#F4F3EF] p-2.5">
+                    <FileText className="h-4 w-4 shrink-0 text-[#050505]" />
                     <input
                       value={media.title}
                       onChange={(event) => setExistingMedia((items) => items.map((item, itemIndex) => itemIndex === index ? { ...item, title: event.target.value } : item))}
-                      className="min-w-0 flex-1 rounded-md border border-slate-200 px-2 py-1 text-xs text-slate-700 focus:border-emerald-500 focus:outline-none"
+                      className="min-w-0 flex-1 border border-[#D5D5D0] bg-[#FFFFFF] px-2.5 py-1 text-xs text-[#050505] font-mono focus:border-[#050505] focus:outline-none"
                       aria-label="Bestandsnaam in portfolio"
                     />
                     <button
@@ -388,20 +410,19 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
                         setRemovedMedia((items) => [...items, media]);
                         setExistingMedia((items) => items.filter((_, itemIndex) => itemIndex !== index));
                       }}
-                      className="rounded p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600"
-                      title="Bestand of link verwijderen"
+                      className="p-1 text-[#6B6B6B] hover:text-[#E32636] transition-colors"
+                      title="Bestand of link ontkoppelen"
                     >
                       <X className="h-4 w-4" />
                     </button>
                   </div>
                 ))}
-                <p className="text-[11px] text-slate-500">Je kunt de zichtbare naam aanpassen of een bestand verwijderen. Selecteer hieronder nieuwe bestanden om ze te vervangen of aan te vullen.</p>
               </div>
             )}
 
-            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-sm font-semibold text-slate-700 transition hover:border-emerald-400 hover:bg-emerald-50">
-              <Upload className="h-5 w-5 text-emerald-600" />
-              Kies bestanden in Verkenner
+            <label className="flex cursor-pointer items-center justify-center gap-2 border border-dashed border-[#6B6B6B] bg-[#F4F3EF] px-4 py-5 font-mono text-xs uppercase tracking-wider text-[#050505] transition-colors hover:border-[#050505] hover:bg-[#FFFFFF]">
+              <Upload className="h-4 w-4 text-[#E32636]" />
+              Selecteer bestanden via verkenner
               <input
                 type="file"
                 multiple
@@ -413,39 +434,49 @@ export const AddEvidenceModal: React.FC<AddEvidenceModalProps> = ({
             {selectedFiles.length > 0 && (
               <div className="space-y-1.5">
                 {selectedFiles.map((file, index) => (
-                  <div key={`${file.name}-${file.lastModified}`} className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs">
+                  <div key={`${file.name}-${file.lastModified}`} className="flex items-center justify-between gap-3 border border-[#D5D5D0] bg-[#FFFFFF] px-3 py-2 font-mono text-xs">
                     <span className="flex min-w-0 items-center gap-2">
-                      <FileText className="h-4 w-4 shrink-0 text-emerald-600" />
-                      <span className="truncate font-medium text-slate-700">{file.name}</span>
-                      <span className="shrink-0 text-slate-400">{(file.size / 1024).toFixed(file.size < 1024 * 1024 ? 0 : 1)} {file.size < 1024 * 1024 ? 'KB' : 'MB'}</span>
+                      <FileText className="h-4 w-4 shrink-0 text-[#050505]" />
+                      <span className="truncate font-bold text-[#050505]">{file.name}</span>
+                      <span className="shrink-0 text-[#6B6B6B]">({(file.size / 1024).toFixed(file.size < 1024 * 1024 ? 0 : 1)} {file.size < 1024 * 1024 ? 'KB' : 'MB'})</span>
                     </span>
-                    <button type="button" onClick={() => setSelectedFiles((files) => files.filter((_, fileIndex) => fileIndex !== index))} className="text-slate-400 hover:text-rose-600" title="Bestand uit selectie verwijderen">
+                    <button 
+                      type="button" 
+                      onClick={() => setSelectedFiles((files) => files.filter((_, fileIndex) => fileIndex !== index))} 
+                      className="text-[#6B6B6B] hover:text-[#E32636]" 
+                      title="Verwijder uit selectie"
+                    >
                       <X className="h-4 w-4" />
                     </button>
                   </div>
                 ))}
               </div>
             )}
-
           </div>
 
-          {saveError && <p role="alert" className="text-sm text-rose-700">{saveError}</p>}
+          {saveError && (
+            <div className="p-3 border border-[#E32636] bg-[#E32636]/10 text-[#E32636] text-xs font-mono flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{saveError}</span>
+            </div>
+          )}
+
           {/* Form Actions */}
-          <div className="pt-4 border-t border-slate-200 flex justify-end gap-2.5">
+          <div className="pt-4 border-t border-[#D5D5D0] flex justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
               disabled={isSaving}
-              className="px-4 py-2 rounded-xl text-slate-700 bg-slate-100 hover:bg-slate-200 font-medium cursor-pointer"
+              className="px-4 py-2 text-xs font-mono uppercase tracking-wider text-[#6B6B6B] hover:text-[#050505] border border-[#D5D5D0] bg-[#FFFFFF] hover:bg-[#F4F3EF] transition-colors cursor-pointer"
             >
               Annuleren
             </button>
             <button
               type="submit"
               disabled={isSaving}
-              className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm cursor-pointer disabled:opacity-50"
+              className="px-6 py-2 text-xs font-mono uppercase tracking-wider text-[#FFFFFF] bg-[#050505] hover:bg-[#E32636] transition-colors cursor-pointer disabled:opacity-50"
             >
-              {isSaving ? 'Opslaan in Supabase...' : 'Bewijs Opslaan'}
+              {isSaving ? 'Synchroniseren...' : 'Dossier Opslaan'}
             </button>
           </div>
         </form>

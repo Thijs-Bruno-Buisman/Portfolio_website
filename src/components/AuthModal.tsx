@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { loginWithGoogle } from '../lib/supabase';
-import { ShieldCheck, AlertCircle, X } from 'lucide-react';
+import { ShieldCheck, AlertCircle, X, Terminal } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -32,39 +32,40 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#050505]/85 backdrop-blur-xs">
       <div 
-        className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"
+        className="relative w-full max-w-md bg-white border border-[#050505] shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-6 pb-4 border-b border-slate-100 flex items-start justify-between bg-slate-50/70">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
-              <ShieldCheck className="w-5 h-5 text-white" />
+        <div className="p-5 border-b border-[#1F1F1F] flex items-start justify-between bg-[#050505] text-white">
+          <div className="flex items-center gap-3 font-mono">
+            <div className="w-8 h-8 bg-[#E32636] text-white flex items-center justify-center">
+              <ShieldCheck className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900">Beheerders Toegang</h3>
-              <p className="text-xs text-slate-500">Inloggen als portfolio-eigenaar</p>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-white">BEHEERDERSTOEGANG // AUTH</h3>
+              <p className="text-[10px] text-[#D5D5D0] uppercase">Inloggen als portfolio-eigenaar</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors cursor-pointer"
+            className="p-1 text-[#D5D5D0] hover:text-[#E32636] transition-colors cursor-pointer"
+            aria-label="Sluiten"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Content */}
         <div className="p-6 space-y-5">
-          <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 leading-relaxed">
-            <strong>Geen zorgen voor je docent:</strong> Docenten en beoordelaars hebben geen account nodig. Zij zien automatisch alle opgeslagen sprints, links en documenten in de veilige leesmodus.
+          <div className="p-3.5 bg-[#F4F3EF] border-l-2 border-[#050505] text-xs font-mono text-[#050505] leading-relaxed">
+            <strong>DOCUMENTATIE VOOR BEOORDELAARS:</strong> Docenten en assessoren hebben geen account nodig. Alle opgeslagen sprints, links en documenten zijn direct zichtbaar in de beveiligde leesmodus.
           </div>
 
           {error && (
-            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-rose-600" />
+            <div className="p-3 bg-[#050505] border border-[#E32636] text-xs font-mono text-[#E32636] flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
@@ -73,7 +74,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           <button
             onClick={handleGoogleLogin}
             disabled={isLoading}
-            className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold transition-all shadow-sm cursor-pointer disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-[#050505] hover:bg-[#E32636] text-white font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
@@ -93,11 +94,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
               />
             </svg>
-            <span>{isLoading ? 'Inloggen...' : 'Inloggen met Google'}</span>
+            <span>{isLoading ? 'BEZIG MET VERIFIËREN...' : 'INLOGGEN MET GOOGLE'}</span>
           </button>
 
-          <p className="text-xs leading-relaxed text-slate-500">
-            Alleen het Google-account dat in Supabase als portfolio-eigenaar is geregistreerd krijgt schrijfrechten.
+          <p className="font-mono text-[11px] leading-relaxed text-[#6B6B6B]">
+            Alleen het Google-account dat in Supabase als portfolio-eigenaar is geconfigureerd krijgt beheerdersrechten.
           </p>
         </div>
       </div>

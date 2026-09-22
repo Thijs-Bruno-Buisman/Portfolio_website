@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
-import { Bot, Loader2, MessageCircle, Send, X } from 'lucide-react';
+import { Loader2, Send, X, Terminal } from 'lucide-react';
 
 type ChatMessage = {
   role: 'user' | 'model';
@@ -15,7 +15,7 @@ export function Chatbot() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'model', text: 'Hoi! Ik ben de portfolio-assistent. Stel een vraag over je leeruitkomsten, sprints of bewijsstukken.' },
+    { role: 'model', text: 'RESEARCH ASSISTANT // ONLINE\nStel een vraag over de minor, sprints, competenties of evaluatie-eisen.' },
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -28,7 +28,7 @@ export function Chatbot() {
     const text = input.trim();
     if (!text || isLoading) return;
     if (!API_KEY) {
-      setError('De chatbot is niet geconfigureerd. Voeg GEMINI_API_KEY toe aan .env en start de website opnieuw.');
+      setError('GEMINI_API_KEY ontbreekt in .env. Voeg de sleutel toe en herstart de applicatie.');
       return;
     }
 
@@ -45,19 +45,19 @@ export function Chatbot() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            systemInstruction: { parts: [{ text: 'Je bent een behulpzame, beknopte Nederlandstalige assistent voor een studentenportfolio van de HU minor Future-proof met AI. Geef praktische feedback en verzin geen portfoliofeiten.' }] },
+            systemInstruction: { parts: [{ text: 'Je bent een beknopte, wetenschappelijke en Nederlandstalige assistent voor het AI-minorportfolio van Thijs Buisman (HU). Beantwoord vragen direct, accuraat en zakelijk zonder decoratieve metaforen.' }] },
             contents: nextMessages.map((message) => ({ role: message.role, parts: [{ text: message.text }] })),
-            generationConfig: { temperature: 0.7, maxOutputTokens: 700 },
+            generationConfig: { temperature: 0.5, maxOutputTokens: 700 },
           }),
         },
       );
       const data = await response.json();
       if (!response.ok) throw new Error(data.error?.message || 'Gemini kon geen antwoord geven.');
       const answer = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!answer) throw new Error('Gemini stuurde geen tekst terug.');
+      if (!answer) throw new Error('Geen antwoord ontvangen van het model.');
       setMessages((current) => [...current, { role: 'model', text: answer }]);
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : 'Er ging iets mis bij Gemini.');
+      setError(requestError instanceof Error ? requestError.message : 'Communicatiefout met Gemini.');
     } finally {
       setIsLoading(false);
     }
@@ -66,29 +66,93 @@ export function Chatbot() {
   return (
     <>
       {isOpen && (
-        <section className="fixed bottom-20 right-4 z-40 flex h-[min(560px,calc(100vh-6rem))] w-[min(390px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
-          <header className="flex items-center justify-between bg-slate-900 px-4 py-3 text-white">
-            <div className="flex items-center gap-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500"><Bot className="h-4 w-4" /></span>
-              <div><h2 className="text-sm font-bold">Portfolio-assistent</h2><p className="text-[11px] text-slate-300">Gemini</p></div>
+        <section 
+          aria-label="Research Console Chatbot"
+          className="fixed bottom-20 right-4 sm:right-6 z-40 flex h-[min(560px,calc(100vh-6rem))] w-[min(420px,calc(100vw-2rem))] flex-col bg-white border border-[#050505] shadow-2xl"
+        >
+          {/* Terminal Header */}
+          <header className="flex items-center justify-between bg-[#050505] px-4 py-3 text-white border-b border-[#1F1F1F]">
+            <div className="flex items-center gap-2.5 font-mono">
+              <Terminal className="h-4 w-4 text-[#E32636]" />
+              <div>
+                <h2 className="text-xs font-bold uppercase tracking-wider text-white">RESEARCH ASSISTANT</h2>
+                <p className="text-[10px] text-[#6B6B6B] uppercase tracking-wide">GEMINI-3.6-FLASH // HU AI LAB</p>
+              </div>
             </div>
-            <button onClick={() => setIsOpen(false)} className="rounded-lg p-2 text-slate-300 hover:bg-slate-800 hover:text-white" title="Chat sluiten"><X className="h-4 w-4" /></button>
+            <button 
+              onClick={() => setIsOpen(false)} 
+              className="p-1 text-[#D5D5D0] hover:text-[#E32636] transition-colors cursor-pointer" 
+              title="Console sluiten"
+              aria-label="Console sluiten"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </header>
 
-          <div className="flex-1 space-y-3 overflow-y-auto bg-slate-50 p-3">
-            {messages.map((message, index) => <div key={`${message.role}-${index}`} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}><div className={`max-w-[86%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm leading-5 ${message.role === 'user' ? 'rounded-br-md bg-emerald-600 text-white' : 'rounded-bl-md border border-slate-200 bg-white text-slate-700'}`}>{message.text}</div></div>)}
-            {isLoading && <div className="flex items-center gap-2 text-xs text-slate-500"><Loader2 className="h-4 w-4 animate-spin" />Even nadenken...</div>}
-            {error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-xs leading-4 text-rose-700">{error}</p>}
+          {/* Messages Stream */}
+          <div className="flex-1 space-y-3 overflow-y-auto bg-[#F4F3EF] p-4 text-xs">
+            {messages.map((message, index) => (
+              <div 
+                key={`${message.role}-${index}`} 
+                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div 
+                  className={`max-w-[88%] p-3 text-xs leading-relaxed whitespace-pre-wrap ${
+                    message.role === 'user' 
+                      ? 'bg-[#050505] text-white font-mono border border-[#050505]' 
+                      : 'bg-white text-[#050505] border border-[#D5D5D0]'
+                  }`}
+                >
+                  {message.text}
+                </div>
+              </div>
+            ))}
+            {isLoading && (
+              <div className="flex items-center gap-2 font-mono text-xs text-[#6B6B6B]">
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-[#E32636]" />
+                <span>QUERY VERWERKEN...</span>
+              </div>
+            )}
+            {error && (
+              <p className="p-2.5 bg-[#050505] border border-[#E32636] font-mono text-xs text-[#E32636]">
+                [FOUT] {error}
+              </p>
+            )}
             <div ref={messagesEndRef} />
           </div>
 
-          <form onSubmit={sendMessage} className="flex gap-2 border-t border-slate-200 bg-white p-3">
-            <input value={input} onChange={(event) => setInput(event.target.value)} placeholder="Stel een vraag..." className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:bg-white" aria-label="Bericht" />
-            <button type="submit" disabled={isLoading || !input.trim()} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-40" title="Bericht versturen"><Send className="h-4 w-4" /></button>
+          {/* Input Form */}
+          <form onSubmit={sendMessage} className="flex border-t border-[#D5D5D0] bg-white p-2.5 gap-2">
+            <input 
+              value={input} 
+              onChange={(event) => setInput(event.target.value)} 
+              placeholder="Stel een vraag over dossiers, doelen of sprints..." 
+              className="min-w-0 flex-1 border border-[#D5D5D0] bg-[#F4F3EF] px-3 py-2 text-xs font-mono outline-none focus:border-[#050505] focus:bg-white text-[#050505]" 
+              aria-label="Prompt invoeren" 
+            />
+            <button 
+              type="submit" 
+              disabled={isLoading || !input.trim()} 
+              className="flex h-9 w-9 shrink-0 items-center justify-center bg-[#050505] text-white hover:bg-[#E32636] transition-colors disabled:opacity-40 cursor-pointer" 
+              title="Versturen"
+              aria-label="Versturen"
+            >
+              <Send className="h-3.5 w-3.5" />
+            </button>
           </form>
         </section>
       )}
-      <button onClick={() => setIsOpen((open) => !open)} className="fixed bottom-4 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-600 text-white shadow-lg transition hover:scale-105 hover:bg-emerald-700" title="Portfolio-assistent openen" aria-label="Portfolio-assistent openen">{isOpen ? <X className="h-5 w-5" /> : <MessageCircle className="h-5 w-5" />}</button>
+
+      {/* Floating Toggle Button */}
+      <button 
+        onClick={() => setIsOpen((open) => !open)} 
+        className="fixed bottom-5 right-5 z-40 bg-[#050505] hover:bg-[#E32636] text-white border border-[#1F1F1F] px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all cursor-pointer shadow-lg" 
+        title="Onderzoeksassistent openen" 
+        aria-label="Onderzoeksassistent openen"
+      >
+        <Terminal className="h-3.5 w-3.5 text-[#E32636] group-hover:text-white" />
+        <span>{isOpen ? '[ SLUITEN ]' : '[ AI CONSOLE ]'}</span>
+      </button>
     </>
   );
 }

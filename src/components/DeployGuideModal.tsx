@@ -29,118 +29,122 @@ export const DeployGuideModal: React.FC<DeployGuideModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl animate-scaleUp border border-slate-200 flex flex-col max-h-[90vh]">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center">
-              <Globe className="w-4 h-4 text-emerald-400" />
+    <div className="fixed inset-0 z-50 bg-[#050505]/75 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="bg-[#FFFFFF] border border-[#050505] max-w-2xl w-full overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+        {/* Editorial Top Bar */}
+        <div className="bg-[#050505] text-[#FFFFFF] px-6 py-4 flex items-center justify-between border-b border-[#050505]">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 border border-[#D5D5D0]/30 bg-[#FFFFFF]/5 text-[#FFFFFF] flex items-center justify-center">
+              <Globe className="w-4 h-4 text-[#E32636]" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900">
-                Deploy- & Code Gids (Vercel & GitHub Pages)
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className="w-1.5 h-1.5 bg-[#E32636]" />
+                <span className="font-mono text-[10px] tracking-widest text-[#D5D5D0] uppercase">
+                  // DEPLOYMENT & TELEMETRY PROTOCOL
+                </span>
+              </div>
+              <h3 className="font-heading font-black text-base sm:text-lg text-[#FFFFFF] tracking-tight">
+                Productie & Publicatie Gids
               </h3>
-              <p className="text-xs text-slate-500">
-                Statische HTML/CSS/JS export en tekstbeheer
-              </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer"
+            className="p-1.5 text-[#D5D5D0] hover:text-[#FFFFFF] hover:bg-[#FFFFFF]/10 transition-colors cursor-pointer"
+            aria-label="Sluit gids"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Tab Selection */}
-        <div className="flex border-b border-slate-200 bg-slate-50/50 px-6 pt-2 gap-2 text-xs font-semibold">
+        {/* Technical Nav Tabs */}
+        <div className="flex border-b border-[#D5D5D0] bg-[#F4F3EF] px-6 pt-2 gap-4 text-xs font-mono">
           <button
             onClick={() => setActiveTab('vercel')}
-            className={`pb-2.5 px-3 border-b-2 transition-all cursor-pointer ${
+            className={`pb-2.5 px-1 border-b-2 uppercase tracking-wider transition-all cursor-pointer ${
               activeTab === 'vercel'
-                ? 'border-emerald-600 text-emerald-700 font-bold'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-[#E32636] text-[#050505] font-bold'
+                : 'border-transparent text-[#6B6B6B] hover:text-[#050505]'
             }`}
           >
-            ▲ Vercel Hosting (Aanbevolen)
+            [01] Vercel Hosting
           </button>
           <button
             onClick={() => setActiveTab('github')}
-            className={`pb-2.5 px-3 border-b-2 transition-all cursor-pointer ${
+            className={`pb-2.5 px-1 border-b-2 uppercase tracking-wider transition-all cursor-pointer ${
               activeTab === 'github'
-                ? 'border-emerald-600 text-emerald-700 font-bold'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-[#E32636] text-[#050505] font-bold'
+                : 'border-transparent text-[#6B6B6B] hover:text-[#050505]'
             }`}
           >
-            <Github className="w-3.5 h-3.5 inline mr-1" />
-            GitHub Pages
+            [02] GitHub Pages
           </button>
           <button
             onClick={() => setActiveTab('code')}
-            className={`pb-2.5 px-3 border-b-2 transition-all cursor-pointer ${
+            className={`pb-2.5 px-1 border-b-2 uppercase tracking-wider transition-all cursor-pointer ${
               activeTab === 'code'
-                ? 'border-emerald-600 text-emerald-700 font-bold'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-[#E32636] text-[#050505] font-bold'
+                : 'border-transparent text-[#6B6B6B] hover:text-[#050505]'
             }`}
           >
-            <FileCode className="w-3.5 h-3.5 inline mr-1" />
-            Tekst & Links Aanpassen
+            [03] Data & Export
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto space-y-4 text-xs sm:text-sm">
+        <div className="p-6 overflow-y-auto space-y-5 text-sm text-[#050505]">
           {activeTab === 'vercel' && (
             <div className="space-y-4">
-              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
-                <h4 className="font-bold text-emerald-900 text-sm mb-1 flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  Binnen 2 minuten live op Vercel
+              <div className="bg-[#F4F3EF] border-l-2 border-[#E32636] border-y border-r border-[#D5D5D0] p-4">
+                <h4 className="font-heading font-black text-[#050505] text-sm mb-1 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#E32636]" />
+                  Aanbevolen Productie Pipeline (Vercel)
                 </h4>
-                <p className="text-xs text-emerald-800 leading-relaxed">
-                  Vercel herkent Vite projecten automatisch en host de statische build razendsnel. Omdat grote bestanden extern in OneDrive en YouTube staan, blijft de repo licht en gratis.
+                <p className="text-xs text-[#6B6B6B] leading-relaxed">
+                  Vercel herkent de Vite-architectuur automatisch. Door de Supabase-cloudintegratie en externe media blijft de GitHub-repository licht en snel te builden.
                 </p>
               </div>
 
-              <ol className="list-decimal list-inside space-y-2 text-slate-700 text-xs sm:text-sm">
-                <li>Push je code naar een <strong>GitHub repository</strong>.</li>
-                <li>Ga naar <strong>vercel.com</strong> en klik op <em>"Add New Project"</em>.</li>
-                <li>Importeer je GitHub repository.</li>
+              <ol className="list-decimal list-inside space-y-2 text-xs sm:text-sm leading-relaxed text-[#050505]">
+                <li>Zorg dat alle wijzigingen gepusht zijn naar je <strong>GitHub repository</strong>.</li>
+                <li>Navigeer naar <strong>vercel.com</strong> en selecteer <em>"Add New Project"</em>.</li>
+                <li>Verbind en importeer je portfolio repository.</li>
                 <li>
-                  Vercel stelt automatisch in:
-                  <ul className="list-disc list-inside pl-4 mt-1 space-y-1 text-slate-600 font-mono text-[11px]">
-                    <li>Framework Preset: <code>Vite</code></li>
-                    <li>Build Command: <code>npm run build</code></li>
-                    <li>Output Directory: <code>dist</code></li>
-                  </ul>
+                  Verifieer de standaard configuratie:
+                  <div className="mt-2 border border-[#D5D5D0] bg-[#050505] text-[#FFFFFF] p-3 font-mono text-[11px] space-y-1">
+                    <p className="text-[#D5D5D0]">FRAMEWORK: Vite</p>
+                    <p className="text-[#D5D5D0]">BUILD_CMD: npm run build</p>
+                    <p className="text-[#D5D5D0]">OUTPUT_DIR: dist</p>
+                  </div>
                 </li>
-                <li>Klik op <strong>Deploy</strong>. Binnen 30 seconden is je portfolio wereldwijd online met een gratis SSL-certificaat!</li>
+                <li className="pt-1">Klik op <strong>Deploy</strong>. Het portfolio is binnen enkele seconden wereldwijd bereikbaar met automatische SSL en telemetry.</li>
               </ol>
             </div>
           )}
 
           {activeTab === 'github' && (
             <div className="space-y-4">
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-                <h4 className="font-bold text-slate-900 text-sm mb-1 flex items-center gap-1.5">
-                  <Terminal className="w-4 h-4 text-slate-700" />
-                  GitHub Pages Build
+              <div className="bg-[#F4F3EF] border border-[#D5D5D0] p-4">
+                <h4 className="font-heading font-black text-[#050505] text-sm mb-1 flex items-center gap-2">
+                  <Terminal className="w-4 h-4 text-[#050505]" />
+                  Statische Distributie
                 </h4>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Je kunt het project ook als statische HTML/CSS/JS hosten op GitHub Pages via een GitHub Action.
+                <p className="text-xs text-[#6B6B6B] leading-relaxed">
+                  Het project kan ook als statische bundel via GitHub Pages of een willekeurige static web server gehost worden.
                 </p>
               </div>
 
               <div className="space-y-2 text-xs">
-                <p className="font-semibold text-slate-800">Lokaal testen van de statische productiebuild:</p>
-                <div className="bg-slate-900 text-slate-100 p-3 rounded-xl font-mono text-[11px] space-y-1">
-                  <p>npm run build</p>
-                  <p>npm run preview</p>
+                <p className="font-mono text-xs font-bold uppercase tracking-wider text-[#050505]">
+                  Lokaal testen van de productiebuild:
+                </p>
+                <div className="bg-[#050505] text-[#FFFFFF] p-3 border border-[#050505] font-mono text-[11px] space-y-1">
+                  <p className="text-[#D5D5D0]">$ npm run build</p>
+                  <p className="text-[#D5D5D0]">$ npm run preview</p>
                 </div>
-                <p className="text-slate-500">
-                  De map <code>dist/</code> bevat alle pure statische HTML, CSS en JavaScript bestanden die direct gehost kunnen worden.
+                <p className="text-xs text-[#6B6B6B]">
+                  De directory <code className="font-mono bg-[#F4F3EF] px-1 py-0.5 border border-[#D5D5D0]">dist/</code> bevat de geoptimaliseerde productiebestanden.
                 </p>
               </div>
             </div>
@@ -148,33 +152,34 @@ export const DeployGuideModal: React.FC<DeployGuideModalProps> = ({
 
           {activeTab === 'code' && (
             <div className="space-y-4">
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-                <h4 className="font-bold text-slate-900 text-sm mb-1">
-                  Waar pas ik teksten & links aan?
+              <div className="bg-[#F4F3EF] border border-[#D5D5D0] p-4">
+                <h4 className="font-heading font-black text-[#050505] text-sm mb-1 flex items-center gap-2">
+                  <FileCode className="w-4 h-4 text-[#050505]" />
+                  Datastructuur & Lokale Defaults
                 </h4>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Alle teksten, naam, talenten, passies, dromen, sprints en OneDrive links staan overzichtelijk gecentreerd in:
+                <p className="text-xs text-[#6B6B6B] leading-relaxed">
+                  Standaard profielgegevens, fallback deliverables en initiële bewijsstukken worden beheerd in:
                 </p>
-                <p className="font-mono text-xs font-bold text-emerald-700 bg-white p-2 rounded-lg border border-slate-200 mt-2">
+                <p className="font-mono text-xs font-bold text-[#050505] bg-[#FFFFFF] p-2 border border-[#D5D5D0] mt-2">
                   src/data/initialData.ts
                 </p>
               </div>
 
-              <div className="border border-slate-200 rounded-xl p-4 space-y-2">
+              <div className="border border-[#D5D5D0] p-4 space-y-3 bg-[#FFFFFF]">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-slate-800 text-xs">
-                    Huidige Portfolio Data Exporteren (JSON)
+                  <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#050505]">
+                    Portfolio JSON Snapshot Exporteren
                   </span>
                   <button
                     onClick={handleCopyJSON}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#050505] hover:bg-[#E32636] text-[#FFFFFF] font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer"
                   >
-                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                    {copied ? 'Gekopieerd!' : 'Kopieer JSON'}
+                    {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copied ? 'Gekopieerd' : 'Kopieer JSON'}
                   </button>
                 </div>
-                <p className="text-[11px] text-slate-500">
-                  Handig als je in de browser teksten of links hebt toegevoegd en deze definitief wilt opslaan in je code vóór het committen.
+                <p className="text-xs text-[#6B6B6B] leading-relaxed">
+                  Kopieer de actuele runtime data om deze eventueel als hardcoded backup of initiële configuratie in de repository op te slaan.
                 </p>
               </div>
             </div>
@@ -182,10 +187,10 @@ export const DeployGuideModal: React.FC<DeployGuideModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-slate-100 bg-slate-50 flex justify-end">
+        <div className="px-6 py-4 border-t border-[#D5D5D0] bg-[#F4F3EF] flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded-xl transition-colors cursor-pointer"
+            className="px-4 py-2 font-mono text-xs uppercase tracking-wider text-[#050505] hover:text-[#FFFFFF] bg-[#FFFFFF] hover:bg-[#050505] border border-[#D5D5D0] transition-colors cursor-pointer"
           >
             Sluiten
           </button>

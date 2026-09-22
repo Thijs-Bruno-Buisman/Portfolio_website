@@ -3,9 +3,7 @@ import { EvidenceItem, LearningOutcome } from '../types';
 import { 
   Calendar, 
   ExternalLink, 
-  Image as ImageIcon, 
   Video, 
-  Tag, 
   CheckCircle, 
   Clock, 
   ArrowRight,
@@ -36,23 +34,23 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
 
   const statusConfig = {
     voldoende: {
-      label: 'Beoordeeld: Voldoende',
-      bg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      label: 'BEOORDEELD // VOLDOENDE',
+      badge: 'bg-[#050505] text-white border-[#050505]',
       icon: CheckCircle,
     },
     in_behandeling: {
-      label: 'In Behandeling',
-      bg: 'bg-amber-50 text-amber-700 border-amber-200',
+      label: 'STATUS // IN BEHANDELING',
+      badge: 'bg-[#F4F3EF] text-[#6B6B6B] border-[#D5D5D0]',
       icon: Clock,
     },
     zelfevaluatie_klaar: {
-      label: 'Zelfevaluatie Gereed',
-      bg: 'bg-blue-50 text-blue-700 border-blue-200',
+      label: 'STATUS // ZELFEVALUATIE',
+      badge: 'bg-white text-[#050505] border-[#050505]',
       icon: Clock,
     },
   }[item.evaluationStatus] || {
-    label: 'In Behandeling',
-    bg: 'bg-slate-50 text-slate-700 border-slate-200',
+    label: 'STATUS // ONBEKEND',
+    badge: 'bg-[#F4F3EF] text-[#6B6B6B] border-[#D5D5D0]',
     icon: Clock,
   };
 
@@ -61,37 +59,37 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
   const hasVideo = item.media.some((m) => m.type === 'video');
 
   return (
-    <article className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden group">
-      {/* Header of the Card */}
-      <div className="p-5 sm:p-6 pb-4">
+    <article className="bg-white border border-[#D5D5D0] hover:border-[#050505] transition-all flex flex-col justify-between group">
+      {/* Header & Core Content */}
+      <div className="p-6 sm:p-7 pb-4">
         {/* Top Badges Row */}
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="px-2.5 py-0.5 rounded-md bg-slate-900 text-white text-xs font-bold tracking-tight">
-              Sprint {item.sprintId}
+        <div className="flex flex-wrap items-center justify-between gap-2.5 mb-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="px-2.5 py-0.5 bg-[#050505] text-white font-mono text-[11px] font-bold uppercase tracking-widest">
+              SPRINT 0{item.sprintId}
             </span>
-            <span className="text-xs text-slate-500 flex items-center gap-1 font-medium ml-1">
-              <Calendar className="w-3.5 h-3.5 text-slate-400" />
+            <span className="font-mono text-xs text-[#6B6B6B] flex items-center gap-1.5 font-medium ml-1">
+              <Calendar className="w-3.5 h-3.5 text-[#6B6B6B]" />
               {item.date}
             </span>
           </div>
 
-          <div className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-semibold border ${statusConfig.bg}`}>
-            <StatusIcon className="w-3 h-3" />
-            {statusConfig.label}
+          <div className={`flex items-center gap-1.5 px-2.5 py-0.5 font-mono text-[10px] sm:text-[11px] font-semibold border ${statusConfig.badge}`}>
+            <StatusIcon className="w-3 h-3 text-[#E32636]" />
+            <span>{statusConfig.label}</span>
           </div>
         </div>
 
         {/* Title */}
         <h3 
           onClick={() => onOpenDetails(item)}
-          className="text-lg font-bold text-slate-900 group-hover:text-emerald-700 transition-colors cursor-pointer leading-snug mb-3"
+          className="font-display text-xl sm:text-2xl font-black text-[#050505] group-hover:text-[#E32636] transition-colors cursor-pointer leading-snug mb-3.5"
         >
           {item.title}
         </h3>
 
         {/* Learning Outcome Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-4">
+        <div className="flex flex-wrap gap-1.5 mb-5">
           {item.learningOutcomeIds.map((luId) => {
             const lu = getLU(luId);
             if (!lu) return null;
@@ -99,10 +97,11 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
               <span
                 key={lu.id}
                 title={lu.fullDesc}
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-slate-100 text-slate-800 border border-slate-200"
+                className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-mono uppercase tracking-wider bg-[#F4F3EF] text-[#050505] border border-[#D5D5D0]"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-                <span className="font-bold">{lu.code}:</span> {lu.title}
+                <span className="w-1.5 h-1.5 bg-[#E32636]" />
+                <span className="font-bold">{lu.code}:</span>
+                <span className="text-[#6B6B6B]">{lu.title.split(' ')[0]}</span>
               </span>
             );
           })}
@@ -112,21 +111,21 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
         {firstImage && (
           <div 
             onClick={() => onOpenDetails(item)}
-            className="relative rounded-xl overflow-hidden mb-4 bg-slate-100 cursor-pointer max-h-48 border border-slate-100"
+            className="relative overflow-hidden mb-5 bg-[#050505] cursor-pointer max-h-52 border border-[#D5D5D0]"
           >
             <img
               src={firstImage.url}
               alt={firstImage.title}
-              className="w-full h-44 object-cover group-hover:scale-[1.02] transition-transform duration-300"
+              className="w-full h-48 object-cover opacity-95 group-hover:opacity-100 group-hover:scale-[1.01] transition-all duration-300"
             />
             {hasVideo && (
-              <div className="absolute top-2 right-2 bg-slate-900/80 text-white px-2 py-1 rounded-md text-xs flex items-center gap-1 backdrop-blur-xs font-medium">
-                <Video className="w-3.5 h-3.5 text-rose-400" />
-                Video
+              <div className="absolute top-2 right-2 bg-[#050505] text-white px-2 py-1 font-mono text-[10px] tracking-wider uppercase flex items-center gap-1.5 border border-[#1F1F1F]">
+                <Video className="w-3 h-3 text-[#E32636]" />
+                VIDEO EMBED
               </div>
             )}
             {firstImage.caption && (
-              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-900/80 to-transparent p-2.5 text-xs text-white truncate">
+              <div className="absolute bottom-0 inset-x-0 bg-[#050505]/90 border-t border-[#1F1F1F] p-2 text-xs font-mono text-[#D5D5D0] truncate">
                 {firstImage.caption}
               </div>
             )}
@@ -135,7 +134,7 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
 
         {/* External Deliverable Links (OneDrive / YouTube / GitHub) */}
         {item.media.filter((m) => m.type === 'link' || m.type === 'video' || m.type === 'file').length > 0 && (
-          <div className="mb-4 space-y-1.5">
+          <div className="mb-5 space-y-1.5">
             {item.media
               .filter((m) => m.type === 'link' || m.type === 'video' || m.type === 'file')
               .map((media, idx) => {
@@ -150,19 +149,19 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
                     href={media.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center justify-between p-2 rounded-lg bg-slate-50 hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-200 text-xs transition-colors group/link"
+                    className="flex items-center justify-between p-2.5 bg-[#F4F3EF] hover:bg-white border border-[#D5D5D0] hover:border-[#050505] text-xs transition-colors group/link"
                   >
-                    <span className="flex items-center gap-2 truncate pr-2">
-                      {isOneDrive && <Cloud className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />}
-                      {isYouTube && <Video className="w-3.5 h-3.5 text-rose-600 flex-shrink-0" />}
-                      {isGitHub && <Github className="w-3.5 h-3.5 text-slate-800 flex-shrink-0" />}
-                      {isFile && <FileText className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />}
-                      {!isOneDrive && !isYouTube && !isGitHub && !isFile && <Link2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />}
-                      <span className="font-semibold text-slate-800 truncate group-hover/link:text-emerald-800">
+                    <span className="flex items-center gap-2.5 truncate pr-2 font-mono">
+                      {isOneDrive && <Cloud className="w-3.5 h-3.5 text-[#050505] flex-shrink-0" />}
+                      {isYouTube && <Video className="w-3.5 h-3.5 text-[#E32636] flex-shrink-0" />}
+                      {isGitHub && <Github className="w-3.5 h-3.5 text-[#050505] flex-shrink-0" />}
+                      {isFile && <FileText className="w-3.5 h-3.5 text-[#050505] flex-shrink-0" />}
+                      {!isOneDrive && !isYouTube && !isGitHub && !isFile && <Link2 className="w-3.5 h-3.5 text-[#050505] flex-shrink-0" />}
+                      <span className="font-semibold text-[#050505] truncate group-hover/link:text-[#E32636] text-[11px] uppercase tracking-wide">
                         {media.title || 'Externe Deliverable'}
                       </span>
                     </span>
-                    <ExternalLink className="w-3 h-3 text-slate-400 group-hover/link:text-emerald-700 flex-shrink-0" />
+                    <ExternalLink className="w-3 h-3 text-[#6B6B6B] group-hover/link:text-[#E32636] flex-shrink-0" />
                   </a>
                 );
               })}
@@ -170,30 +169,30 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
         )}
 
         {/* The 3 HU Core Pillars: Onderzocht, Gemaakt, Geleerd */}
-        <div className="space-y-3 text-xs sm:text-sm">
-          <div className="bg-slate-50/80 rounded-xl p-3 border border-slate-100">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-0.5">
-              🔍 Wat heb ik onderzocht?
+        <div className="space-y-3.5 text-xs sm:text-sm">
+          <div className="bg-[#F4F3EF] p-3.5 border border-[#D5D5D0]">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#6B6B6B] block mb-1">
+              // 01. ONDERZOEK & ANALYSE
             </span>
-            <p className="text-slate-700 line-clamp-3 leading-relaxed">
+            <p className="text-[#050505]/85 line-clamp-3 leading-relaxed text-xs sm:text-sm">
               {item.investigated}
             </p>
           </div>
 
-          <div className="bg-slate-50/80 rounded-xl p-3 border border-slate-100">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-0.5">
-              🛠️ Wat heb ik gemaakt?
+          <div className="bg-[#F4F3EF] p-3.5 border border-[#D5D5D0]">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#6B6B6B] block mb-1">
+              // 02. ARTIFACTEN & CREATIE
             </span>
-            <p className="text-slate-700 line-clamp-3 leading-relaxed">
+            <p className="text-[#050505]/85 line-clamp-3 leading-relaxed text-xs sm:text-sm">
               {item.created}
             </p>
           </div>
 
-          <div className="bg-emerald-50/60 rounded-xl p-3 border border-emerald-100/70">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 block mb-0.5">
-              💡 Wat heb ik geleerd?
+          <div className="bg-white p-3.5 border border-[#050505]">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#E32636] block mb-1">
+              // 03. INZICHTEN & EVALUATIE
             </span>
-            <p className="text-emerald-950 line-clamp-3 leading-relaxed">
+            <p className="text-[#050505] line-clamp-3 leading-relaxed text-xs sm:text-sm">
               {item.learned}
             </p>
           </div>
@@ -201,50 +200,52 @@ export const EvidenceCard: React.FC<EvidenceCardProps> = ({
       </div>
 
       {/* Footer of Card */}
-      <div className="px-5 sm:px-6 py-3.5 bg-slate-50/60 border-t border-slate-100 flex items-center justify-between gap-3 text-xs">
+      <div className="px-6 py-4 bg-[#F4F3EF] border-t border-[#D5D5D0] flex items-center justify-between gap-3 text-xs">
         {/* Tools & Tags */}
         <div className="flex flex-wrap items-center gap-1.5 overflow-hidden">
           {item.toolsUsed.slice(0, 3).map((tool, idx) => (
             <span
               key={idx}
-              className="px-2 py-0.5 rounded bg-white text-slate-600 border border-slate-200 text-[11px] font-medium"
+              className="px-2 py-0.5 bg-white text-[#050505] border border-[#D5D5D0] font-mono text-[10px] uppercase tracking-wider"
             >
               {tool}
             </span>
           ))}
           {item.toolsUsed.length > 3 && (
-            <span className="text-slate-400 text-[10px]">
+            <span className="font-mono text-[#6B6B6B] text-[10px]">
               +{item.toolsUsed.length - 3}
             </span>
           )}
         </div>
 
-        {/* View Details Action */}
+        {/* Actions */}
         <div className="flex items-center gap-2">
           {onEdit && (
             <button
               onClick={() => onEdit(item)}
-              className="text-slate-400 hover:text-emerald-700 p-1 rounded transition-colors cursor-pointer"
-              title="Bewijs bewerken"
+              className="text-[#6B6B6B] hover:text-[#050505] p-1.5 border border-transparent hover:border-[#D5D5D0] transition-colors cursor-pointer"
+              title="Dossier bewerken"
+              aria-label="Dossier bewerken"
             >
-              <Pencil className="w-4 h-4" />
+              <Pencil className="w-3.5 h-3.5" />
             </button>
           )}
           {onDelete && (
             <button
               onClick={() => onDelete(item.id)}
-              className="text-slate-400 hover:text-rose-600 p-1 rounded transition-colors cursor-pointer"
-              title="Bewijs verwijderen"
+              className="text-[#6B6B6B] hover:text-[#E32636] p-1.5 border border-transparent hover:border-[#D5D5D0] transition-colors cursor-pointer"
+              title="Dossier verwijderen"
+              aria-label="Dossier verwijderen"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-3.5 h-3.5" />
             </button>
           )}
 
           <button
             onClick={() => onOpenDetails(item)}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-800 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider font-bold text-[#050505] group-hover:text-[#E32636] transition-colors cursor-pointer ml-1"
           >
-            Bekijk bewijs
+            <span>DOSSIER</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>

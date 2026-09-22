@@ -344,10 +344,10 @@ export default function App() {
   }, [evidenceItems, selectedSprintId, selectedLUFilter, searchQuery]);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-emerald-100 selection:text-emerald-900">
+    <div className="min-h-screen bg-[#F4F3EF] text-[#050505] flex flex-col font-sans selection:bg-[#050505] selection:text-white">
       {databaseError && (
-        <div role="alert" className="bg-rose-50 border-b border-rose-200 px-4 py-2 text-center text-sm text-rose-800">
-          {databaseError} Je lokale gegevens zijn behouden.
+        <div role="alert" className="bg-[#050505] border-b border-[#E32636] px-4 py-2.5 text-center font-mono text-xs text-[#E32636]">
+          [SYSTEM ALERT] {databaseError} Lokale cache blijft actief.
         </div>
       )}
       {/* Top Header */}
@@ -369,42 +369,42 @@ export default function App() {
         onLogout={handleLogout}
       />
 
-      {/* Cloud Synchronization & Access Status Banner */}
-      <div className="bg-slate-900 text-white text-xs py-2 px-4 sm:px-6">
+      {/* Cloud Synchronization & Access Telemetry Strip */}
+      <div className="bg-[#050505] text-[#D5D5D0] text-xs py-2 px-4 sm:px-6 border-b border-[#1F1F1F] font-mono">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             {isOwner ? (
               <>
                 <span className="flex h-2 w-2 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E32636] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E32636]"></span>
                 </span>
-                <span className="text-slate-200">
-                  <strong className="text-emerald-400">Supabase verbonden:</strong> Je bewerkt nu als eigenaar. Alles wat je aanpast of toevoegt wordt permanent opgeslagen.
+                <span className="tracking-wider text-[11px]">
+                  <strong className="text-white">TELEMETRY: SUPABASE ONLINE</strong> // SESSIE: EIGENAAR (SCHRIJFRECHTEN ACTIEF)
                 </span>
               </>
             ) : (
               <>
-                <Eye className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
-                <span className="text-slate-300">
-                  <strong className="text-white">Leesmodus voor Docent & Bezoekers:</strong> Je bekijkt de live cloud-versie van dit portfolio. Wijzigingen zijn vergrendeld om ongewenste aanpassingen te voorkomen.
+                <span className="h-2 w-2 bg-[#6B6B6B] inline-block"></span>
+                <span className="tracking-wider text-[11px] text-[#A0A09C]">
+                  <strong className="text-white">TELEMETRY: LIVE CLOUD-VERSIE</strong> // MODUS: LEESMODUS BEZOEKER & DOCENT
                 </span>
               </>
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {!isOwner ? (
               <button
                 onClick={() => setIsAuthModalOpen(true)}
-                className="text-emerald-400 hover:text-emerald-300 hover:underline font-semibold flex items-center gap-1 cursor-pointer"
+                className="text-white hover:text-[#E32636] font-mono text-xs uppercase tracking-wider flex items-center gap-1.5 cursor-pointer transition-colors"
               >
                 <Lock className="w-3 h-3" />
-                <span>Inloggen als Thijs</span>
+                <span>Inloggen als Eigenaar</span>
               </button>
             ) : (
-              <span className="text-[11px] text-slate-400 hidden md:inline">
-                Ingelogd als eigenaar • Beheerdersrechten actief
+              <span className="text-[11px] text-[#6B6B6B] tracking-wider uppercase hidden md:inline">
+                BEVEILIGD // AUTH ID: {currentUser?.email || 'THIJS'}
               </span>
             )}
           </div>
@@ -442,23 +442,23 @@ export default function App() {
             />
 
             {/* Filter Bar: Learning Outcomes & Search */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+            <div className="bg-white border border-[#D5D5D0] p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
               {/* LU Chips */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
-                <span className="text-xs font-semibold text-slate-500 mr-1 flex items-center gap-1">
-                  <Filter className="w-3.5 h-3.5 text-slate-400" />
-                  Filter LU:
+                <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#6B6B6B] mr-1 flex items-center gap-1.5">
+                  <Filter className="w-3.5 h-3.5 text-[#050505]" />
+                  FILTER:
                 </span>
 
                 <button
                   onClick={() => setSelectedLUFilter('all')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                  className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap border ${
                     selectedLUFilter === 'all'
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      ? 'bg-[#050505] text-white border-[#050505] font-bold'
+                      : 'border-[#D5D5D0] bg-[#F4F3EF] text-[#6B6B6B] hover:text-[#050505] hover:border-[#050505]'
                   }`}
                 >
-                  Alle LU's
+                  ALLE LU'S
                 </button>
 
                 {learningOutcomes.map((lu) => {
@@ -467,10 +467,10 @@ export default function App() {
                     <button
                       key={lu.id}
                       onClick={() => setSelectedLUFilter(lu.id)}
-                      className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                      className={`px-2.5 py-1.5 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap border ${
                         isSelected
-                          ? 'bg-emerald-600 text-white shadow-xs'
-                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                          ? 'bg-[#050505] text-white border-[#050505] border-b-2 border-b-[#E32636] font-bold'
+                          : 'border-[#D5D5D0] bg-[#F4F3EF] text-[#6B6B6B] hover:text-[#050505] hover:border-[#050505]'
                       }`}
                     >
                       {lu.code}: {lu.title.split(' ')[0]}
@@ -481,18 +481,18 @@ export default function App() {
 
               {/* Search Bar */}
               <div className="relative flex-1 max-w-xs">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-3.5 h-3.5 text-[#6B6B6B] absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Zoek in bewijzen, tools of links..."
-                  className="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-emerald-500 focus:bg-white text-slate-900"
+                  placeholder="Zoek in dossiers, tools of tags..."
+                  className="w-full pl-9 pr-3 py-1.5 text-xs font-mono bg-[#F4F3EF] border border-[#D5D5D0] focus:border-[#050505] focus:bg-white text-[#050505] outline-none"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="text-xs text-slate-400 hover:text-slate-600 absolute right-2.5 top-1/2 -translate-y-1/2"
+                    className="font-mono text-xs text-[#6B6B6B] hover:text-[#E32636] absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer uppercase"
                   >
                     Wissen
                   </button>
@@ -501,17 +501,19 @@ export default function App() {
             </div>
 
             {/* Evidence Count and Active Filter Indicator */}
-            <div className="flex items-center justify-between text-xs text-slate-500 px-1">
-              <div>
-                Getoond: <span className="font-bold text-slate-800">{filteredEvidence.length}</span>{' '}
-                {filteredEvidence.length === 1 ? 'item' : 'items'}
+            <div className="flex items-center justify-between font-mono text-xs text-[#6B6B6B] px-0.5">
+              <div className="flex flex-wrap items-center gap-2">
+                <span>
+                  DOSSIERS: <strong className="text-[#050505]">{filteredEvidence.length}</strong>{' '}
+                  {filteredEvidence.length === 1 ? 'ITEM' : 'ITEMS'}
+                </span>
                 {selectedSprintId !== null && (
-                  <span className="ml-1.5 px-2 py-0.5 rounded bg-slate-200 text-slate-700 font-medium">
-                    Sprint {selectedSprintId}
+                  <span className="px-2 py-0.5 border border-[#D5D5D0] bg-white text-[#050505] text-[11px] font-bold">
+                    SPRINT 0{selectedSprintId}
                   </span>
                 )}
                 {selectedLUFilter !== 'all' && (
-                  <span className="ml-1.5 px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-medium">
+                  <span className="px-2 py-0.5 border border-[#050505] bg-[#050505] text-white text-[11px] font-bold">
                     {learningOutcomes.find((lu) => lu.id === selectedLUFilter)?.code}
                   </span>
                 )}
@@ -524,9 +526,9 @@ export default function App() {
                     setSelectedLUFilter('all');
                     setSearchQuery('');
                   }}
-                  className="text-emerald-700 hover:underline font-semibold cursor-pointer"
+                  className="text-[#E32636] hover:underline font-bold uppercase tracking-wider cursor-pointer text-xs"
                 >
-                  Alle filters wissen
+                  [ FILTERS RESETTEN ]
                 </button>
               )}
             </div>
@@ -546,32 +548,32 @@ export default function App() {
                 ))}
               </div>
             ) : (
-              <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center max-w-lg mx-auto shadow-sm">
-                <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-4">
-                  <FileText className="w-6 h-6" />
+              <div className="bg-white border border-[#D5D5D0] p-12 text-center max-w-lg mx-auto">
+                <div className="w-12 h-12 bg-[#050505] text-white flex items-center justify-center mx-auto mb-4">
+                  <FileText className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900 mb-1">
-                  Geen bewijzen of links gevonden
+                <h3 className="font-display text-lg font-bold text-[#050505] mb-1">
+                  Geen dossiers gevonden
                 </h3>
-                <p className="text-xs text-slate-500 mb-6">
+                <p className="text-xs font-mono text-[#6B6B6B] mb-6">
                   {selectedSprintId 
-                    ? `Er zijn nog geen items geregistreerd voor Sprint ${selectedSprintId}.` 
-                    : 'Er zijn nog geen bewijsstukken die voldoen aan de huidige filters.'}
+                    ? `Nog geen geregistreerde items voor Sprint 0${selectedSprintId}.` 
+                    : 'Er zijn geen bewijsstukken die voldoen aan het actieve filter.'}
                 </p>
                 {isOwner && (
                   <div className="flex flex-wrap items-center justify-center gap-3">
                     <button
                       onClick={() => handleOpenQuickLink(selectedSprintId || 1)}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#050505] hover:bg-[#E32636] text-white font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer"
                     >
                       <Plus className="w-4 h-4" />
-                      + Externe Link toevoegen (OneDrive / YouTube)
+                      <span>+ Externe Link toevoegen</span>
                     </button>
                     <button
                       onClick={() => setIsAddModalOpen(true)}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-all cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-transparent hover:bg-[#F4F3EF] text-[#050505] border border-[#D5D5D0] font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer"
                     >
-                      Volledig Bewijs
+                      <span>Volledig Bewijs</span>
                     </button>
                   </div>
                 )}
@@ -593,43 +595,43 @@ export default function App() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 mt-12 py-6 text-xs text-slate-500">
+      {/* Technical Editorial Footer */}
+      <footer className="bg-white border-t border-[#D5D5D0] mt-16 py-8 text-xs text-[#6B6B6B] font-mono">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <GraduationCap className="w-4 h-4 text-emerald-600" />
-            <span>
-              Hogeschool Utrecht • Minor <span className="font-semibold text-slate-800">Future-proof met AI</span> • Bewijzenportfolio
+          <div className="flex items-center gap-2.5">
+            <GraduationCap className="w-4 h-4 text-[#050505]" />
+            <span className="tracking-wide">
+              HOGESCHOOL UTRECHT // MINOR <span className="font-bold text-[#050505]">FUTURE-PROOF MET AI</span> // PORTFOLIO THIJS BUISMAN
             </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4 text-xs">
             <button
               onClick={() => setIsDeployGuideOpen(true)}
-              className="text-emerald-700 hover:text-emerald-800 inline-flex items-center gap-1 font-semibold transition-colors cursor-pointer"
+              className="text-[#050505] hover:text-[#E32636] inline-flex items-center gap-1.5 uppercase tracking-wider transition-colors cursor-pointer"
             >
               <Globe className="w-3.5 h-3.5" />
-              Hosting & Deploy Gids
+              Hosting & Deploy
             </button>
             {isOwner && (
               <>
-                <span className="text-slate-300">|</span>
+                <span className="text-[#D5D5D0]">|</span>
                 <button
                   onClick={handleResetToCleanState}
-                  className="text-slate-400 hover:text-rose-600 inline-flex items-center gap-1 transition-colors cursor-pointer"
+                  className="text-[#6B6B6B] hover:text-[#E32636] inline-flex items-center gap-1 uppercase tracking-wider transition-colors cursor-pointer"
                   title="Wis alle opgeslagen bewijzen voor een schone start"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  Schone start (bewijzen wissen)
+                  Schone start
                 </button>
               </>
             )}
-            <span className="text-slate-300">|</span>
+            <span className="text-[#D5D5D0]">|</span>
             <button
-              onClick={() => setActiveTab('stories')}
-              className="hover:text-emerald-700 font-medium transition-colors cursor-pointer"
+              onClick={() => setActiveTab('profile')}
+              className="hover:text-[#050505] uppercase tracking-wider transition-colors cursor-pointer"
             >
-              User Stories bekijken
+              Persoonlijk Verhaal
             </button>
           </div>
         </div>

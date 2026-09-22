@@ -4,17 +4,18 @@ import {
   X, 
   Calendar, 
   ExternalLink, 
-  Image as ImageIcon, 
   Video, 
   CheckCircle2, 
   Clock, 
-  Check, 
-  Tag, 
-  Lightbulb, 
-  Wrench, 
-  Search,
   Pencil,
-  FileText
+  FileText,
+  Terminal,
+  Search,
+  Wrench,
+  Lightbulb,
+  Link2,
+  Cloud,
+  Github
 } from 'lucide-react';
 
 interface EvidenceModalProps {
@@ -47,65 +48,62 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-[#050505]/85 backdrop-blur-xs overflow-y-auto">
       <div 
-        className="relative w-full max-w-3xl bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden my-8 max-h-[90vh] flex flex-col"
+        className="relative w-full max-w-3xl bg-white border border-[#050505] shadow-2xl overflow-hidden my-8 max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="flex items-start justify-between p-5 sm:p-6 border-b border-slate-200 bg-slate-50/70">
+        <div className="flex items-start justify-between p-6 bg-[#050505] text-white border-b border-[#1F1F1F]">
           <div className="pr-6">
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-              <span className="px-2.5 py-0.5 rounded-md bg-slate-900 text-white text-xs font-bold">
-                Sprint {item.sprintId}
+            <div className="flex flex-wrap items-center gap-2.5 mb-2.5">
+              <span className="px-2.5 py-0.5 bg-[#E32636] text-white font-mono text-[11px] font-bold uppercase tracking-widest">
+                SPRINT 0{item.sprintId}
               </span>
-              <span className="text-xs text-slate-500 font-medium flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+              <span className="font-mono text-xs text-[#D5D5D0] flex items-center gap-1.5 font-medium">
+                <Calendar className="w-3.5 h-3.5 text-[#D5D5D0]" />
                 {item.date}
               </span>
-              <span className={`px-2.5 py-0.5 rounded-md text-xs font-semibold ${
-                item.evaluationStatus === 'voldoende' 
-                  ? 'bg-emerald-100 text-emerald-800' 
-                  : 'bg-amber-100 text-amber-800'
-              }`}>
-                {item.evaluationStatus === 'voldoende' ? 'Beoordeling: Voldoende' : 'Status: In behandeling'}
+              <span className="font-mono text-xs text-white uppercase border border-[#1F1F1F] bg-[#1F1F1F] px-2 py-0.5">
+                {item.evaluationStatus === 'voldoende' ? 'BEOORDEELD // VOLDOENDE' : 'STATUS // IN BEHANDELING'}
               </span>
             </div>
 
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
+            <h2 className="font-display text-2xl sm:text-3xl font-black text-white leading-tight">
               {item.title}
             </h2>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors cursor-pointer"
+            className="p-1.5 text-[#D5D5D0] hover:text-[#E32636] transition-colors cursor-pointer"
+            aria-label="Dossier sluiten"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-5 sm:p-6 overflow-y-auto space-y-6 text-sm">
+        <div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-sm bg-white">
           {/* Linked Learning Outcomes Cards */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2.5">
-              Gekoppelde Leeruitkomsten
+            <h4 className="font-mono text-xs font-bold uppercase tracking-widest text-[#6B6B6B] mb-3">
+              // GEKOPPELDE LEERUITKOMSTEN
             </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {item.learningOutcomeIds.map((luId) => {
                 const lu = getLU(luId);
                 if (!lu) return null;
                 return (
                   <div 
                     key={lu.id}
-                    className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs"
+                    className="p-3.5 bg-[#F4F3EF] border border-[#D5D5D0] text-xs"
                   >
-                    <div className="flex items-center gap-1.5 font-bold text-slate-900 mb-1">
-                      <span className="w-2 h-2 rounded-full bg-emerald-600" />
-                      {lu.code}: {lu.title}
+                    <div className="flex items-center gap-2 font-mono font-bold text-[#050505] mb-1.5 uppercase">
+                      <span className="w-2 h-2 bg-[#E32636]" />
+                      <span>{lu.code}: {lu.title}</span>
                     </div>
-                    <p className="text-slate-600 leading-relaxed">
+                    <p className="text-[#050505]/80 leading-relaxed font-sans text-xs">
                       {lu.fullDesc}
                     </p>
                   </div>
@@ -117,34 +115,34 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
           {/* Core 3 In-Depth Sections */}
           <div className="space-y-4">
             {/* Wat onderzocht */}
-            <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-              <div className="flex items-center gap-2 font-bold text-slate-900 text-sm mb-2">
-                <Search className="w-4 h-4 text-emerald-600" />
-                Wat heb ik onderzocht?
+            <div className="bg-[#F4F3EF] p-4 sm:p-5 border border-[#D5D5D0]">
+              <div className="flex items-center gap-2 font-mono font-bold text-[#050505] text-xs uppercase tracking-wider mb-2 pb-1 border-b border-[#D5D5D0]">
+                <Search className="w-3.5 h-3.5 text-[#050505]" />
+                // 01. ONDERZOEK & METHODIEK
               </div>
-              <p className="text-slate-700 leading-relaxed whitespace-pre-line">
+              <p className="text-[#050505]/85 leading-relaxed whitespace-pre-line text-sm">
                 {item.investigated}
               </p>
             </div>
 
             {/* Wat gemaakt */}
-            <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-              <div className="flex items-center gap-2 font-bold text-slate-900 text-sm mb-2">
-                <Wrench className="w-4 h-4 text-emerald-600" />
-                Wat heb ik gemaakt?
+            <div className="bg-[#F4F3EF] p-4 sm:p-5 border border-[#D5D5D0]">
+              <div className="flex items-center gap-2 font-mono font-bold text-[#050505] text-xs uppercase tracking-wider mb-2 pb-1 border-b border-[#D5D5D0]">
+                <Wrench className="w-3.5 h-3.5 text-[#050505]" />
+                // 02. ARTIFACTEN & CREATIE
               </div>
-              <p className="text-slate-700 leading-relaxed whitespace-pre-line">
+              <p className="text-[#050505]/85 leading-relaxed whitespace-pre-line text-sm">
                 {item.created}
               </p>
             </div>
 
             {/* Wat geleerd */}
-            <div className="bg-emerald-50/70 rounded-xl p-4 border border-emerald-200">
-              <div className="flex items-center gap-2 font-bold text-emerald-950 text-sm mb-2">
-                <Lightbulb className="w-4 h-4 text-emerald-700" />
-                Wat heb ik geleerd? (Zelfevaluatie & Reflectie)
+            <div className="bg-white p-4 sm:p-5 border-2 border-[#050505]">
+              <div className="flex items-center gap-2 font-mono font-bold text-[#E32636] text-xs uppercase tracking-wider mb-2 pb-1 border-b border-[#D5D5D0]">
+                <Lightbulb className="w-3.5 h-3.5 text-[#E32636]" />
+                // 03. INZICHTEN, ZELFEVALUATIE & REFLECTIE
               </div>
-              <p className="text-emerald-950 leading-relaxed whitespace-pre-line">
+              <p className="text-[#050505] leading-relaxed whitespace-pre-line text-sm">
                 {item.learned}
               </p>
             </div>
@@ -153,29 +151,29 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
           {/* Media Items Showcase */}
           {item.media && item.media.length > 0 && (
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-                Bewijsmateriaal & Media
+              <h4 className="font-mono text-xs font-bold uppercase tracking-widest text-[#6B6B6B] mb-3">
+                // BEWIJSLAST & MEDIA
               </h4>
 
               <div className="space-y-4">
                 {item.media.map((media, idx) => (
                   <div
                     key={idx}
-                    className="rounded-xl border border-slate-200 overflow-hidden bg-slate-50"
+                    className="border border-[#D5D5D0] overflow-hidden bg-[#050505]"
                   >
                     {media.type === 'image' && (
                       <div>
                         <img
                           src={media.url}
                           alt={media.title}
-                          className="w-full max-h-96 object-contain bg-slate-900"
+                          className="w-full max-h-96 object-contain bg-[#050505]"
                         />
-                        <div className="p-3 bg-white border-t border-slate-200">
-                          <p className="font-semibold text-slate-900 text-xs sm:text-sm">
+                        <div className="p-3 bg-white border-t border-[#D5D5D0]">
+                          <p className="font-display font-bold text-[#050505] text-sm">
                             {media.title}
                           </p>
                           {media.caption && (
-                            <p className="text-xs text-slate-500 mt-0.5">
+                            <p className="font-mono text-xs text-[#6B6B6B] mt-0.5">
                               {media.caption}
                             </p>
                           )}
@@ -185,7 +183,7 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
 
                     {media.type === 'video' && (
                       <div>
-                        <div className="aspect-video w-full bg-slate-950 flex items-center justify-center">
+                        <div className="aspect-video w-full bg-[#050505] flex items-center justify-center">
                           {media.url.includes('youtube') || media.url.includes('youtu.be') ? (
                             <iframe
                               src={getYouTubeEmbedUrl(media.url)}
@@ -202,14 +200,14 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
                             />
                           )}
                         </div>
-                        <div className="p-3 bg-white border-t border-slate-200 flex items-center justify-between gap-3">
+                        <div className="p-3 bg-white border-t border-[#D5D5D0] flex items-center justify-between gap-3">
                           <div>
-                            <p className="font-semibold text-slate-900 text-xs sm:text-sm flex items-center gap-1.5">
-                              <Video className="w-4 h-4 text-rose-500" />
+                            <p className="font-display font-bold text-[#050505] text-sm flex items-center gap-2">
+                              <Video className="w-4 h-4 text-[#E32636]" />
                               {media.title}
                             </p>
                             {media.caption && (
-                              <p className="text-xs text-slate-500 mt-0.5">
+                              <p className="font-mono text-xs text-[#6B6B6B] mt-0.5">
                                 {media.caption}
                               </p>
                             )}
@@ -218,7 +216,7 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
                             href={media.url}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors flex-shrink-0"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#050505] hover:bg-[#E32636] text-white font-mono text-xs uppercase tracking-wider transition-colors flex-shrink-0"
                           >
                             <span>Openen</span>
                             <ExternalLink className="w-3 h-3" />
@@ -228,12 +226,12 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
                     )}
 
                     {media.type === 'link' && (
-                      <div className="p-3.5 bg-white flex items-center justify-between gap-3">
+                      <div className="p-4 bg-white flex items-center justify-between gap-3">
                         <div>
-                          <p className="font-semibold text-slate-900 text-sm">
+                          <p className="font-display font-bold text-[#050505] text-sm">
                             {media.title}
                           </p>
-                          <p className="text-xs text-slate-500 truncate max-w-sm">
+                          <p className="font-mono text-xs text-[#6B6B6B] truncate max-w-sm mt-0.5">
                             {media.url}
                           </p>
                         </div>
@@ -241,25 +239,30 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
                           href={media.url}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-semibold hover:bg-emerald-600 transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#050505] hover:bg-[#E32636] text-white font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer"
                         >
-                          Openen
+                          <span>Openen</span>
                           <ExternalLink className="w-3.5 h-3.5" />
                         </a>
                       </div>
                     )}
 
                     {media.type === 'file' && (
-                      <div className="p-3.5 bg-white flex items-center justify-between gap-3">
+                      <div className="p-4 bg-white flex items-center justify-between gap-3">
                         <div className="min-w-0">
-                          <p className="flex items-center gap-2 font-semibold text-slate-900 text-sm">
-                            <FileText className="h-4 w-4 shrink-0 text-emerald-600" />
+                          <p className="flex items-center gap-2 font-display font-bold text-[#050505] text-sm">
+                            <FileText className="h-4 w-4 shrink-0 text-[#050505]" />
                             <span className="truncate">{media.title}</span>
                           </p>
-                          {media.size && <p className="mt-0.5 text-xs text-slate-500">{(media.size / 1024 / 1024).toFixed(2)} MB</p>}
+                          {media.size && <p className="mt-0.5 font-mono text-xs text-[#6B6B6B]">{(media.size / 1024 / 1024).toFixed(2)} MB</p>}
                         </div>
-                        <a href={media.url} target="_blank" rel="noreferrer" className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-600">
-                          Openen
+                        <a 
+                          href={media.url} 
+                          target="_blank" 
+                          rel="noreferrer" 
+                          className="inline-flex shrink-0 items-center gap-1.5 bg-[#050505] hover:bg-[#E32636] px-3.5 py-1.5 font-mono text-xs uppercase tracking-wider font-bold text-white transition-colors"
+                        >
+                          <span>Openen</span>
                           <ExternalLink className="h-3.5 w-3.5" />
                         </a>
                       </div>
@@ -271,12 +274,12 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
           )}
 
           {/* Tools and Tags */}
-          <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center gap-2">
-            <span className="text-xs font-semibold text-slate-500">Gebruikte Tools & Methoden:</span>
+          <div className="pt-3 border-t border-[#D5D5D0] flex flex-wrap items-center gap-2 font-mono text-xs">
+            <span className="text-[#6B6B6B] uppercase font-bold">TOOLS:</span>
             {item.toolsUsed.map((tool, idx) => (
               <span
                 key={idx}
-                className="px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 text-xs font-medium"
+                className="px-2 py-0.5 bg-[#F4F3EF] text-[#050505] border border-[#D5D5D0] text-[11px] uppercase tracking-wider"
               >
                 {tool}
               </span>
@@ -284,7 +287,7 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
             {item.tags.map((tag, idx) => (
               <span
                 key={idx}
-                className="px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 text-xs font-medium border border-emerald-200"
+                className="px-2 py-0.5 bg-white text-[#050505] border border-[#050505] text-[11px] uppercase tracking-wider font-bold"
               >
                 #{tag}
               </span>
@@ -293,26 +296,26 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
         </div>
 
         {/* Modal Footer / Assessor Evaluation Toggle */}
-        <div className="p-4 sm:p-5 border-t border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-3">
+        <div className="p-4 sm:p-5 border-t border-[#D5D5D0] bg-[#F4F3EF] flex flex-wrap items-center justify-between gap-3 font-mono text-xs">
           {onUpdateStatus ? (
             <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-slate-600">Beoordelingsstatus:</span>
+              <span className="text-[#6B6B6B] uppercase tracking-wider font-bold">BEOORDELING:</span>
               <button
                 onClick={() => onUpdateStatus(item.id, 'voldoende')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all cursor-pointer border ${
                   item.evaluationStatus === 'voldoende'
-                    ? 'bg-emerald-600 text-white shadow-xs'
-                    : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
+                    ? 'bg-[#050505] text-white border-[#050505] font-bold'
+                    : 'bg-white text-[#050505] border-[#D5D5D0] hover:border-[#050505]'
                 }`}
               >
                 Voldoende
               </button>
               <button
                 onClick={() => onUpdateStatus(item.id, 'in_behandeling')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                className={`px-3 py-1.5 text-xs uppercase tracking-wider transition-all cursor-pointer border ${
                   item.evaluationStatus === 'in_behandeling'
-                    ? 'bg-amber-600 text-white shadow-xs'
-                    : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
+                    ? 'bg-[#050505] text-white border-[#050505] font-bold'
+                    : 'bg-white text-[#050505] border-[#D5D5D0] hover:border-[#050505]'
                 }`}
               >
                 In Behandeling
@@ -322,16 +325,19 @@ export const EvidenceModal: React.FC<EvidenceModalProps> = ({
             <div />
           )}
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             {onEdit && (
-              <button onClick={() => onEdit(item)} className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 sm:text-sm">
-                <Pencil className="h-4 w-4" />
-                Bewerken
+              <button 
+                onClick={() => onEdit(item)} 
+                className="inline-flex items-center gap-1.5 border border-[#D5D5D0] hover:border-[#050505] bg-white px-3.5 py-2 text-xs uppercase tracking-wider font-bold text-[#050505] transition-colors cursor-pointer"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                <span>Bewerken</span>
               </button>
             )}
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
+              className="px-4 py-2 bg-[#050505] hover:bg-[#E32636] text-white text-xs uppercase tracking-wider font-bold transition-colors cursor-pointer"
             >
               Sluiten
             </button>
