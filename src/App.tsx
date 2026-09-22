@@ -522,12 +522,12 @@ export default function App() {
         {activeTab === 'overview' && (
           <div className="space-y-12">
             
-            {/* NASA-style 'Featured News' Dossiers Section */}
+            {/* Embedded & Systems Engineering Featured Dossiers Section */}
             <section aria-labelledby="featured-dossiers-heading" className="bg-white">
               <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-4 mb-6 border-b-2 border-[#050505]">
                 <div>
                   <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#E03A3E] block mb-1">
-                    // ACTUEEL ONDERZOEK
+                    // ELEKTROTECHNIEK & APPLIED AI
                   </span>
                   <h2 id="featured-dossiers-heading" className="font-display font-black text-3xl sm:text-4xl text-[#050505] tracking-tight">
                     Featured Dossiers
@@ -548,7 +548,7 @@ export default function App() {
                 </button>
               </div>
 
-              {/* 3-Column Visual Grid matching NASA Featured News */}
+              {/* 3-Column Visual Grid */}
               {evidenceItems.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {(evidenceItems.filter((e) => e.isFeatured).length > 0
@@ -578,11 +578,11 @@ export default function App() {
                                 <span className="font-mono text-[10px] tracking-widest uppercase text-gray-400">
                                   SPRINT 0{item.sprintId}
                                 </span>
-                                <span className="w-2 h-2 rounded-full bg-[#E03A3E]" />
+                                <span className="w-2 h-2 rounded-full bg-[#00E5FF]" />
                               </div>
                               <div className="relative z-10">
-                                <span className="font-mono text-xs text-[#E03A3E] font-bold tracking-wider block">
-                                  {firstLU ? `${firstLU.code} • ${firstLU.title}` : 'AI RESEARCH DOSSIER'}
+                                <span className="font-mono text-xs text-[#00E5FF] font-bold tracking-wider block">
+                                  {firstLU ? `${firstLU.code} • ${firstLU.title}` : 'EMBEDDED AI DOSSIER'}
                                 </span>
                                 <span className="font-display font-bold text-lg text-white/90 line-clamp-1">
                                   {item.title}
@@ -591,7 +591,7 @@ export default function App() {
                             </div>
                           )}
 
-                          {/* Category Tag pill matching NASA screenshot (e.g. ◉ ARTICLE / ◉ DOSSIER) */}
+                          {/* Category Tag pill */}
                           <div className="absolute top-3 left-3 bg-black/80 backdrop-blur-sm text-white px-2.5 py-1 text-[10px] font-mono uppercase tracking-widest font-bold flex items-center gap-1.5 border border-white/10">
                             <span className="w-1.5 h-1.5 rounded-full bg-[#E03A3E]" />
                             <span>{item.isFeatured ? 'FEATURED' : 'DOSSIER'}</span>

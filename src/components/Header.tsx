@@ -31,25 +31,54 @@ interface HeaderProps {
   onSearchChange?: (q: string) => void;
 }
 
-const NasaMeatballEmblem = () => (
+const EmbeddedSiliconEmblem = () => (
   <svg viewBox="0 0 100 100" className="w-10 h-10 select-none drop-shadow-md" aria-hidden="true">
-    {/* Deep NASA Blue Circle */}
-    <circle cx="50" cy="50" r="46" fill="#0B3D91" />
-    {/* White Starlight Dots */}
-    <circle cx="28" cy="30" r="1.5" fill="#ffffff" opacity="0.9" />
-    <circle cx="72" cy="25" r="1.3" fill="#ffffff" opacity="0.8" />
-    <circle cx="36" cy="65" r="1.3" fill="#ffffff" opacity="0.9" />
-    <circle cx="76" cy="68" r="1.5" fill="#ffffff" opacity="0.8" />
-    <circle cx="58" cy="78" r="1.1" fill="#ffffff" opacity="0.7" />
-    <circle cx="22" cy="52" r="1.2" fill="#ffffff" opacity="0.8" />
-    <circle cx="82" cy="42" r="1.4" fill="#ffffff" opacity="0.9" />
-    {/* White Orbital Ring */}
-    <ellipse cx="50" cy="50" rx="42" ry="16" fill="none" stroke="#FFFFFF" strokeWidth="2.5" transform="rotate(-28 50 50)" opacity="0.95" />
-    {/* Red Vector Wing */}
-    <path d="M 22 72 L 50 18 L 62 48 L 78 74 L 54 58 Z" fill="#E03A3E" opacity="0.95" />
-    {/* Center Typography */}
-    <text x="50" y="55" textAnchor="middle" fill="#FFFFFF" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="900" fontSize="15" letterSpacing="1">
-      HU•AI
+    {/* Microchip Exterior Metallic Pins (Gold/Copper leads) */}
+    {/* Left pins */}
+    <rect x="5" y="26" width="11" height="4" rx="1" fill="#D4AF37" />
+    <rect x="5" y="38" width="11" height="4" rx="1" fill="#D4AF37" />
+    <rect x="5" y="50" width="11" height="4" rx="1" fill="#D4AF37" />
+    <rect x="5" y="62" width="11" height="4" rx="1" fill="#D4AF37" />
+    
+    {/* Right pins */}
+    <rect x="84" y="26" width="11" height="4" rx="1" fill="#D4AF37" />
+    <rect x="84" y="38" width="11" height="4" rx="1" fill="#D4AF37" />
+    <rect x="84" y="50" width="11" height="4" rx="1" fill="#D4AF37" />
+    <rect x="84" y="62" width="11" height="4" rx="1" fill="#D4AF37" />
+
+    {/* Top pins */}
+    <rect x="26" y="5" width="4" height="11" rx="1" fill="#D4AF37" />
+    <rect x="38" y="5" width="4" height="11" rx="1" fill="#D4AF37" />
+    <rect x="50" y="5" width="4" height="11" rx="1" fill="#D4AF37" />
+    <rect x="62" y="5" width="4" height="11" rx="1" fill="#D4AF37" />
+
+    {/* Bottom pins */}
+    <rect x="26" y="84" width="4" height="11" rx="1" fill="#D4AF37" />
+    <rect x="38" y="84" width="4" height="11" rx="1" fill="#D4AF37" />
+    <rect x="50" y="84" width="4" height="11" rx="1" fill="#D4AF37" />
+    <rect x="62" y="84" width="4" height="11" rx="1" fill="#D4AF37" />
+
+    {/* Microchip Package Body (Ceramic / Matte Silicon) */}
+    <rect x="14" y="14" width="72" height="72" rx="7" fill="#0E1117" stroke="#252A36" strokeWidth="2" />
+
+    {/* Pin 1 Orientation Dot */}
+    <circle cx="23" cy="23" r="2.8" fill="#E03A3E" />
+
+    {/* PCB Traces & Signal Buses */}
+    <path d="M 26 36 L 38 36 L 44 42" stroke="#00E5FF" strokeWidth="1.6" fill="none" opacity="0.85" />
+    <path d="M 74 36 L 62 36 L 56 42" stroke="#00E5FF" strokeWidth="1.6" fill="none" opacity="0.85" />
+    <path d="M 26 64 L 38 64 L 44 58" stroke="#00E5FF" strokeWidth="1.6" fill="none" opacity="0.85" />
+    <path d="M 74 64 L 62 64 L 56 58" stroke="#00E5FF" strokeWidth="1.6" fill="none" opacity="0.85" />
+
+    {/* Center Silicon Die Core */}
+    <rect x="34" y="34" width="32" height="32" rx="3" fill="#06080B" stroke="#00E5FF" strokeWidth="1.2" />
+
+    {/* Typography */}
+    <text x="50" y="49" textAnchor="middle" fill="#FFFFFF" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="900" fontSize="11" letterSpacing="0.5">
+      HU•EE
+    </text>
+    <text x="50" y="60" textAnchor="middle" fill="#E03A3E" fontFamily="ui-monospace, monospace" fontWeight="800" fontSize="7.5" letterSpacing="1">
+      AI•LAB
     </text>
   </svg>
 );
@@ -79,7 +108,7 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20 gap-4">
           
-          {/* Left: Explore & Minimalist NASA Search Bar */}
+          {/* Left: Explore & Minimalist Search Bar */}
           <div className="flex items-center gap-3 sm:gap-4 flex-1 max-w-sm">
             <button
               onClick={() => onTabChange('evidence')}
@@ -90,7 +119,7 @@ export const Header: React.FC<HeaderProps> = ({
               <Compass className="w-3.5 h-3.5 text-gray-400" />
             </button>
 
-            {/* NASA Pill Search Box */}
+            {/* Pill Search Box */}
             <div className="relative w-full max-w-[200px] sm:max-w-[240px]">
               <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
@@ -103,21 +132,21 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Center: Iconic NASA Meatball Emblem & Student Identification */}
+          {/* Center: Iconic Silicon Embedded Emblem & Student Identification */}
           <div 
             onClick={() => onTabChange('overview')}
             className="flex items-center gap-3 cursor-pointer group flex-shrink-0"
             title="Naar Hoofdpagina"
           >
             <div className="transform group-hover:scale-105 transition-transform">
-              <NasaMeatballEmblem />
+              <EmbeddedSiliconEmblem />
             </div>
             <div className="hidden md:flex flex-col text-left">
               <span className="font-display font-black text-sm text-white tracking-tight leading-none group-hover:text-[#E03A3E] transition-colors">
                 {profile.name || 'Thijs Buisman'}
               </span>
               <span className="font-mono text-[10px] text-gray-400 tracking-wider uppercase mt-0.5">
-                AI RESEARCH LAB // HU
+                ELECTRICAL ENG // EMBEDDED AI
               </span>
             </div>
           </div>
@@ -159,10 +188,10 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             </nav>
 
-            {/* NASA+ LIVE style badge */}
+            {/* LIVE style badge */}
             <div className="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 bg-[#111111] border border-[#2a2a2a] rounded-sm font-mono text-[10px] font-bold text-gray-300 uppercase tracking-widest">
-              <span className="w-1.5 h-1.5 bg-[#E03A3E] rounded-full animate-pulse" />
-              <span>AI LAB</span>
+              <span className="w-1.5 h-1.5 bg-[#00E5FF] rounded-full animate-pulse" />
+              <span>EMBEDDED AI</span>
             </div>
 
             {/* Owner / Guest controls */}

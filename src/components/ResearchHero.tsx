@@ -42,12 +42,12 @@ export const ResearchHero: React.FC<ResearchHeroProps> = ({
 
   return (
     <section 
-      aria-label="NASA-stijl Research Hero"
+      aria-label="Embedded Engineering & AI Research Hero"
       className="relative w-full text-white overflow-hidden mb-12 border-b border-[#1c1c1c] bg-[#050505]"
       style={{
-        backgroundImage: `linear-gradient(180deg, rgba(5, 5, 5, 0.45) 0%, rgba(5, 5, 5, 0.75) 60%, rgba(5, 5, 5, 0.98) 100%), url('https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?q=80&w=2074&auto=format&fit=crop')`,
+        backgroundImage: `linear-gradient(180deg, rgba(5, 5, 5, 0.55) 0%, rgba(5, 5, 5, 0.8) 60%, rgba(5, 5, 5, 0.98) 100%), url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop')`,
         backgroundSize: 'cover',
-        backgroundPosition: 'center 35%',
+        backgroundPosition: 'center 40%',
       }}
     >
       {/* Cinematic Content Container */}
@@ -55,27 +55,27 @@ export const ResearchHero: React.FC<ResearchHeroProps> = ({
         <div className="max-w-3xl">
           {/* Institution & Lab Tag */}
           <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-black/60 border border-white/20 rounded-xs mb-4 text-xs font-mono tracking-widest uppercase text-gray-300 backdrop-blur-xs">
-            <span className="w-2 h-2 bg-[#E03A3E] rounded-full animate-ping" />
-            <span>{profile.institution || 'Hogeschool Utrecht'} // Minor {profile.minor || 'Future-proof met AI'}</span>
+            <span className="w-2 h-2 bg-[#00E5FF] rounded-full animate-ping" />
+            <span>{profile.institution || 'Hogeschool Utrecht'} // {profile.studyTrack || 'Electrical Engineering'} &bull; Minor {profile.minor || 'Future-proof met AI'}</span>
           </div>
 
-          {/* NASA Bold Display Headline */}
+          {/* Bold Display Headline */}
           <h1 className="font-display font-black text-4xl sm:text-6xl lg:text-7xl tracking-tight text-white leading-[1.08] mb-5">
-            Your Orbiting AI Laboratory
+            Applied Embedded AI & Systems Lab
           </h1>
 
           {/* Subtitle Description */}
           <p className="text-base sm:text-xl text-gray-200 leading-relaxed font-sans max-w-2xl mb-8 drop-shadow-sm">
-            Tijdens 8 sprints ontwikkelt Thijs Bruno Buisman een methodisch dossier van werkende AI-agents, API-integraties en verantwoorde implementaties verdeeld over de 5 officiële HU-leeruitkomsten.
+            Op het snijvlak van Electrical Engineering en intelligente software: tijdens 8 sprints ontwikkelt Thijs Bruno Buisman een methodisch dossier van werkende AI-modellen, edge-applicaties, autonome agents en verantwoorde implementaties voor de HU-leeruitkomsten.
           </p>
 
-          {/* Prominent Red Action Button (Space Station Updates Style) */}
+          {/* Prominent Red Action Button */}
           <div className="flex flex-wrap items-center gap-4">
             <button
               onClick={onNavigateToSprints}
               className="px-7 py-4 bg-[#E03A3E] hover:bg-[#c82f33] text-white font-bold text-sm sm:text-base tracking-wide rounded-sm transition-all duration-200 transform hover:-translate-y-0.5 shadow-xl flex items-center gap-2.5 cursor-pointer active:translate-y-0"
             >
-              <span>Sprint Updates & Dossiers</span>
+              <span>Sprint Dossiers & Systeem-Updates</span>
               <ArrowRight className="w-4 h-4" />
             </button>
 
@@ -83,13 +83,13 @@ export const ResearchHero: React.FC<ResearchHeroProps> = ({
               onClick={onNavigateToStory}
               className="px-6 py-4 bg-black/50 hover:bg-black/80 text-white font-semibold text-sm sm:text-base border border-white/30 hover:border-white rounded-sm transition-all backdrop-blur-xs cursor-pointer"
             >
-              <span>Over de Onderzoeker</span>
+              <span>Over de Ingenieur / Student</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* NASA 3-Column Mission Ticker Strip at the Bottom */}
+      {/* 3-Column Engineering Ticker Strip at the Bottom */}
       <div className="border-t border-white/15 bg-black/75 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 items-center">
@@ -118,11 +118,11 @@ export const ResearchHero: React.FC<ResearchHeroProps> = ({
               className="group cursor-pointer border-b md:border-b-0 md:border-r border-white/10 pb-3 md:pb-0 pr-4"
             >
               <span className="font-mono text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-widest block mb-1">
-                FOCUS GEBIED
+                HARDWARE & AI FOCUS
               </span>
               <div className="flex items-center justify-between">
                 <span className="font-display text-sm sm:text-base font-bold text-white group-hover:text-[#E03A3E] transition-colors truncate">
-                  {currentSprint.focus || "Autonome Agents & API Tool-Use"}
+                  {currentSprint.focus || "Embedded Systems & API Tool-Use"}
                 </span>
                 <span className="w-5 h-5 rounded-full bg-[#E03A3E] text-white flex items-center justify-center text-xs font-bold ml-2 flex-shrink-0 group-hover:scale-110 transition-transform">
                   →
@@ -130,7 +130,7 @@ export const ResearchHero: React.FC<ResearchHeroProps> = ({
               </div>
             </div>
 
-            {/* Mission Strip Col 3: Bewijsdekking (For the Benefit of All Style) */}
+            {/* Mission Strip Col 3: Bewijsdekking */}
             <div 
               onClick={onNavigateToOutcomes}
               className="group cursor-pointer pr-2 flex items-center justify-between"
