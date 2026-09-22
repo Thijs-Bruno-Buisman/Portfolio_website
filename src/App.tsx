@@ -11,7 +11,7 @@ import {
   learningOutcomes, 
   sprints 
 } from './data/initialData';
-import { Header } from './components/Header';
+import { Header, TabType } from './components/Header';
 import { PersonalStory } from './components/PersonalStory';
 import { SprintNav } from './components/SprintNav';
 import { EvidenceCard } from './components/EvidenceCard';
@@ -62,11 +62,65 @@ function writeLocalCache(key: string, value: unknown) {
 }
 
 export default function App() {
-  // Navigation & View State - Default to 'profile' (Homepage: Wie ben ik?)
-  const [activeTab, setActiveTab] = useState<'profile' | 'evidence' | 'outcomes'>('profile');
-  const [selectedSprintId, setSelectedSprintId] = useState<number | null>(null);
+  // Navigation & View State - Hash-driven deep linking
+  const parseHash = (): { tab: TabType; sprintId?: number } => {
+    const hash = window.location.hash.toLowerCase();
+    if (hash.startsWith('#sprints') || hash.startsWith('#bewijzen')) {
+      const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+      const sprintParam = params.get('sprint');
+      return { tab: 'evidence', sprintId: sprintParam ? Number(sprintParam) : undefined };
+    }
+    if (hash.startsWith('#leeruitkomsten') || hash.startsWith('#outcomes')) {
+      return { tab: 'outcomes' };
+    }
+    if (hash.startsWith('#verhaal') || hash.startsWith('#profiel') || hash.startsWith('#story')) {
+      return { tab: 'profile' };
+    }
+    return { tab: 'overview' };
+  };
+
+  const [activeTab, setActiveTab] = useState<TabType>(() => parseHash().tab);
+  const [viewMode, setViewMode] = useState<'editorial' | 'classic'>('editorial');
+  const [selectedSprintId, setSelectedSprintId] = useState<number | null>(() => parseHash().sprintId ?? null);
   const [selectedLUFilter, setSelectedLUFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // Handle browser back/forward and hash changes
+  useEffect(() => {
+    const handleHashChange = () => {
+      const route = parseHash();
+      setActiveTab(route.tab);
+      if (route.sprintId !== undefined) {
+        setSelectedSprintId(route.sprintId);
+      }
+    };
+
+    window.addEventListener('popstate', handleHashChange);
+    window.addEventListener('hashchange', handleHashChange);
+    return () => {
+      window.removeEventListener('popstate', handleHashChange);
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, []);
+
+  const handleTabChange = (tab: TabType) => {
+    setActiveTab(tab);
+    let newHash = '#overzicht';
+    if (tab === 'evidence') newHash = selectedSprintId ? `#sprints?sprint=${selectedSprintId}` : '#sprints';
+    if (tab === 'outcomes') newHash = '#leeruitkomsten';
+    if (tab === 'profile') newHash = '#verhaal';
+    if (window.location.hash !== newHash) {
+      window.history.pushState(null, '', newHash);
+    }
+  };
+
+  const handleSelectSprint = (sprintId: number | null) => {
+    setSelectedSprintId(sprintId);
+    if (activeTab === 'evidence') {
+      const newHash = sprintId !== null ? `#sprints?sprint=${sprintId}` : '#sprints';
+      window.history.replaceState(null, '', newHash);
+    }
+  };
 
   // Modals
   const [activeEvidenceModalItem, setActiveEvidenceModalItem] = useState<EvidenceItem | null>(null);
@@ -354,7 +408,7 @@ export default function App() {
       <Header
         profile={profile}
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={handleTabChange}
         onOpenAddModal={() => {
           if (!isOwner) {
             setIsAuthModalOpen(true);
@@ -367,6 +421,8 @@ export default function App() {
         isOwner={isOwner}
         onLogin={() => setIsAuthModalOpen(true)}
         onLogout={handleLogout}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
       />
 
       {/* Cloud Synchronization & Access Telemetry Strip */}
@@ -412,15 +468,111 @@ export default function App() {
       </div>
 
       {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <main id="main-content" tabIndex={-1} className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 outline-none">
+        {/* Tab 0: Overzicht (Homepage Dispatch) */}
+        {activeTab === 'overview' && (
+          <div className="space-y-8">
+            {/* Overview Dispatch Hero Card */}
+            <div className="bg-white border border-[#D5D5D0] p-6 sm:p-8">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-2 h-2 bg-[#E32636]" />
+                <span className="font-mono text-xs uppercase tracking-widest text-[#6B6B6B]">
+                  {profile.minor || 'Minor Future-proof met AI'} // Hogeschool Utrecht
+                </span>
+              </div>
+              <h2 className="font-heading font-black text-2xl sm:text-4xl text-[#050505] tracking-tight mb-4">
+                Onderzoeks- & Bewijsdossier van {profile.name}
+              </h2>
+              <p className="text-sm sm:text-base text-[#6B6B6B] max-w-3xl leading-relaxed mb-6 font-sans">
+                {profile.bio || 'Welkom in het portfolio voor de Minor Future-proof met AI aan de Hogeschool Utrecht. Hier vind je alle onderzoeksartefacten, reflecties, en gekoppelde bewijsstukken per sprint.'}
+              </p>
+
+              {/* Quick Navigation Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-[#D5D5D0]">
+                <button
+                  onClick={() => handleTabChange('evidence')}
+                  className="p-4 border border-[#D5D5D0] bg-[#F4F3EF] hover:border-[#050505] hover:bg-white text-left transition-all cursor-pointer group"
+                >
+                  <span className="font-mono text-xs text-[#E32636] font-bold block mb-1">02. SECTIE</span>
+                  <h3 className="font-heading font-bold text-base text-[#050505] group-hover:text-[#E32636] transition-colors">
+                    Sprints & Bewijzen →
+                  </h3>
+                  <p className="font-mono text-xs text-[#6B6B6B] mt-1">
+                    {evidenceItems.length} {evidenceItems.length === 1 ? 'dossier' : 'dossiers'} geregistreerd
+                  </p>
+                </button>
+
+                <button
+                  onClick={() => handleTabChange('outcomes')}
+                  className="p-4 border border-[#D5D5D0] bg-[#F4F3EF] hover:border-[#050505] hover:bg-white text-left transition-all cursor-pointer group"
+                >
+                  <span className="font-mono text-xs text-[#E32636] font-bold block mb-1">03. SECTIE</span>
+                  <h3 className="font-heading font-bold text-base text-[#050505] group-hover:text-[#E32636] transition-colors">
+                    Leeruitkomsten Matrix →
+                  </h3>
+                  <p className="font-mono text-xs text-[#6B6B6B] mt-1">
+                    5 competenties & bewijsdekking
+                  </p>
+                </button>
+
+                <button
+                  onClick={() => handleTabChange('profile')}
+                  className="p-4 border border-[#D5D5D0] bg-[#F4F3EF] hover:border-[#050505] hover:bg-white text-left transition-all cursor-pointer group"
+                >
+                  <span className="font-mono text-xs text-[#E32636] font-bold block mb-1">04. SECTIE</span>
+                  <h3 className="font-heading font-bold text-base text-[#050505] group-hover:text-[#E32636] transition-colors">
+                    Persoonlijk Verhaal →
+                  </h3>
+                  <p className="font-mono text-xs text-[#6B6B6B] mt-1">
+                    Achtergrond, talenten & visie
+                  </p>
+                </button>
+              </div>
+            </div>
+
+            {/* Embedded Sprints overview */}
+            {viewMode === 'editorial' && (
+              <div className="space-y-6 pt-4 border-t border-[#D5D5D0]">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="font-mono text-xs uppercase tracking-widest text-[#6B6B6B]">
+                      // Recente Bewijslast
+                    </span>
+                    <h3 className="font-heading font-black text-xl text-[#050505]">
+                      Sprints & Dossiers
+                    </h3>
+                  </div>
+                  <button
+                    onClick={() => handleTabChange('evidence')}
+                    className="font-mono text-xs uppercase tracking-wider text-[#050505] hover:text-[#E32636] underline cursor-pointer"
+                  >
+                    Bekijk alle sprints →
+                  </button>
+                </div>
+
+                <SprintNav
+                  sprints={sprints}
+                  selectedSprintId={selectedSprintId}
+                  onSelectSprint={handleSelectSprint}
+                  evidenceItems={evidenceItems}
+                  onOpenQuickLinkModal={handleOpenQuickLink}
+                  onOpenAddModal={handleOpenAddModalForSprint}
+                  onOpenEvidenceDetails={setActiveEvidenceModalItem}
+                  isOwner={isOwner}
+                />
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Tab 1: Homepage (Wie ben ik? Persoonlijk verhaal & Foto's) */}
         {activeTab === 'profile' && (
           <PersonalStory
             profile={profile}
             onUpdateProfile={handleUpdateProfile}
             onNavigateToSprints={() => {
-              setActiveTab('evidence');
-              setSelectedSprintId(1);
+              handleTabChange('evidence');
+              handleSelectSprint(1);
             }}
             isOwner={isOwner}
           />
@@ -433,7 +585,7 @@ export default function App() {
             <SprintNav
               sprints={sprints}
               selectedSprintId={selectedSprintId}
-              onSelectSprint={setSelectedSprintId}
+              onSelectSprint={handleSelectSprint}
               evidenceItems={evidenceItems}
               onOpenQuickLinkModal={handleOpenQuickLink}
               onOpenAddModal={handleOpenAddModalForSprint}
@@ -628,7 +780,7 @@ export default function App() {
             )}
             <span className="text-[#D5D5D0]">|</span>
             <button
-              onClick={() => setActiveTab('profile')}
+              onClick={() => handleTabChange('profile')}
               className="hover:text-[#050505] uppercase tracking-wider transition-colors cursor-pointer"
             >
               Persoonlijk Verhaal
