@@ -12,6 +12,9 @@ import {
   sprints 
 } from './data/initialData';
 import { Header, TabType } from './components/Header';
+import { ResearchHero } from './components/ResearchHero';
+import { SprintRail } from './components/SprintRail';
+import { SprintBriefing } from './components/SprintBriefing';
 import { PersonalStory } from './components/PersonalStory';
 import { SprintNav } from './components/SprintNav';
 import { EvidenceCard } from './components/EvidenceCard';
@@ -469,98 +472,178 @@ export default function App() {
 
       {/* Main Container */}
       <main id="main-content" tabIndex={-1} className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 outline-none">
-        {/* Tab 0: Overzicht (Homepage Dispatch) */}
+        {/* Tab 0: Overzicht (Homepage Research Dispatch) */}
         {activeTab === 'overview' && (
           <div className="space-y-8">
-            {/* Overview Dispatch Hero Card */}
-            <div className="bg-white border border-[#D5D5D0] p-6 sm:p-8">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="w-2 h-2 bg-[#E32636]" />
-                <span className="font-mono text-xs uppercase tracking-widest text-[#6B6B6B]">
-                  {profile.minor || 'Minor Future-proof met AI'} // Hogeschool Utrecht
-                </span>
-              </div>
-              <h2 className="font-heading font-black text-2xl sm:text-4xl text-[#050505] tracking-tight mb-4">
-                Onderzoeks- & Bewijsdossier van {profile.name}
-              </h2>
-              <p className="text-sm sm:text-base text-[#6B6B6B] max-w-3xl leading-relaxed mb-6 font-sans">
-                {profile.bio || 'Welkom in het portfolio voor de Minor Future-proof met AI aan de Hogeschool Utrecht. Hier vind je alle onderzoeksartefacten, reflecties, en gekoppelde bewijsstukken per sprint.'}
-              </p>
+            {/* Research Hero: Editorial student identity & true teacher metrics */}
+            <ResearchHero
+              profile={profile}
+              sprints={sprints}
+              evidenceItems={evidenceItems}
+              learningOutcomes={learningOutcomes}
+              onNavigateToSprints={() => {
+                handleTabChange('evidence');
+                handleSelectSprint(selectedSprintId ?? 1);
+              }}
+              onNavigateToOutcomes={() => handleTabChange('outcomes')}
+              onNavigateToStory={() => handleTabChange('profile')}
+              isOwner={isOwner}
+            />
 
-              {/* Quick Navigation Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-[#D5D5D0]">
-                <button
-                  onClick={() => handleTabChange('evidence')}
-                  className="p-4 border border-[#D5D5D0] bg-[#F4F3EF] hover:border-[#050505] hover:bg-white text-left transition-all cursor-pointer group"
-                >
-                  <span className="font-mono text-xs text-[#E32636] font-bold block mb-1">02. SECTIE</span>
-                  <h3 className="font-heading font-bold text-base text-[#050505] group-hover:text-[#E32636] transition-colors">
-                    Sprints & Bewijzen →
-                  </h3>
-                  <p className="font-mono text-xs text-[#6B6B6B] mt-1">
-                    {evidenceItems.length} {evidenceItems.length === 1 ? 'dossier' : 'dossiers'} geregistreerd
-                  </p>
-                </button>
-
-                <button
-                  onClick={() => handleTabChange('outcomes')}
-                  className="p-4 border border-[#D5D5D0] bg-[#F4F3EF] hover:border-[#050505] hover:bg-white text-left transition-all cursor-pointer group"
-                >
-                  <span className="font-mono text-xs text-[#E32636] font-bold block mb-1">03. SECTIE</span>
-                  <h3 className="font-heading font-bold text-base text-[#050505] group-hover:text-[#E32636] transition-colors">
-                    Leeruitkomsten Matrix →
-                  </h3>
-                  <p className="font-mono text-xs text-[#6B6B6B] mt-1">
-                    5 competenties & bewijsdekking
-                  </p>
-                </button>
-
-                <button
-                  onClick={() => handleTabChange('profile')}
-                  className="p-4 border border-[#D5D5D0] bg-[#F4F3EF] hover:border-[#050505] hover:bg-white text-left transition-all cursor-pointer group"
-                >
-                  <span className="font-mono text-xs text-[#E32636] font-bold block mb-1">04. SECTIE</span>
-                  <h3 className="font-heading font-bold text-base text-[#050505] group-hover:text-[#E32636] transition-colors">
-                    Persoonlijk Verhaal →
-                  </h3>
-                  <p className="font-mono text-xs text-[#6B6B6B] mt-1">
-                    Achtergrond, talenten & visie
-                  </p>
-                </button>
-              </div>
-            </div>
-
-            {/* Embedded Sprints overview */}
-            {viewMode === 'editorial' && (
-              <div className="space-y-6 pt-4 border-t border-[#D5D5D0]">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="font-mono text-xs uppercase tracking-widest text-[#6B6B6B]">
-                      // Recente Bewijslast
-                    </span>
-                    <h3 className="font-heading font-black text-xl text-[#050505]">
-                      Sprints & Dossiers
-                    </h3>
-                  </div>
-                  <button
-                    onClick={() => handleTabChange('evidence')}
-                    className="font-mono text-xs uppercase tracking-wider text-[#050505] hover:text-[#E32636] underline cursor-pointer"
-                  >
-                    Bekijk alle sprints →
-                  </button>
-                </div>
-
-                <SprintNav
+            {/* Split-Rail Layout for Editorial View */}
+            {viewMode === 'editorial' ? (
+              <div className="flex flex-col lg:flex-row gap-8 items-start">
+                <SprintRail
                   sprints={sprints}
                   selectedSprintId={selectedSprintId}
                   onSelectSprint={handleSelectSprint}
                   evidenceItems={evidenceItems}
+                  isOwner={isOwner}
                   onOpenQuickLinkModal={handleOpenQuickLink}
                   onOpenAddModal={handleOpenAddModalForSprint}
-                  onOpenEvidenceDetails={setActiveEvidenceModalItem}
-                  isOwner={isOwner}
                 />
+
+                <div className="flex-1 min-w-0 w-full space-y-6">
+                  {selectedSprintId !== null && (
+                    <SprintBriefing
+                      sprint={sprints.find((s) => s.id === selectedSprintId) || sprints[0]}
+                      evidenceItems={evidenceItems}
+                      onOpenEvidenceDetails={setActiveEvidenceModalItem}
+                    />
+                  )}
+
+                  {/* Filter Bar: Learning Outcomes & Search */}
+                  <div className="bg-white border border-[#D5D5D0] p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+                      <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#6B6B6B] mr-1 flex items-center gap-1.5">
+                        <Filter className="w-3.5 h-3.5 text-[#050505]" />
+                        FILTER:
+                      </span>
+
+                      <button
+                        onClick={() => setSelectedLUFilter('all')}
+                        className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap border ${
+                          selectedLUFilter === 'all'
+                            ? 'bg-[#050505] text-white border-[#050505] font-bold'
+                            : 'border-[#D5D5D0] bg-[#F4F3EF] text-[#6B6B6B] hover:text-[#050505] hover:border-[#050505]'
+                        }`}
+                      >
+                        ALLE LU'S
+                      </button>
+
+                      {learningOutcomes.map((lu) => {
+                        const isSelected = selectedLUFilter === lu.id;
+                        return (
+                          <button
+                            key={lu.id}
+                            onClick={() => setSelectedLUFilter(lu.id)}
+                            className={`px-2.5 py-1.5 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap border ${
+                              isSelected
+                                ? 'bg-[#050505] text-white border-[#050505] border-b-2 border-b-[#E32636] font-bold'
+                                : 'border-[#D5D5D0] bg-[#F4F3EF] text-[#6B6B6B] hover:text-[#050505] hover:border-[#050505]'
+                            }`}
+                          >
+                            {lu.code}: {lu.title.split(' ')[0]}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="relative flex-1 max-w-xs">
+                      <Search className="w-3.5 h-3.5 text-[#6B6B6B] absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Zoek in dossiers, tools of tags..."
+                        className="w-full pl-9 pr-3 py-1.5 text-xs font-mono bg-[#F4F3EF] border border-[#D5D5D0] focus:border-[#050505] focus:bg-white text-[#050505] outline-none"
+                      />
+                      {searchQuery && (
+                        <button
+                          onClick={() => setSearchQuery('')}
+                          className="font-mono text-xs text-[#6B6B6B] hover:text-[#E32636] absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer uppercase"
+                        >
+                          Wissen
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Evidence Count and Active Filter Indicator */}
+                  <div className="flex items-center justify-between font-mono text-xs text-[#6B6B6B] px-0.5">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span>
+                        DOSSIERS: <strong className="text-[#050505]">{filteredEvidence.length}</strong>{' '}
+                        {filteredEvidence.length === 1 ? 'ITEM' : 'ITEMS'}
+                      </span>
+                      {selectedSprintId !== null && (
+                        <span className="px-2 py-0.5 border border-[#D5D5D0] bg-white text-[#050505] text-[11px] font-bold">
+                          SPRINT 0{selectedSprintId}
+                        </span>
+                      )}
+                      {selectedLUFilter !== 'all' && (
+                        <span className="px-2 py-0.5 border border-[#050505] bg-[#050505] text-white text-[11px] font-bold">
+                          {learningOutcomes.find((lu) => lu.id === selectedLUFilter)?.code}
+                        </span>
+                      )}
+                    </div>
+
+                    {(selectedSprintId !== null || selectedLUFilter !== 'all' || searchQuery) && (
+                      <button
+                        onClick={() => {
+                          setSelectedSprintId(null);
+                          setSelectedLUFilter('all');
+                          setSearchQuery('');
+                        }}
+                        className="text-[#E32636] hover:underline font-bold uppercase tracking-wider cursor-pointer text-xs"
+                      >
+                        [ FILTERS RESETTEN ]
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Evidence Cards Grid */}
+                  {filteredEvidence.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {filteredEvidence.map((item) => (
+                        <EvidenceCard
+                          key={item.id}
+                          item={item}
+                          learningOutcomes={learningOutcomes}
+                          onOpenDetails={setActiveEvidenceModalItem}
+                          onDelete={isOwner ? handleDeleteEvidence : undefined}
+                          onEdit={isOwner ? handleEditEvidence : undefined}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="bg-white border border-[#D5D5D0] p-12 text-center max-w-lg mx-auto">
+                      <div className="w-12 h-12 bg-[#050505] text-white flex items-center justify-center mx-auto mb-4">
+                        <FileText className="w-6 h-6 text-white" />
+                      </div>
+                      <h3 className="font-display text-lg font-bold text-[#050505] mb-1">
+                        Geen dossiers gevonden
+                      </h3>
+                      <p className="text-xs font-mono text-[#6B6B6B] mb-6">
+                        {selectedSprintId 
+                          ? `Nog geen geregistreerde items voor Sprint 0${selectedSprintId}.` 
+                          : 'Er zijn geen bewijsstukken die voldoen aan het actieve filter.'}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
+            ) : (
+              <SprintNav
+                sprints={sprints}
+                selectedSprintId={selectedSprintId}
+                onSelectSprint={handleSelectSprint}
+                evidenceItems={evidenceItems}
+                onOpenQuickLinkModal={handleOpenQuickLink}
+                onOpenAddModal={handleOpenAddModalForSprint}
+                onOpenEvidenceDetails={setActiveEvidenceModalItem}
+                isOwner={isOwner}
+              />
             )}
           </div>
         )}
@@ -580,20 +663,31 @@ export default function App() {
 
         {/* Tab 2: Sprints & Links (Bewijzen per Sprint) */}
         {activeTab === 'evidence' && (
-          <div className="space-y-6">
-            {/* Sprint Navigation Bar with Dedicated External Deliverables & Quick Link */}
-            <SprintNav
-              sprints={sprints}
-              selectedSprintId={selectedSprintId}
-              onSelectSprint={handleSelectSprint}
-              evidenceItems={evidenceItems}
-              onOpenQuickLinkModal={handleOpenQuickLink}
-              onOpenAddModal={handleOpenAddModalForSprint}
-              onOpenEvidenceDetails={setActiveEvidenceModalItem}
-              isOwner={isOwner}
-            />
+          <div>
+            {viewMode === 'editorial' ? (
+              <div className="flex flex-col lg:flex-row gap-8 items-start">
+                {/* Left Sticky Vertical Command Rail */}
+                <SprintRail
+                  sprints={sprints}
+                  selectedSprintId={selectedSprintId}
+                  onSelectSprint={handleSelectSprint}
+                  evidenceItems={evidenceItems}
+                  isOwner={isOwner}
+                  onOpenQuickLinkModal={handleOpenQuickLink}
+                  onOpenAddModal={handleOpenAddModalForSprint}
+                />
 
-            {/* Filter Bar: Learning Outcomes & Search */}
+                {/* Right Editorial Evidence Area */}
+                <div className="flex-1 min-w-0 w-full space-y-6">
+                  {selectedSprintId !== null && (
+                    <SprintBriefing
+                      sprint={sprints.find((s) => s.id === selectedSprintId) || sprints[0]}
+                      evidenceItems={evidenceItems}
+                      onOpenEvidenceDetails={setActiveEvidenceModalItem}
+                    />
+                  )}
+
+                  {/* Filter Bar: Learning Outcomes & Search */}
             <div className="bg-white border border-[#D5D5D0] p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
               {/* LU Chips */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
@@ -727,8 +821,81 @@ export default function App() {
                     >
                       <span>Volledig Bewijs</span>
                     </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+              <div className="space-y-6">
+                <SprintNav
+                  sprints={sprints}
+                  selectedSprintId={selectedSprintId}
+                  onSelectSprint={handleSelectSprint}
+                  evidenceItems={evidenceItems}
+                  onOpenQuickLinkModal={handleOpenQuickLink}
+                  onOpenAddModal={handleOpenAddModalForSprint}
+                  onOpenEvidenceDetails={setActiveEvidenceModalItem}
+                  isOwner={isOwner}
+                />
+
+                {/* Classic Filter Bar */}
+                <div className="bg-white border border-[#D5D5D0] p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+                    <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#6B6B6B] mr-1 flex items-center gap-1.5">
+                      <Filter className="w-3.5 h-3.5 text-[#050505]" />
+                      FILTER:
+                    </span>
+                    <button
+                      onClick={() => setSelectedLUFilter('all')}
+                      className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap border ${
+                        selectedLUFilter === 'all'
+                          ? 'bg-[#050505] text-white border-[#050505] font-bold'
+                          : 'border-[#D5D5D0] bg-[#F4F3EF] text-[#6B6B6B] hover:text-[#050505] hover:border-[#050505]'
+                      }`}
+                    >
+                      ALLE LU'S
+                    </button>
+                    {learningOutcomes.map((lu) => (
+                      <button
+                        key={lu.id}
+                        onClick={() => setSelectedLUFilter(lu.id)}
+                        className={`px-2.5 py-1.5 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap border ${
+                          selectedLUFilter === lu.id
+                            ? 'bg-[#050505] text-white border-[#050505] border-b-2 border-b-[#E32636] font-bold'
+                            : 'border-[#D5D5D0] bg-[#F4F3EF] text-[#6B6B6B] hover:text-[#050505] hover:border-[#050505]'
+                        }`}
+                      >
+                        {lu.code}: {lu.title.split(' ')[0]}
+                      </button>
+                    ))}
                   </div>
-                )}
+
+                  <div className="relative flex-1 max-w-xs">
+                    <Search className="w-3.5 h-3.5 text-[#6B6B6B] absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Zoek in dossiers, tools of tags..."
+                      className="w-full pl-9 pr-3 py-1.5 text-xs font-mono bg-[#F4F3EF] border border-[#D5D5D0] focus:border-[#050505] focus:bg-white text-[#050505] outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {filteredEvidence.map((item) => (
+                    <EvidenceCard
+                      key={item.id}
+                      item={item}
+                      learningOutcomes={learningOutcomes}
+                      onOpenDetails={setActiveEvidenceModalItem}
+                      onDelete={isOwner ? handleDeleteEvidence : undefined}
+                      onEdit={isOwner ? handleEditEvidence : undefined}
+                    />
+                  ))}
+                </div>
               </div>
             )}
           </div>
